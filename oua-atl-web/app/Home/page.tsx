@@ -3,7 +3,10 @@ import React, { useEffect, useState } from "react";
 import Slider1 from "@/public/1.jpg";
 import Slider2 from "@/public/2.jpg";
 import Slider3 from "@/public/3.jpg";
-import Render, { ContentRenderProps } from "././component/render";
+import Render, { ContentRenderProps } from "../component/render";
+import { MovingBorder, MovingBorderDemo } from "../component/moving-border";
+import FooterAlumniPage from "../component/footer";
+import { CardRender } from "../component/meter-or";
 
 export default function Page() {
   const Sliders: ContentRenderProps[] = [
@@ -12,7 +15,7 @@ export default function Page() {
       Heading: "NOT JUST FUN AND GAMES",
       Text: "WE ALSO MEET REGULARLY TO SUPPORT ONE ANOTHER AS WELL AS THE UNIVERSITY OH, AND THERE'S FOOD.",
       Button: (
-        <button className="border-slate-50 border-[3px] rounder-md text-white font-[600] px-3 py-1">
+        <button className=" border-purple-300 border-[3px] hover:bg-purple-500 rounded-md text-white font-[600] px-3 py-1">
           Find Meeting
         </button>
       ),
@@ -22,7 +25,7 @@ export default function Page() {
       Heading: "THE ART OF GIVING SOMETHING BACK",
       Text: "FIND OUT ABOUT THE INITIATIVES AND PROJECTS WE ARE WORKING ON AS WELL AS HOW YOU CAN HELP. WE'D LOVE TO HEAR FROM YOU.",
       Button: (
-        <button className="border-slate-50 border-[3px] rounder-md text-white font-[600] px-3 py-1">
+        <button className=" border-purple-300 border-[3px] hover:bg-purple-500 rounded-md text-white font-[600] px-3 py-1">
           Join Us Today
         </button>
       ),
@@ -32,7 +35,7 @@ export default function Page() {
       Heading: "NOT JUST FUN AND GAMES",
       Text: "WE ALSO MEET REGULARLY TO SUPPORT ONE ANOTHER AS WELL AS THE UNIVERSITY OH, AND THERE'S FOOD.",
       Button: (
-        <button className="border-slate-50 border-[3px] rounder-md text-white font-[600] px-3 py-1">
+        <button className=" border-purple-300 border-[3px] hover:bg-purple-500 rounded-md text-white font-[600] px-3 py-1">
           Find Meeting
         </button>
       ),
@@ -51,6 +54,8 @@ export default function Page() {
         {...Sliders[currentSlide]}
         nextSlide={nextSlide} // Pass the nextSlide function
       />
+      <CardRender />
+      <FooterAlumniPage />
     </div>
   );
 }
