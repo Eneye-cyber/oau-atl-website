@@ -1,0 +1,225 @@
+[
+  {
+    "term": "2016 - 2018",
+    "members": [
+      {
+        "name": "Tunde Sorungbe",
+        "position": "Vice President",
+        "term": "2016 - 2018",
+        "bio": "Tunde Sorungbe is a seasoned professional with extensive experience in organizational management. Known for his strategic thinking and leadership skills, Tunde played a crucial role in guiding the team through challenging periods. His approach to problem-solving and decision-making has had a lasting impact on the organization.",
+        "achievements": [
+          { "tag": "Leadership", "color": "bg-blue-500" },
+          { "tag": "Promotion", "color": "bg-blue-500" },
+          { "tag": "Strategic Planning", "color": "bg-blue-500" },
+          { "tag": "Innovation", "color": "bg-red-500" },
+          { "tag": "Team Building", "color": "bg-purple-500" }
+        ]
+      },
+      {
+        "name": "Ngozi Onyekaba",
+        "position": "Treasurer",
+        "term": "2016 - 2018",
+        "bio": "Ngozi Onyekaba has been instrumental in managing the financial resources of the organization. Her meticulous attention to detail and expertise in financial planning have ensured the stability and growth of the organization’s assets. Ngozi's dedication to transparency and accountability has earned her widespread respect.",
+        "achievements": [
+          { "tag": "Financial Management", "color": "bg-blue-600" },
+          { "tag": "Budget Planning", "color": "bg-blue-500" },
+          { "tag": "Audit Compliance", "color": "bg-red-500" },
+          { "tag": "Resource Allocation", "color": "bg-red-600" },
+          { "tag": "Stakeholder Communication", "color": "bg-purple-500" }
+        ]
+      },
+      {
+        "name": "Yemi Nsah",
+        "position": "Secretary",
+        "term": "2016 - 2018",
+        "bio": "Yemi Nsah has excelled in administrative roles, providing comprehensive support to the executive team. Her organizational skills and attention to detail have greatly contributed to the efficiency of daily operations. Yemi’s ability to manage complex schedules and communications has been a key asset.",
+        "achievements": [
+          { "tag": "Administrative Support", "color": "bg-blue-500" },
+          { "tag": "Event Coordination", "color": "bg-blue-500" },
+          { "tag": "Document Management", "color": "bg-blue-500" },
+          { "tag": "Communication Skills", "color": "bg-red-500" },
+          { "tag": "Time Management", "color": "bg-purple-700" }
+        ]
+      },
+      {
+        "name": "Yetty Ayoola",
+        "position": "Asst. Secretary",
+        "term": "2016 - 2018",
+        "bio": "Yetty Ayoola has been a valuable asset in supporting the secretarial team with her exceptional organizational abilities. Her proactive approach and commitment to excellence have ensured that all administrative tasks are handled efficiently. Yetty's contribution has been crucial in maintaining smooth operations.",
+        "achievements": [
+          { "tag": "Support Services", "color": "bg-blue-500" },
+          { "tag": "Document Preparation", "color": "bg-blue-500" },
+          { "tag": "Meeting Coordination", "color": "bg-blue-500" },
+          { "tag": "Data Entry", "color": "bg-red-500" },
+          { "tag": "Problem Solving", "color": "bg-purple-500" }
+        ]
+      },
+      {
+        "name": "Mide Sowunmi",
+        "position": "Public Relations Officer",
+        "term": "2016 - 2018",
+        "bio": "Mide Sowunmi has been instrumental in managing the organization’s public image and communications. With a talent for media relations and strategic messaging, Mide has successfully enhanced the organization’s reputation and fostered positive relationships with stakeholders.",
+        "achievements": [
+          { "tag": "Media Relations", "color": "bg-blue-500" },
+          { "tag": "Public Speaking", "color": "bg-blue-500" },
+          { "tag": "Crisis Management", "color": "bg-blue-500" },
+          { "tag": "Content Creation", "color": "bg-red-500" },
+          { "tag": "Brand Management", "color": "bg-purple-500" }
+        ]
+      },
+      {
+        "name": "Morenike Jayeoba",
+        "position": "Asst. Public Relations Officer",
+        "term": "2016 - 2018",
+        "bio": "Morenike Jayeoba has supported the Public Relations Officer with various communication tasks and initiatives. Her enthusiasm and creative approach to public relations have significantly contributed to the success of the organization’s outreach programs.",
+        "achievements": [
+          { "tag": "Creative Communication", "color": "bg-blue-500" },
+          { "tag": "Event Promotion", "color": "bg-red-500" },
+          { "tag": "Social Media Management", "color": "bg-blue-500" },
+          { "tag": "Community Engagement", "color": "bg-red-500" },
+          { "tag": "Public Campaigns", "color": "bg-purple-500" }
+        ]
+      }
+    ]
+  },
+  {
+    "term": "2014 - 2016",
+    "members": [
+      {
+        "name": "Bernard Adesina",
+        "position": "President",
+        "term": "2014 - 2016",
+        "bio": "Bernard Adesina led the organization with a vision for growth and development. His leadership skills and strategic foresight guided the team through a period of significant transformation, resulting in numerous accomplishments and advancements for the organization.",
+        "achievements": [
+          { "tag": "Strategic Leadership", "color": "bg-blue-500" },
+          { "tag": "Organizational Growth", "color": "bg-blue-500" },
+          { "tag": "Innovation", "color": "bg-blue-500" },
+          { "tag": "Visionary Planning", "color": "bg-red-500" },
+          { "tag": "Team Motivation", "color": "bg-purple-500" }
+        ]
+      },
+      {
+        "name": "Dolapo Ogbechie",
+        "position": "Vice President",
+        "term": "2014 - 2016",
+        "bio": "Dolapo Ogbechie played a pivotal role in supporting the President and overseeing various organizational functions. His ability to manage multiple projects and foster collaboration among team members contributed significantly to the organization’s achievements.",
+        "achievements": [
+          { "tag": "Project Management", "color": "bg-blue-500" },
+          { "tag": "Team Collaboration", "color": "bg-blue-500" },
+          { "tag": "Operational Efficiency", "color": "bg-blue-500" },
+          { "tag": "Resource Optimization", "color": "bg-red-500" },
+          { "tag": "Leadership Support", "color": "bg-blue-500" }
+        ]
+      },
+      {
+        "name": "Abbie Coker",
+        "position": "Treasurer",
+        "term": "2014 - 2016",
+        "bio": "Abbie Coker managed the financial resources of the organization with exceptional skill. Her expertise in budgeting and financial planning ensured that the organization’s finances were well-maintained and aligned with strategic goals.",
+        "achievements": [
+          { "tag": "Budgeting", "color": "bg-blue-500" },
+          { "tag": "Financial Planning", "color": "bg-blue-700" },
+          { "tag": "Expense Tracking", "color": "bg-blue-700" },
+          { "tag": "Financial Reporting", "color": "bg-red-500" },
+          { "tag": "Audit Management", "color": "bg-purple-500" }
+        ]
+      },
+      {
+        "name": "Bola Odetokun",
+        "position": "Secretary",
+        "term": "2014 - 2016",
+        "bio": "Bola Odetokun provided crucial administrative support to the organization, ensuring that all documentation and communication were handled efficiently. His attention to detail and organizational skills were key to the smooth functioning of daily operations.",
+        "achievements": [
+          { "tag": "Documentation", "color": "bg-blue-500" },
+          { "tag": "Administrative Support", "color": "bg-blue-500" },
+          { "tag": "Communication Management", "color": "bg-blue-500" },
+          { "tag": "Event Organization", "color": "bg-red-500" },
+          { "tag": "Task Coordination", "color": "bg-purple-500" }
+        ]
+      },
+      {
+        "name": "Fisayo Boroniki",
+        "position": "Public Relations Officer",
+        "term": "2014 - 2016",
+        "bio": "Fisayo Boroniki managed the organization’s public relations efforts with great success. His skills in media relations and public communication helped enhance the organization’s image and engage with the community effectively.",
+        "achievements": [
+          { "tag": "Public Relations", "color": "bg-blue-500" },
+          { "tag": "Community Engagement", "color": "bg-blue-500" },
+          { "tag": "Media Relations", "color": "bg-blue-500" },
+          { "tag": "Campaign Management", "color": "bg-red-500" },
+          { "tag": "Brand Promotion", "color": "bg-purple-500" }
+        ]
+      }
+    ]
+  },
+  {
+    "term": "2012 - 2014",
+    "members": [
+      {
+        "name": "Adewale Oshin",
+        "position": "President",
+        "term": "2012 - 2014",
+        "bio": "Adewale Oshin provided visionary leadership and spearheaded key initiatives that defined the organization’s growth during his tenure. His strategic approach and dedication to excellence were pivotal in achieving the organization’s objectives.",
+        "achievements": [
+          { "tag": "Visionary Leadership", "color": "bg-blue-500" },
+          { "tag": "Strategic Initiatives", "color": "bg-blue-500" },
+          { "tag": "Organizational Development", "color": "bg-blue-500" },
+          { "tag": "Innovative Solutions", "color": "bg-red-500" },
+          { "tag": "Stakeholder Engagement", "color": "bg-purple-500" }
+        ]
+      },
+      {
+        "name": "Kemi Iwunoluwa",
+        "position": "Vice President",
+        "term": "2012 - 2014",
+        "bio": "Kemi Iwunoluwa played a key role in supporting the President and managing various operational aspects. Her ability to lead teams and manage projects contributed significantly to the organization’s achievements during this period.",
+        "achievements": [
+          { "tag": "Operational Leadership", "color": "bg-blue-500" },
+          { "tag": "Project Oversight", "color": "bg-blue-500" },
+          { "tag": "Team Leadership", "color": "bg-blue-500" },
+          { "tag": "Process Improvement", "color": "bg-red-500" },
+          { "tag": "Strategic Execution", "color": "bg-purple-500" }
+        ]
+      },
+      {
+        "name": "Olajide Adebayo",
+        "position": "Treasurer",
+        "term": "2012 - 2014",
+        "bio": "Olajide Adebayo managed the financial aspects of the organization with precision. His expertise in financial management and planning ensured the stability and growth of the organization’s finances.",
+        "achievements": [
+          { "tag": "Financial Management", "color": "bg-blue-500" },
+          { "tag": "Budget Administration", "color": "bg-blue-500" },
+          { "tag": "Expense Management", "color": "bg-blue-500" },
+          { "tag": "Financial Reporting", "color": "bg-red-500" },
+          { "tag": "Resource Allocation", "color": "bg-purple-500" }
+        ]
+      },
+      {
+        "name": "Lola Ilesanmi",
+        "position": "Secretary",
+        "term": "2012 - 2014",
+        "bio": "Lola Ilesanmi provided essential administrative support and ensured the smooth execution of organizational tasks. Her organizational skills and attention to detail were instrumental in maintaining efficient operations.",
+        "achievements": [
+          { "tag": "Administrative Efficiency", "color": "bg-blue-500" },
+          { "tag": "Task Management", "color": "bg-blue-500" },
+          { "tag": "Document Control", "color": "bg-blue-500" },
+          { "tag": "Meeting Coordination", "color": "bg-red-500" },
+          { "tag": "Operational Support", "color": "bg-blue-500" }
+        ]
+      },
+      {
+        "name": "Taiwo Akinsola",
+        "position": "Public Relations Officer",
+        "term": "2012 - 2014",
+        "bio": "Taiwo Akinsola was responsible for managing the organization’s public relations and enhancing its image. His efforts in media engagement and community relations played a crucial role in the organization’s public outreach.",
+        "achievements": [
+          { "tag": "Public Relations Management", "color": "bg-blue-500" },
+          { "tag": "Community Outreach", "color": "bg-blue-500" },
+          { "tag": "Media Strategy", "color": "bg-blue-500" },
+          { "tag": "Brand Awareness", "color": "bg-blue-500" },
+          { "tag": "Campaign Strategy", "color": "bg-purple-500" }
+        ]
+      }
+    ]
+  }
+]
