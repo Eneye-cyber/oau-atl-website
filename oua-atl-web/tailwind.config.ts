@@ -15,6 +15,19 @@ module.exports = {
   // darkMode: "class",
   theme: {
     extend: {
+      colors: {
+        primary: "var(--primary)",
+        'primary-light': "var(--primary-light)",
+        accent: "var(--accent)",
+        'jet-black': "var(--jet-black)",
+        'nero-black': "var(--nero-black)",
+      },
+      fontFamily: {
+        roboto: ['var(--font-roboto)'],
+      },
+      height: {
+        hero: '36.25rem'
+      },
       animation: {
         "fade-in": "fadeIn 1s ease-in-out forwards",
         "meteor-effect": "meteor 5s linear infinite",

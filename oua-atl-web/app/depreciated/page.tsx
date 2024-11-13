@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Slider1 from "@/public/1.jpg";
 import Slider2 from "@/public/2.jpg";
 import Slider3 from "@/public/3.jpg";
-import Render, { ContentRenderProps } from "././component/render";
+import Render, { ContentRenderProps } from "@/app/component/render";
 
 export default function Page() {
   const Sliders: ContentRenderProps[] = [

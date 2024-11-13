@@ -2,64 +2,116 @@
 @tailwind components;
 @tailwind utilities;
 :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 214, 219, 220;
-    --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+
+  --primary: #382172;
+  --primary-light: rgb(137 101 235);
+  --accent: rgb(242, 206, 62);
+  --jet-black: rgb(37, 37, 37);
+  --nero-black: rgb(22, 21, 21);
 }
 
 @media (prefers-color-scheme: dark) {
-     :root {
-        --foreground-rgb: 255, 255, 255;
-        --background-start-rgb: 0, 0, 0;
-        --background-end-rgb: 0, 0, 0;
-    }
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+@layer base {
+  html {
+    font-family: var(--font-roboto);
+  }
 }
 
 @layer utilities {
-    .text-balance {
-        text-wrap: balance;
-    }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .pad {
+    @apply px-[5%];
+  }
+
+  .container {
+    @apply w-full mx-auto max-w-screen-xl;
+  }
+
+  .flex-column {
+    @apply flex flex-col;
+  }
+
+  .flex-between {
+    @apply flex justify-between items-center;
+  }
+}
+
+@layer components {
+  .banner-hero {
+    background: url("./../public/img/19.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .footer-title {
+    @apply text-lg text-white relative mb-4 uppercase;
+  }
+  .footer-title span:after {
+    background: var(--primary-light);
+    content: " ";
+    display: block;
+    height: 1px;
+    position: absolute;
+    top: auto;
+    bottom: -12px;
+    width: 60px;
+    z-index: 99;
+  }
+
+  .footer-text {
+    @apply text-xs text-[#aaa] font-light;
+  }
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-        /* Start slightly below */
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-        /* End at normal position */
-    }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    /* Start slightly below */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    /* End at normal position */
+  }
 }
 
 .animated-list li {
-    opacity: 0;
-    /* Start invisible */
-    animation: fadeIn 1s forwards;
-    /* Apply fade-in animation */
+  opacity: 0;
+  /* Start invisible */
+  animation: fadeIn 1s forwards;
+  /* Apply fade-in animation */
 }
-
 
 /* Add staggered delays */
 
 .animated-list li:nth-child(1) {
-    animation-delay: 0s;
+  animation-delay: 0s;
 }
 
 .animated-list li:nth-child(2) {
-    animation-delay: 2s;
+  animation-delay: 2s;
 }
 
 .animated-list li:nth-child(3) {
-    animation-delay: 4s;
+  animation-delay: 4s;
 }
 
 .animated-list li:nth-child(4) {
-    animation-delay: 6s;
+  animation-delay: 6s;
 }
 
 .animated-list li:nth-child(5) {
-    animation-delay: 8s;
+  animation-delay: 8s;
 }
