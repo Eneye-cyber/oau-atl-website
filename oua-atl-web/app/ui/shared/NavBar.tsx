@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { NavLinks } from '@/app/ui/shared/NavLinks'
+import { NavLinks, MobileNavLinks } from '@/app/ui/shared/NavLinks'
 
 
 const NavBar = () => {
@@ -15,13 +15,15 @@ const NavBar = () => {
   ]
 
   return (
-    <div className="w-full bg-white pad py-2 md:py-3 shadow-md">
+    <div className="w-full bg-white pad py-2 md:py-3 shadow-md relative">
       <div className="container flex-between">
         <Link href={'/'}>
           <Image alt={'ATL Alumini'} src={'/img/logo.png'} className='w-20 md:w-36 lg:w-48 xl:w-[270px] h-auto ' width={270} height={67.5} />
         </Link>
 
         <NavLinks links={links} />
+        <MobileNavLinks links={links} />
+        
       </div>
     </div>
   )
