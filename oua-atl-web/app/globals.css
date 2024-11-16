@@ -46,9 +46,62 @@
   .flex-between {
     @apply flex justify-between items-center;
   }
+
+  .flex-center {
+    @apply flex justify-center items-center;
+  }
 }
 
 @layer components {
+  .hero-slider {
+    @apply h-96 md:h-[32.5rem]
+  }
+  .hero-alt {
+    background: url(./../public/img/1_alt.jpg);
+  }
+
+  .module-title span:before {
+    background: var(--primary-light);
+    content: " ";
+    display: block;
+    height: 3px;
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    right: 0;
+    top: -14px;
+    width: 60px;
+    z-index: 99;
+}
+
+  .module-title span:after {
+    content: "";
+    width: 100%;
+    height: 1px;
+    left: 0;
+    margin: 0 auto;
+    right: 0;
+    top: -13px;
+    background: #aaa;
+    position: absolute;
+  }
+
+  .ct_title h4 {
+    border-left: 3px solid #f2ce3e;
+    padding-left: 10px;
+    margin-bottom: 55px;
+    line-height: 0.9;
+    color: #000000;
+}
+
+  .form-label {
+    @apply font-semibold text-jet-black text-sm mb-2 block;
+  }
+
+  .form-input {
+    @apply border rounded bg-gray-50 text-sm w-full py-2 px-3 text-gray-700 appearance-none focus:outline-none focus-within:border-primary-light;
+  }
+
   .banner-hero {
     background: url("./../public/img/19.jpg");
     background-repeat: no-repeat;

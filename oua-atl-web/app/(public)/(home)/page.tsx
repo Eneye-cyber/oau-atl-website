@@ -1,10 +1,13 @@
 import Button from "@/app/ui/shared/Button"
+import HeroSlider from "./ui/HeroSlider"
 
 const page = () => {
   return (
     <>
      <section aria-label="hero h-full md:max-h-hero">
-      <div className="w-full"></div>
+      <div className="w-full">
+        <HeroSlider />
+      </div>
      </section>
 
      <section id="banner" className="w-full banner-hero">
