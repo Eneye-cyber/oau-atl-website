@@ -1,10 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import Slider1 from "@/public/1.jpg";
-import Slider2 from "@/public/2.jpg";
-import Slider3 from "@/public/3.jpg";
+import React, { useState } from "react";
+import Slider1 from "@/public/img/1.jpg";
+import Slider2 from "@/public/img/2.jpg";
+import Slider3 from "@/public/img/3.jpg";
 import Render, { ContentRenderProps } from "../../component/render";
-import { MovingBorder, MovingBorderDemo } from "../../component/moving-border";
+// import { MovingBorder, MovingBorderDemo } from "../../component/moving-border";
 import FooterAlumniPage from "../../component/footer";
 import { CardRender } from "../../component/meter-or";
 

@@ -21,6 +21,7 @@ module.exports = {
         accent: "var(--accent)",
         'jet-black': "var(--jet-black)",
         'nero-black': "var(--nero-black)",
+        'body': "var(--body)",
       },
       fontFamily: {
         roboto: ['var(--font-roboto)'],
@@ -31,6 +32,10 @@ module.exports = {
       animation: {
         "fade-in": "fadeIn 1s ease-in-out forwards",
         "meteor-effect": "meteor 5s linear infinite",
+      },
+      boxShadow: {
+        'custom-1': '0px 8px 16px rgba(160, 160, 160, 0.25)',
+        'drawer-1': '0px 4px 20px rgba(0, 0, 0, 0.10)',
       },
       keyframes: {
         meteor: {

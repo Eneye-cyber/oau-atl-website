@@ -1,31 +1,56 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
 
 const baseUrl = process.env.API_BASE
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+
+export async function POST(req: Request) {
+  // Validate the HTTP method
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method Not Allowed' });
+    return NextResponse.json(
+      { error: 'Method Not Allowed' },
+      { status: 405 }
+    );
   }
-
-  const url = `${baseUrl}/auth/login`
-  const data = req.body;
-
-  console.log('url', url);
-  console.log('data', data);
 
   try {
-    const query = await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
+    // Parse request body
+    const data = await req.json();
 
-    const response = await query.json()
-  
-    res.status(200).json({ message: 'Form submitted successfully' });
-  } catch (e) {
-    console.log('error', e)
-    return res.status(500).json({ message: 'Server Error' });
+    const url = `${baseUrl}/auth/login`;
+
+    console.log('Sending login request to:', url);
+
+    // Make the fetch call
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    // Handle response from the external API
+    if (!response.ok) {
+      const errorResponse = await response.json();
+      console.error('Login failed:', errorResponse);
+      return NextResponse.json(
+        { error: 'Login failed', details: errorResponse },
+        { status: response.status }
+      );
+    }
+
+    const result = await response.json();
+
+    return NextResponse.json(
+      { message: 'Form submitted successfully', data: result },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error('Server error:', error);
+
+    return NextResponse.json(
+      { error: 'Internal Server Error', details: error?.message },
+      { status: 500 }
+    );
   }
-  
-  // Process the form data, e.g., save to database
 }

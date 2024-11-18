@@ -8,6 +8,7 @@
 
   --primary: #382172;
   --primary-light: rgb(137 101 235);
+  --body: #666;
   --accent: rgb(242, 206, 62);
   --jet-black: rgb(37, 37, 37);
   --nero-black: rgb(22, 21, 21);
@@ -21,11 +22,11 @@
   }
 }
 
-@layer base {
-  html {
+/* @layer base {
+  /* html {
     font-family: var(--font-roboto);
-  }
-}
+  } 
+} */
 
 @layer utilities {
   .text-balance {
