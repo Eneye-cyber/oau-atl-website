@@ -1,6 +1,15 @@
 'use client';
 import {type FC} from "react";
 import SearchIcon from './SearchIcon'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { LuMoreHorizontal, LuEye, LuFileEdit } from "react-icons/lu";
 // import ChevronDown from './ChevronDown'
 interface Project {
   id: string;
@@ -13,6 +22,42 @@ interface Project {
 }
 interface ProjectsTableProps {
   projects: Project[];
+}
+
+const TableDataCell = ({children}: Readonly<{
+  children: React.ReactNode;
+}>) => {
+  return (
+    <td className="p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
+      <div className="grid w-full gap-y-1 px-3 py-4">
+        <div className="inline-flex items-center gap-1.5">
+            {children}
+        </div>
+      </div>
+    </td>
+  )
+}
+
+const ActionMenu = () => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <div className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <LuMoreHorizontal />
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="bg-white w-40" align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator className="bg-gray-950/5" />
+        <DropdownMenuItem>
+          <LuEye className="inline-block mr-1" />
+          View project
+        </DropdownMenuItem>
+        <DropdownMenuItem><LuFileEdit className="inline-block mr-1" />Edit project</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }
 
 const ProjectsTable: FC<ProjectsTableProps>  = ({ projects }) => {
@@ -136,6 +181,7 @@ const ProjectsTable: FC<ProjectsTableProps>  = ({ projects }) => {
                 <TableDataCell>{project.contributors}</TableDataCell>
                 <TableDataCell>{project.deadline}</TableDataCell>
                 <TableDataCell>{project.status}</TableDataCell>
+                <TableDataCell><ActionMenu /></TableDataCell>
             </tr>
 
           ))}
@@ -147,17 +193,5 @@ const ProjectsTable: FC<ProjectsTableProps>  = ({ projects }) => {
   );
 };
 
-const TableDataCell = ({children}: Readonly<{
-  children: React.ReactNode;
-}>) => {
-  return (
-    <td className="p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
-      <div className="grid w-full gap-y-1 px-3 py-4">
-        <div className="inline-flex items-center gap-1.5">
-            {children}
-        </div>
-      </div>
-    </td>
-  )
-}
+
 export default ProjectsTable;

@@ -4,7 +4,7 @@ import ProjectsTable from './ui/ProjectsTable'
 import Button from '@/app/ui/shared/Button'
 import StatsOverview from '@/app/ui/StatsOverview'
 import Tabs from '@/app/ui/Tabs'
-
+import { FaChevronRight } from "react-icons/fa6";
 
 interface Project {
   id: string;
@@ -58,8 +58,15 @@ const Page = async () => {
   return (
     <article className="p-6 container">
 
-      <div className="flex justify-between py-6">
-        <h1 className="text-2xl font-semibold">Projects</h1>
+      <div className="flex items-end justify-between py-6">
+        <div>
+          <div className="flex items-center gap-2 text-gray-600 text-sm">
+            <span>Project</span>
+            <span> <FaChevronRight /> </span>
+            <span>List</span>
+          </div>
+          <h1 className="text-2xl font-semibold">Projects</h1>
+        </div>
 
         <Button href="/admin/events/create">Create Project</Button>
       </div>
