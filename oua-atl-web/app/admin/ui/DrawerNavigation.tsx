@@ -11,12 +11,6 @@ const links = [
     icon: '/icons/admin/dashboard.svg',
     activeIcon: '/icons/admin/dashboard_active.svg'
   },
-  // {
-  //   label: 'Users',
-  //   href: '/admin/users',
-  //   icon: '/icons/admin/users.svg',
-  //   activeIcon: '/icons/admin/users_active.svg'
-  // },
   {
     label: 'Events',
     href: '/admin/events',
@@ -25,13 +19,13 @@ const links = [
   },
   {
     label: 'Projects',
-    href: '/admin/orders',
+    href: '/admin/projects',
     icon: '/icons/admin/reset_password.svg',
     activeIcon: '/icons/admin/reset_password.svg'
   },
   {
     label: 'Members',
-    href: '/admin/orders',
+    href: '/admin/members',
     icon: '/icons/admin/analytics.svg',
     activeIcon: '/icons/admin/orders_active.svg'
   },
