@@ -30,12 +30,6 @@ const links = [
     activeIcon: '/icons/admin/orders_active.svg'
   },
   {
-    label: 'Notification',
-    href: '/admin/notifications',
-    icon: '/icons/admin/notification.svg',
-    activeIcon: '/icons/admin/notification.svg'
-  },
-  {
     label: 'Reset Password',
     href: '/admin/orders',
     icon: '/icons/admin/reset_password.svg',
@@ -61,7 +55,7 @@ const DrawerNavigation = () => {
     </li>
   ))
   return (
-    <aside className="fixed top-0 bottom-0 z-20 w-full max-w-72 bg-white shadow-drawer-1">
+    <aside className="fixed top-0 bottom-0 z-20 w-full max-w-72 bg-white shadow-drawer-1 max-xl:-translate-x-full">
       <div className="w-full h-screen py-6 pt-4 flex flex-col gap-8">
         <Link href="/">
           <Image 
@@ -75,7 +69,7 @@ const DrawerNavigation = () => {
         </Link>
 
         <div className='flex-1'>
-          <ul className="flex-column w-full pl-7 pr-3 py-3">
+          <ul className="flex-column w-full pl-7 pr-3 md:py-8">
             {element}
           </ul>
         </div>

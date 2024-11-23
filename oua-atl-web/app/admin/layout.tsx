@@ -10,11 +10,11 @@ export default function Layout({
   return (
     <>
     {/* <PreLoader /> */}
-    <div id="content" className={`flex-auto flex flex-col w-full h-full min-h-dvh relative bg-[#F6FAFB]`} >
+    <div id="content" className={`flex-auto flex flex-col w-full h-full min-h-dvh relative bg-[#F6FAFB] overflow-hidden`} >
       <DrawerNavigation />
-      <section className="flex flex-col z-0 ml-72 flex-1">
+      <section className="flex flex-col z-0 xl:ml-72 flex-1">
         <TopBar />
-        <main className="w-full flex-1">
+        <main className="w-full flex-1 flex flex-col">
           {children}
 
         </main>

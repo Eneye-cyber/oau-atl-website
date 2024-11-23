@@ -4,7 +4,7 @@ import Link from "next/link";
 const TopBar = () => {
   return (
     <header className='bg-white py-4 shadow-drawer-1'>
-      <div className="container">
+      <div className="px-[5%] lg:px-[2%]">
         <div className="w-fit ml-auto flex items-center gap-4">
 
             <Link href={"/notifications"} className="hidden md:inline-flex">
