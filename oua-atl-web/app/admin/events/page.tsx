@@ -65,7 +65,7 @@ const Page = async () => {
 
       <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6">
         <div className="">
-          <DataTable title="All Events" columns={columns} data={events} showActions={true} />
+          <DataTable title="All Events" path="events" columns={columns} data={events} showActions={true} />
 
           <Separator className="my-4" />
 

@@ -10,6 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { LuMoreHorizontal, LuEye, LuFileEdit } from "react-icons/lu";
+import Link from 'next/link';
+
 // import ChevronDown from './ChevronDown'
 interface Project {
   id: string;
@@ -38,7 +40,7 @@ const TableDataCell = ({children}: Readonly<{
   )
 }
 
-const ActionMenu = () => {
+const ActionMenu = ({path, id}: {path?: string; id?: string}) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -51,8 +53,11 @@ const ActionMenu = () => {
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-gray-950/5" />
         <DropdownMenuItem>
-          <LuEye className="inline-block mr-1" />
-          View project
+          <Link href={`/admin/${path}/${id}`}>
+            <LuEye className="inline-block mr-1" />
+            View project
+          </Link>
+
         </DropdownMenuItem>
         <DropdownMenuItem><LuFileEdit className="inline-block mr-1" />Edit project</DropdownMenuItem>
       </DropdownMenuContent>
@@ -181,7 +186,7 @@ const ProjectsTable: FC<ProjectsTableProps>  = ({ projects }) => {
                 <TableDataCell>{project.contributors}</TableDataCell>
                 <TableDataCell>{project.deadline}</TableDataCell>
                 <TableDataCell>{project.status}</TableDataCell>
-                <TableDataCell><ActionMenu /></TableDataCell>
+                <TableDataCell><ActionMenu path={"projects"} id={`${index}`} /></TableDataCell>
             </tr>
 
           ))}

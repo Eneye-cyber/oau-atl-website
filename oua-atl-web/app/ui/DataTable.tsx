@@ -3,10 +3,12 @@ import { type FC } from 'react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { LuMoreHorizontal, LuEye, LuFileEdit } from 'react-icons/lu';
 import Image from 'next/image'
+import Link from 'next/link';
 
 interface TableProps {
   columns: { key: string; label: string }[]; // Defines table columns with a key and label
   data: Record<string, any>[]; // Array of objects where each object represents a row
+  path?: string; // Controls the api url path of the table
   showActions?: boolean; // Controls visibility of the action column
   title?: string;
 }
@@ -29,7 +31,7 @@ const TableImageCell: FC<{ src: string }> = ({ src }) => (
   </td>
 );
 
-const ActionMenu = () => (
+const ActionMenu = ({path, id}: {path?: string; id?: string}) => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <div className="h-8 w-8 p-0 mx-auto">
@@ -41,8 +43,10 @@ const ActionMenu = () => (
       <DropdownMenuLabel>Actions</DropdownMenuLabel>
       <DropdownMenuSeparator className="bg-gray-950/5" />
       <DropdownMenuItem>
-        <LuEye className="inline-block mr-1" />
-        View
+        <Link href={`/admin/${path}/${id}`}>
+          <LuEye className="inline-block mr-1" />
+          View
+        </Link>
       </DropdownMenuItem>
       <DropdownMenuItem>
         <LuFileEdit className="inline-block mr-1" />
@@ -52,7 +56,7 @@ const ActionMenu = () => (
   </DropdownMenu>
 );
 
-const DataTable: FC<TableProps> = ({title, columns, data, showActions = false }) => {
+const DataTable: FC<TableProps> = ({title, columns, path, data, showActions = false }) => {
   return (
     <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5">
       <div className="divide-y divide-gray-200 dark:divide-white/10">
@@ -116,7 +120,7 @@ const DataTable: FC<TableProps> = ({title, columns, data, showActions = false })
                 ))}
                 {showActions && (
                   <TableDataCell>
-                    <ActionMenu />
+                    <ActionMenu path={path} id="2" />
                   </TableDataCell>
                 )}
               </tr>

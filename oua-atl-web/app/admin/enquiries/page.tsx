@@ -1,7 +1,5 @@
 
 import { FaChevronRight } from "react-icons/fa6";
-import Button from '@/app/ui/shared/Button'
-import Link from 'next/link'
 import DataTable from '@/app/ui/DataTable'
 import { Separator } from "@/components/ui/separator"
 import StatsOverview from '@/app/ui/StatsOverview'
