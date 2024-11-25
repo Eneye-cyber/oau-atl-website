@@ -1,9 +1,22 @@
 
 import { FaChevronRight } from "react-icons/fa6";
-import Button from '@/app/ui/shared/Button'
+// import Button from '@/app/ui/shared/Button'
 import Link from 'next/link'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { LuMoreVertical, LuEye, LuFileEdit, LuTrash2 } from 'react-icons/lu';
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 const PhotoAlbum = () => {
   return (
@@ -31,9 +44,11 @@ const PhotoAlbum = () => {
                     <LuEye className="inline-block mr-1" />
                     View Album
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <LuFileEdit className="inline-block mr-1" />
-                    Edit Album
+                  <DropdownMenuItem> 
+                    <Link href="/admin/gallery/3/edit">
+                      <LuFileEdit className="inline-block mr-1" />
+                      <span>Edit Album</span>
+                    </Link>
                   </DropdownMenuItem>
 
                   <DropdownMenuItem>
@@ -44,7 +59,7 @@ const PhotoAlbum = () => {
               </DropdownMenu>
             </div>
 
-            <div className="z-0 absolute inset-0 bg-black opacity-0 group-hover:opacity-10" />
+            <div className="z-0 absolute inset-0 bg-black opacity-0 group-hover:opacity-70" />
         </div>
         <figcaption className="h-14">
           <div className="text-sm font-medium pt-2 break-words tracking-normal overflow-hidden text-ellipsis line-clamp-2 max-h-[40px]">Album Name</div>
@@ -68,13 +83,13 @@ const page = () => {
           <h1 className="text-2xl font-semibold">Photo Albums</h1>
         </div>
 
-        <Button href="/admin/gallery/create">Create Album</Button>
+        <CreateAlbumDialog />
       </div>
 
 
       <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 flex-1">
         <div className="py-3 mb-3 sm:mb-6 border-b border-black/50">
-          <h3 className="text-xl font-bold">Albums Listing</h3>
+          <h3 className="text-xl font-bold text-slate-900">Albums listing</h3>
         </div>
         <DropdownMenuSeparator className="bg-gray-950/5" />
 
@@ -86,6 +101,44 @@ const page = () => {
         </div>
       </section>
     </article>
+  )
+}
+
+
+
+function CreateAlbumDialog() {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Create Album</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Create album</DialogTitle>
+          <DialogDescription>
+            Create a new photo album to upload pictures.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex items-center space-x-2">
+          <div className="grid flex-1 gap-2">
+            <Label htmlFor="name" className="sr-only">
+              Album Name
+            </Label>
+            <Input
+              id="name"
+              defaultValue="Convention 2019"
+            />
+          </div>
+        </div>
+        <DialogFooter className="sm:justify-start">
+          <DialogClose asChild>
+            <Button type="button" className="bg-primary" variant="secondary">
+              Submit
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 

@@ -25,7 +25,7 @@ const MemberLayout = ({
             <h1 className="text-2xl font-semibold">Registered Alumni</h1>
           </div>
 
-          <Button className="hidden sm:inline-flex" href="/admin/members/create-admin">Create Admin User</Button>
+          <Button className="hidden sm:inline-flex" href="/admin/members/executive/create">Create Executive Member</Button>
 
         </div>
 

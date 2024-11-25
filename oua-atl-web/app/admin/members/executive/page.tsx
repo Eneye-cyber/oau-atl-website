@@ -31,7 +31,7 @@ const page = () => {
     <>
       <section className="bg-white ring-1 ring-gray-950/5 rounded p-6">
         <div className="">
-          <DataTable title="Executive Members" columns={columns} data={data} showActions={true} />
+          <DataTable path='members/executive' title="Executive Members" columns={columns} data={data} showActions={true} />
 
           <Separator className="my-4" />
 
