@@ -13,8 +13,9 @@ const MemberLayout = ({
   return (
     <article className="p-6 container flex-1 flex flex-col gap-6 md:gap-12">
 
+
       <section className=" bg-white ring-1 ring-gray-950/5 rounded">
-        <div className="flex items-end justify-between mb-6 p-6">
+        <div className="flex items-end justify-between mb-6 p-3 sm:p-6">
           <div className="">
             <div className="flex items-center gap-2 text-gray-600 text-sm mb-1">
               <span>Admin</span>
@@ -24,11 +25,11 @@ const MemberLayout = ({
             <h1 className="text-2xl font-semibold">Registered Alumni</h1>
           </div>
 
-          <Button href="/admin/members/create-admin">Create Admin User</Button>
+          <Button className="hidden sm:inline-flex" href="/admin/members/create-admin">Create Admin User</Button>
 
         </div>
 
-        <div className="flex px-1 border-b-2 w-fit">
+        <div className="flex mx-auto sm:mx-0 px-1 border-b-2 w-fit">
           <TabNavigation href="/admin/members/regular" label="Regular Members"></TabNavigation>
           <TabNavigation href="/admin/members/executive" label="Executive Members"></TabNavigation>
         </div>

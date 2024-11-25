@@ -1,9 +1,14 @@
-
+import { Metadata } from 'next'
 import Link from 'next/link'
 import StatsOverview from '@/app/ui/StatsOverview'
 import DataTable from '@/app/ui/DataTable'
 import { Separator } from "@/components/ui/separator"
 import { FaChevronRight } from "react-icons/fa6";
+
+export const metadata: Metadata = {
+  title: "Dashboard | Great Ife Alumni",
+};
+
 
 // async function getData(): Promise<Project[]> {
 //   // Fetch data from your API here.
@@ -84,15 +89,15 @@ const Page = async () => {
       </div>
 
 
-      <section className="bg-white ring-1 ring-gray-950/5 rounded p-6 grid lg:grid-cols-12 gap-3 mt-12">
-        <div className="lg:col-span-8">
+      <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-y-6 gap-3 mt-12">
+        <div className="overflow-auto lg:col-span-8">
           <DataTable title="Latest Donations" columns={columns} data={data} />
 
           <Separator className="my-4" />
 
           <div className="flex">
             <Link href=""
-                className="inline-block px-4 py-2 text-center bg-primary text-white rounded-md shadow hover:bg-primary-light"
+                className="inline-block w-full sm:w-fit px-4 py-2 text-center bg-primary text-white rounded-md shadow hover:bg-primary-light"
               >
                 View Donations
               </Link>
@@ -101,7 +106,7 @@ const Page = async () => {
         </div>
 
         <aside className="lg:col-span-4">
-          <div className="w-full rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+          <div className="w-full rounded-lg border bg-card text-card-foreground shadow-sm p-3 sm:p-6">
             <div className="py-2">
               <h4 className='font-bold text-2xl leading-tight'>Latest Enquiries</h4>
               <p className='text-gray-600 text-sm'>Latest contact messages</p>

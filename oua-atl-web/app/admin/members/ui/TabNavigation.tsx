@@ -7,7 +7,7 @@ const TabNavigation = ({href, label}: {href: string; label: string}) => {
   const isActive = pathname === href;
   
   return (
-    <Link href={href} className={`inline-flex py-1 px-5 border-b-2 ${isActive ? 'border-b-jet-black' : 'text-gray-900/50'}`}>{label}</Link>
+    <Link href={href} className={`inline-flex py-1 px-2.5 sm:px-5 border-b-2 ${isActive ? 'border-b-jet-black' : 'text-gray-900/50'}`}>{label}</Link>
   )
 }
 

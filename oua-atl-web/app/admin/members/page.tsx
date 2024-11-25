@@ -23,7 +23,7 @@ const Page = async () => {
   
 
   return (
-    <section className="bg-white ring-1 ring-gray-950/5 rounded p-6 grid grid-cols-12 gap-3">
+    <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-y-6 gap-3">
       <div className="md:col-span-8">
         <DataTable title="Latest Members" columns={columns} data={data} showActions={true} />
 
@@ -31,7 +31,7 @@ const Page = async () => {
 
         <div className="flex">
           <Link href="/admin/members/regular"
-              className="inline-block px-4 py-2 text-center bg-primary text-white rounded-md shadow hover:bg-primary-light"
+              className="inline-block w-full sm:w-fit px-4 py-2 text-center bg-primary text-white rounded-md shadow hover:bg-primary-light"
             >
               View all members
             </Link>
