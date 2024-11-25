@@ -63,7 +63,7 @@ const Page = async () => {
         <StatsOverview label="Past Events" value={2} />
       </div>
 
-      <section className="bg-white ring-1 ring-gray-950/5 rounded p-6">
+      <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6">
         <div className="">
           <DataTable title="All Events" columns={columns} data={events} showActions={true} />
 

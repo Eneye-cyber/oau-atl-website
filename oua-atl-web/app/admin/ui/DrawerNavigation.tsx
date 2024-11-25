@@ -32,8 +32,8 @@ const links = [
     activeIcon: '/icons/admin/orders_active.svg',
   },
   {
-    label: 'Reset Password',
-    href: '/admin/orders',
+    label: 'Photo Gallery',
+    href: '/admin/gallery',
     icon: '/icons/admin/reset_password.svg',
     activeIcon: '/icons/admin/reset_password.svg',
   },
