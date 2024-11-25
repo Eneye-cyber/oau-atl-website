@@ -38,8 +38,8 @@ const links = [
     activeIcon: '/icons/admin/reset_password.svg',
   },
   {
-    label: 'Manage Enquiries',
-    href: '/admin/orders',
+    label: 'Contact Enquiries',
+    href: '/admin/enquiries',
     icon: '/icons/admin/enquiries.svg',
     activeIcon: '/icons/admin/enquiries.svg',
   },
