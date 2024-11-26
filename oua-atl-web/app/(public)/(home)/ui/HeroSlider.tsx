@@ -1,9 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Slider1 from "@/public/img/1.jpg";
-import Slider2 from "@/public/img/2.jpg";
-import Slider3 from "@/public/img/3.jpg";
+import Link from 'next/link'
 
 // Sample data for slides
 // const slides = [
@@ -18,9 +16,9 @@ const slides = [
     Heading: "NOT JUST FUN AND GAMES",
     Text: "WE ALSO MEET REGULARLY TO SUPPORT ONE ANOTHER AS WELL AS THE UNIVERSITY OH, AND THERE'S FOOD.",
     Button: (
-      <button className="text-sm font-medium border-white border hover:bg-accent hover:border-accent rounded text-white px-6 py-2">
+      <Link href={"/events"} className="text-sm font-medium border-white border hover:bg-accent hover:border-accent rounded text-white px-6 py-2">
         Find Meeting
-      </button>
+      </Link>
     ),
   },
   {
@@ -28,9 +26,9 @@ const slides = [
     Heading: "THE ART OF GIVING SOMETHING BACK",
     Text: "FIND OUT ABOUT THE INITIATIVES AND PROJECTS WE ARE WORKING ON AS WELL AS HOW YOU CAN HELP. WE'D LOVE TO HEAR FROM YOU.",
     Button: (
-      <button className="text-sm font-medium border-white border hover:bg-accent hover:border-accent rounded text-white px-6 py-2">
+      <Link href={"/projects"} className="text-sm font-medium border-white border hover:bg-accent hover:border-accent rounded text-white px-6 py-2">
         Join Us Today
-      </button>
+      </Link>
     ),
   },
   {
@@ -38,9 +36,9 @@ const slides = [
     Heading: "NOT JUST FUN AND GAMES",
     Text: "WE ALSO MEET REGULARLY TO SUPPORT ONE ANOTHER AS WELL AS THE UNIVERSITY OH, AND THERE'S FOOD.",
     Button: (
-      <button className="text-sm font-medium border-white border hover:bg-accent hover:border-accent rounded text-white px-6 py-2">
+      <Link href={"/contact"} className="text-sm font-medium border-white border hover:bg-accent hover:border-accent rounded text-white px-6 py-2">
         Find Meeting
-      </button>
+      </Link>
     ),
   },
 ]

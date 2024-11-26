@@ -53,10 +53,10 @@ const page = () => {
             </div>
 
             <div className="sm:col-span-6">
-              <label htmlFor="location" className="form-label">
-                Event Location *
+              <label htmlFor="tags" className="form-label">
+                Event tags *
               </label>
-              <input id="location" type="text" required  autoComplete="location" className="form-input" />
+              <input id="tags" type="text" required  autoComplete="location" className="form-input" />
               {/* {errors.email?.message && <p className="text-sm text-red-400">{errors.email.message}</p>} */}
             </div>
 
@@ -68,7 +68,37 @@ const page = () => {
               {/* {errors.message?.message && <p className="text-sm text-red-400">{errors.message.message}</p>} */}
             </div>
 
+            <hr className="sm:col-span-6" />
+            <section className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 sm:col-span-6 ">
+              <h3 className="text-xl font-semibold sm:col-span-6">Event Location</h3>
+              
+              <div className="sm:col-span-3">
+                <label htmlFor="event_name" className="form-label">
+                  Location name *
+                </label>
+                <input id="event_name" type="text"  autoComplete="event_name" className="form-input" />
+                {/* {errors.subject?.message && <p className="text-sm text-red-400">{errors.subject.message}</p>} */}
+              </div>
 
+              <div className="sm:col-span-3">
+                <label htmlFor="event_name" className="form-label">
+                  Location city *
+                </label>
+                <input id="event_name" type="text"  autoComplete="event_name" className="form-input" />
+                {/* {errors.subject?.message && <p className="text-sm text-red-400">{errors.subject.message}</p>} */}
+              </div>
+
+
+              <div className="sm:col-span-6">
+                <label htmlFor="location" className="form-label">
+                  Location address *
+                </label>
+                <input id="location" type="text" required  autoComplete="location" className="form-input" />
+                {/* {errors.email?.message && <p className="text-sm text-red-400">{errors.email.message}</p>} */}
+              </div>
+
+
+            </section>
 
           </section>
 
@@ -82,7 +112,15 @@ const page = () => {
               {/* {errors.email?.message && <p className="text-sm text-red-400">{errors.email.message}</p>} */}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="">
+              <label htmlFor="ticket_price" className="form-label">
+                Ticket Sale Closing date *
+              </label>
+              <input id="ticket_price" type="datetie" required  className="form-input" />
+              {/* {errors.email?.message && <p className="text-sm text-red-400">{errors.email.message}</p>} */}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="">
                 <label htmlFor="vip_price" className="form-label">
                   Vip Ticket Price 
@@ -108,7 +146,17 @@ const page = () => {
               <input id="non_member_price" type="text" required  autoComplete="non_member_price" className="form-input" />
               {/* {errors.email?.message && <p className="text-sm text-red-400">{errors.email.message}</p>} */}
             </div>
+
+            <div className="">
+              <label htmlFor="ticket_price" className="form-label">
+                Ticket Closing date <span className="text-gray-500">( Non members)</span>
+              </label>
+              <input id="ticket_price" type="datetie" required  className="form-input" />
+              {/* {errors.email?.message && <p className="text-sm text-red-400">{errors.email.message}</p>} */}
+            </div>
           </section>
+
+          
         </div>
 
 

@@ -24,12 +24,12 @@ const FooterLinks = ({ links }: { links: NavItem[] }) => {
 
 const Footer = () => {
   const quickLinks: NavItem[] = [
-    {label: 'Who We Are', href: '#'},
-    {label: 'Become a Member', href: '#'},
-    {label: 'Edit Profile', href: '#'},
-    {label: 'Pay Membership Dues', href: '#'},
-    {label: 'Upcoming Events', href: '#'},
-    {label: 'Fundraising Projects', href: '#'},
+    {label: 'Who We Are', href: '/about-us'},
+    {label: 'Become a Member', href: '/members/register'},
+    {label: 'Edit Profile', href: '/members/dashboard'},
+    {label: 'Pay Membership Dues', href: '/members/dashboard'},
+    {label: 'Upcoming Events', href: '/events'},
+    {label: 'Fundraising Projects', href: '/projects'},
   ]
 
   return (
@@ -46,7 +46,7 @@ const Footer = () => {
               </p>
 
               <div className="py-1">
-                <Link href={'#'} className="inline-flex px-16 py-3 text-xs text-primary-light rounded-md border border-primary-light">Read More...</Link>
+                <Link href={'/about-us'} className="inline-flex px-16 py-3 text-xs text-primary-light rounded-md border border-primary-light">Read More...</Link>
               </div>
             </section>
 

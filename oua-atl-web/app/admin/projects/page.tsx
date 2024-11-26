@@ -68,7 +68,7 @@ const Page = async () => {
           <h1 className="text-2xl font-semibold">Projects</h1>
         </div>
 
-        <Button href="/admin/events/create">Create Project</Button>
+        <Button href="/admin/projects/create">Create Project</Button>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">

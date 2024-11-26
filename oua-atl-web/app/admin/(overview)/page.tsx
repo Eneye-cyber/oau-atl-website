@@ -96,7 +96,7 @@ const Page = async () => {
           <Separator className="my-4" />
 
           <div className="flex">
-            <Link href=""
+            <Link href="/admin/donations"
                 className="inline-block w-full sm:w-fit px-4 py-2 text-center bg-primary text-white rounded-md shadow hover:bg-primary-light"
               >
                 View Donations
@@ -169,7 +169,7 @@ const Page = async () => {
 
 
             <div className="mt-4">
-              <Link href=""
+              <Link href="/admin/enquiries"
                 className="inline-block px-4 py-2 w-full text-center bg-primary text-white rounded-md shadow hover:bg-primary-light"
               >
                 View all

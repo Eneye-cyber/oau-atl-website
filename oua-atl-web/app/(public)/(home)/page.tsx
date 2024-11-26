@@ -18,7 +18,7 @@ const page = () => {
             <p>We&apos;d love you to join us at an event we have coming up</p>
           </div>
 
-          <Button>Find Out More</Button>
+          <Button href="/events">Find Out More</Button>
         </div>
       </div>
 

@@ -4,19 +4,8 @@ import { FaChevronRight } from "react-icons/fa6";
 import Link from 'next/link'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { LuMoreVertical, LuEye, LuFileEdit, LuTrash2 } from 'react-icons/lu';
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import Button from '@/app/ui/shared/Button'
+// import { Button } from "@/components/ui/button"
 
 const PhotoAlbum = () => {
   return (
@@ -83,7 +72,7 @@ const page = () => {
           <h1 className="text-2xl font-semibold">Photo Albums</h1>
         </div>
 
-        <CreateAlbumDialog />
+        <Button href="/admin/gallery/create">Create Album</Button>
       </div>
 
 
@@ -105,41 +94,5 @@ const page = () => {
 }
 
 
-
-function CreateAlbumDialog() {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Create Album</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Create album</DialogTitle>
-          <DialogDescription>
-            Create a new photo album to upload pictures.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex items-center space-x-2">
-          <div className="grid flex-1 gap-2">
-            <Label htmlFor="name" className="sr-only">
-              Album Name
-            </Label>
-            <Input
-              id="name"
-              defaultValue="Convention 2019"
-            />
-          </div>
-        </div>
-        <DialogFooter className="sm:justify-start">
-          <DialogClose asChild>
-            <Button type="button" className="bg-primary" variant="secondary">
-              Submit
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
 
 export default page
