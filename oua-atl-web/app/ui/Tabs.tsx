@@ -1,13 +1,38 @@
 'use client';
-import {type FC, useState} from "react";
+import { type FC, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 interface TabProps {
   label: string;
-  active?: boolean;
+  value: string | null;
+  activeTabValue: string | null;
+  // active?: boolean;
   onClick: () => void;
 }
 
-const Tab: FC<TabProps> = ({ label, active, onClick }) => (
+type TabsProps = {
+  label: string;
+  value: null | string;
+}[];
+
+const defaultProps = [
+  { label: "All", value: null },
+  { label: "Active", value: "active" },
+  { label: "Complete", value: "complete" },
+  { label: "Overdue", value: "overdue" },
+];
+
+const Tab: FC<TabProps> = ({ label, value, onClick, activeTabValue }) => {
+  const [active, setActive] = useState<boolean>(false);
+
+  
+
+
+  // Sync with external activeTabValue prop
+  useEffect(() => {
+    setActive(activeTabValue === value);
+  }, [activeTabValue, value]);
+  return (
   <button
     type="button"
     className={`group flex items-center gap-x-2 rounded-lg px-3 py-2 text-sm font-medium outline-none transition duration-75 ${
@@ -21,17 +46,32 @@ const Tab: FC<TabProps> = ({ label, active, onClick }) => (
   >
     <span className="fi-tabs-item-label transition duration-75">{label}</span>
   </button>
-);
+  )
+};
 
-const Tabs: FC = () => {
+const Tabs: FC<{ tabs?: TabsProps }> = ({ tabs = defaultProps }) => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<string | null>(null);
 
-  const tabs = [
-    { label: "All", value: null },
-    { label: "Active", value: "active" },
-    { label: "Complete", value: "complete" },
-    { label: "Overdue", value: "overdue" },
-  ];
+  useEffect(() => {
+    // Sync initial tab with query parameter from the URL
+    const query = new URLSearchParams(window.location.search);
+    const tabValue = query.get("status");
+    setActiveTab(tabValue || null);
+  }, []);
+
+  const handleTabClick = (value: string | null) => {
+    setActiveTab(value);
+
+    // Update URL query parameter
+    const params = new URLSearchParams(window.location.search);
+    if (value) {
+      params.set("status", value);
+    } else {
+      params.delete("status");
+    }
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <nav
@@ -42,8 +82,10 @@ const Tabs: FC = () => {
         <Tab
           key={tab.label}
           label={tab.label}
-          active={activeTab === tab.value}
-          onClick={() => setActiveTab(tab.value)}
+          value={tab.value}
+          activeTabValue={activeTab}
+          // active={activeTab === tab.value}
+          onClick={() => handleTabClick(tab.value)}
         />
       ))}
     </nav>

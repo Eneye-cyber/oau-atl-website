@@ -1,34 +1,59 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from 'next/image'
 import type { Metadata } from "next";
 import { Badge } from "@/components/ui/badge"
 // import HeroSection from '@/app/ui/HeroSection'
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import { Button } from "@/components/ui/button"
+import { EventResponseObject } from "@/app/lib/types";
+import { formatEventDates, formatEventTimes } from "@/lib/utils";
 
+const baseUrl = process.env.API_BASE
 export const metadata: Metadata = {
   title: "Events | Ife Alumni",
   description: "Great Ife Alumni Association Inc. USA - Atlanta Branch. Events and Hangount.",
 };
 
-const page = () => {
+async function getData(id: string): Promise<{ message: string; payload: EventResponseObject | null }> {
+  if (!baseUrl) throw new Error("API_BASE environment variable is not set.");
+  try {
+    const url = `${baseUrl}/physical-events/${id}`;
+    const res = await fetch(url, { method: 'GET', credentials: 'include' });
+
+    if (!res.ok) {
+      return { message: `Error ${res.status}: ${res.statusText}`, payload: null };
+    }
+
+    const result = await res.json();
+    return result;
+  } catch (error: any) {
+    console.error('Fetch Error:', error);
+    return { message: error.message || 'An unexpected error occurred.', payload: null };
+  }
+}
+
+
+const page = async ({ params }: { params: { eventSlug: string } }) => {
+  const data: {message: string, payload: EventResponseObject | null} = await getData(params.eventSlug);
+  console.log(data);
+  const event: EventResponseObject | null = data.payload ?? null
+
+  if (!event) {
+    return <h3>Event not found</h3>;
+  }
+  
   return (
     <>
       {/* <HeroSection /> */}
 
       <article className="py-4 md:py-8 px-[5%]">
-        {/* <div className="md:py-8 text-center">
-          <h2 className="text-3xl md:text-5xl font-semibold">Great Ife Scholarship Fund</h2>
-          <div className="inline-block capitalize relative mt-1">Ile Ife</div>
-
-        </div> */}
-
         <div className="container">
           <div className="w-full mx-auto py-6 sm:py-8 lg:py-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
               <div className="relative rounded-lg overflow-hidden">
-                <Image
-                  src="/img/placeholder.svg"
-                  alt="Tech Conference 2024"
+                <img
+                  src={event.image_url ?? "/img/placeholder.svg"}
+                  alt={event.title}
                   width="700"
                   height="500"
                   className="w-full h-full object-cover"
@@ -37,43 +62,48 @@ const page = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 lg:bottom-8 lg:left-8">
                   <div className="flex gap-2">
-                    <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                      Conference
-                    </Badge>
+                    {event.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="bg-primary text-primary-foreground">{tag}</Badge>
+                    ))}
                     <Badge variant="secondary" className="bg-accent text-accent-foreground">
                       Tech
                     </Badge>
                   </div>
                 </div>
               </div>
-              <div className="space-y-6 lg:space-y-8 py-3">
-                <div>
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">Tech Conference 2024</h1>
-                  <p className="text-muted-foreground text-lg sm:text-xl">June 15 - 17, 2024</p>
+              <div className="space-y-6 lg:space-y-8">
+              <div>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">{event.title}</h1>
+                <p className="text-muted-foreground text-lg sm:text-xl">{formatEventDates(event.start_date, event.end_date)}</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div className="flex items-start space-x-2 text-muted-foreground">
+                  <ClockIcon className="h-5 w-5" />
+                  <span>{formatEventTimes(event.start_date, event.end_date)}</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  <div className="flex items-center space-x-2 text-muted-foreground">
-                    <ClockIcon className="h-5 w-5" />
-                    <span>9:00 AM - 5:00 PM</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-muted-foreground">
-                    <MapPinIcon className="h-5 w-5" />
-                    <span>Moscone Center, San Francisco, CA</span>
-                  </div>
+                <div className="flex items-start space-x-2 text-muted-foreground">
+                  <MapPinIcon className="h-5 w-5 mt-0.5" />
+                  <span>{`${event.location.postal_code}, ${event.location.address}, ${event.location.city}, ${event.location.state}` }</span>
                 </div>
-                <div className="prose text-muted-foreground">
-                  <p>
-                    Join us for the annual Tech Conference, where industry leaders and innovators come together to share their
-                    insights and showcase the latest advancements in technology. This three-day event will feature a wide
-                    range of keynote speeches, panel discussions, and networking opportunities.
-                  </p>
-                  <p>
-                    Attendees will have the chance to explore cutting-edge technologies, attend workshops, and connect with
-                    like-minded professionals from around the world. Don&apos;t miss this opportunity to be a part of the tech
-                    community&apos;s most anticipated event of the year.
-                  </p>
+                <div className="flex items-start space-x-2 text-muted-foreground">
+                  <TicketIcon className="h-5 w-5" />
+                  <span>Ticket Price: ${event.entrance_fee}</span>
+                </div>
+                <div className="flex items-start space-x-2 text-muted-foreground">
+                  <UsersIcon className="h-5 w-5" />
+                  <span>{event.tickets?.length ?? '0'}+ Attendees</span>
                 </div>
               </div>
+              <div className="prose text-muted-foreground">
+                <p>
+                  {event.content}
+                </p>  
+              </div>
+              <div className="flex justify-between items-center">
+                <Button variant="outline">Edit Event</Button>
+                {/* <Button>Edit Event</Button> */}
+              </div>
+            </div>
             </div>
           </div>
         </div>
