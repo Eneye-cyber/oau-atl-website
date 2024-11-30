@@ -1,22 +1,26 @@
 
 import { FaChevronRight } from "react-icons/fa6";
-import DataTable from '@/app/ui/DataTable'
-import { Separator } from "@/components/ui/separator"
-import StatsOverview from '@/app/ui/StatsOverview'
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+import type { Metadata } from 'next'
+ 
+
+
+import { Suspense } from 'react'
+// import Tabs from '@/app/ui/Tabs'
+import StatsFeed from './ui/StatsFeed';
+import EnquiriesTable from './ui/EnquiriesTable';
+import StatLoader from '@/app/ui/loaders/StatLoader';
+import TableLoader from '@/app/ui/loaders/TableLoader';
+
 
 interface Enquiries {
   name: string;
   email: string;
   message: string;
+}
+
+export const metadata: Metadata = {
+  title: 'Enquiries | Dashboard',
+  description: '...',
 }
 async function getData(): Promise<Enquiries[]> {
   // Fetch data from your API here.
@@ -28,7 +32,9 @@ async function getData(): Promise<Enquiries[]> {
 }
 
 
-const page = async () => {
+const page = async ({ searchParams }: { searchParams: { status: string; page: string } }) => {
+  const status = searchParams.status || "";
+  const page = searchParams.page || "1";
 
   const data = await getData()
   const enquiries = data
@@ -52,43 +58,25 @@ const page = async () => {
 
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <StatsOverview label="Active Enquiries" value={1} />
-        <StatsOverview label="Closed Enquiries" value={2} />
-      </div>
+      <Suspense fallback={(
+          <div className="grid md:grid-cols-2 gap-6">
+            <StatLoader />
+            <StatLoader />
+          </div>
+        )}
+      >
+        <StatsFeed />
+      </Suspense>
+
+      {/* <section className=" py-4">
+        <Tabs tabs={[{label: 'Open Enquiries', value: null}, {label: 'Closed Enquiries', value: 'history'}]} />
+      </section> */}
 
       <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6">
         <div className="">
-          <DataTable  columns={columns} data={enquiries} showActions={true} />
-
-          <Separator className="my-4" />
-
-          <div className="flex">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious href="#" />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">1</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#" isActive>
-                    2
-                  </PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">3</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext href="#" />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </div>
+        <Suspense fallback={(<TableLoader />)} >
+          <EnquiriesTable status={status} page={page}  />
+        </Suspense>
 
         </div>
       </section>

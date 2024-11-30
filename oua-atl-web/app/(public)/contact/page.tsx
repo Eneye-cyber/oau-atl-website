@@ -1,6 +1,11 @@
 import HeroSection from '@/app/ui/HeroSection'
 import ContactForm from '@/app/ui/forms/ContactForm'
-
+import type { Metadata } from 'next'
+ 
+export const metadata: Metadata = {
+  title: 'Contact us',
+  description: 'Reach out to us for any details, sponsorship and questions',
+}
 
 const page = () => {
   return (

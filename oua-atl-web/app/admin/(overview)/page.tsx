@@ -5,7 +5,7 @@ import DataTable from '@/app/ui/DataTable';
 import { Separator } from "@/components/ui/separator";
 import { FaChevronRight } from "react-icons/fa6";
 import StatsFeed from './ui/StatsFeed';
-import { Skeleton } from "@/components/ui/skeleton"
+import StatLoader from '@/app/ui/loaders/StatLoader';
 
 export const metadata: Metadata = {
   title: "Dashboard | Great Ife Alumni",
@@ -86,10 +86,10 @@ const Page = async () => {
 
       <Suspense fallback={(
           <div className="grid md:grid-cols-4 gap-4">
-            <Skeleton className='w-full h-20 md:h-28 animate-pulse rounded-md bg-muted' />
-            <Skeleton className='w-full h-20 md:h-28 animate-pulse rounded-md bg-muted' />
-            <Skeleton className='w-full h-20 md:h-28 animate-pulse rounded-md bg-muted' />
-            <Skeleton className='w-full h-20 md:h-28 animate-pulse rounded-md bg-muted' />
+            <StatLoader />
+            <StatLoader />
+            <StatLoader />
+            <StatLoader />
           </div>
         )}
       >
