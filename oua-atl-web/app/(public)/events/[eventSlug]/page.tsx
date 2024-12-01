@@ -18,7 +18,7 @@ async function getData(id: string): Promise<{ message: string; payload: EventRes
   if (!baseUrl) throw new Error("API_BASE environment variable is not set.");
   try {
     const url = `${baseUrl}/physical-events/${id}`;
-    const res = await fetch(url, { method: 'GET', credentials: 'include' });
+    const res = await fetch(url, { method: 'GET', credentials: 'include',  });
 
     if (!res.ok) {
       return { message: `Error ${res.status}: ${res.statusText}`, payload: null };

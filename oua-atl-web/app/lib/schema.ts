@@ -86,3 +86,16 @@ export const CreateEventSchema = z.object({
     })// endDate must be later than startDate
   }
 });
+
+export const CreateProjectSchema = z.object({
+  amountGoal: z.union([z.number().min(0, "Amount goal must be at least 0"), z.string().transform((val) => Number(val))]), // Ensure it's non-negative
+  projectText: z.string().min(1, "Project description is required"),
+  // isFeatured: z.boolean(),
+  // createdBy: z.string().uuid("Invalid UUID for createdBy"),
+  imageURL: z.string().url("Invalid image URL"),
+  projectTitle: z.string().min(1, "Project title is required"),
+  deadline: z.string().min(1, "Deadline is required"),
+  city: z.string().min(1, 'Location city is required'),
+  state: z.string().min(1, 'Location State is required'),
+  postalCode: z.string().min(1, 'Location postal code is required'),
+});

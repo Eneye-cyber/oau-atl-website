@@ -2,9 +2,13 @@
 // import { useState } from 'react';
 import ProjectsTable from './ui/ProjectsTable'
 import Button from '@/app/ui/shared/Button'
-import StatsOverview from '@/app/ui/StatsOverview'
+import StatsFeed from './ui/StatsFeed';
+import StatLoader from '@/app/ui/loaders/StatLoader';
+import { Suspense } from 'react'
+
 import Tabs from '@/app/ui/Tabs'
 import { FaChevronRight } from "react-icons/fa6";
+import TableLoader from '@/app/ui/loaders/TableLoader';
 
 interface Project {
   id: string;
@@ -15,46 +19,13 @@ interface Project {
   deadline?: string;
   status: "Active" | "Complete" | "Overdue";
 }
-async function getData(): Promise<Project[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "728ed52f",
-      name: "Relief funds",
-      goal: 1000,
-      amount: 100,
-      contributors: 5,
-      deadline: "Aug 5, 2025",
-      status: "Active",
-    },
 
-    {
-      id: "728ed52f",
-      name: "Scholarship funds",
-      goal: 1000,
-      amount: 500,
-      contributors: 10,
-      deadline: "Aug 5, 2024",
-      status: "Overdue",
-    },
+const Page = async ({ searchParams }: { searchParams: { status: string; page: string } }) => {
 
-    {
-      id: "728ed52f",
-      name: "Native Scholarship funds",
-      goal: 1000,
-      amount: 1200,
-      contributors: 10,
-      deadline: "Aug 5, 2024",
-      status: "Complete",
-    },
-    // ...
-  ]
-}
+  const status = searchParams.status || "";
+  const page = searchParams.page || "1";
 
-const Page = async () => {
-  const data = await getData()
 
-  const projects = data
   return (
     <article className="p-6 container">
 
@@ -71,18 +42,27 @@ const Page = async () => {
         <Button href="/admin/projects/create">Create Project</Button>
       </div>
 
-      <div className="grid md:grid-cols-3 gap-6">
-        <StatsOverview label="Active Projects" value={1} />
-        <StatsOverview label="Completed Projects" value={2} />
-        <StatsOverview label="Overdue Projects" value={2} />
-      </div>
+      <Suspense fallback={(
+          <div className="grid md:grid-cols-3 gap-6">
+            <StatLoader />
+            <StatLoader />
+            <StatLoader />
+          </div>
+        )}
+      >
+        <StatsFeed />
+      </Suspense>
 
 
       <section className="flex flex-col gap-10 py-14">
         <Tabs />
+        
+        <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6">
+          <Suspense fallback={(<TableLoader />)} >
+            <ProjectsTable status={status} page={page} />
+          </Suspense>
+        </section>
 
-
-        <ProjectsTable projects={projects} />
 
       </section>
     </article>

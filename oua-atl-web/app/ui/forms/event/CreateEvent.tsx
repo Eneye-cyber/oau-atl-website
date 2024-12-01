@@ -194,7 +194,7 @@ const CreateEvent = () => {
 
               <div className="sm:col-span-3">
                 <label htmlFor="city" className="form-label">
-                  Location state *
+                  Location city *
                 </label>
                 <input
                   id="city"
