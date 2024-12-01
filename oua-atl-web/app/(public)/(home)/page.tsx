@@ -1,5 +1,6 @@
 import Button from "@/app/ui/shared/Button"
 import HeroSlider from "./ui/HeroSlider"
+import MidSection from "./ui/MidSection"
 
 const page = () => {
   return (
@@ -8,6 +9,22 @@ const page = () => {
       <div className="w-full">
         <HeroSlider />
       </div>
+     </section>
+     <section id="banner" className="w-full banner-hero">
+      <div className="container py-4">
+        <div className="flex-center">
+          <div className="text-center text-jet-black">
+            <h5 className="text-xl font-bold">Learn about the activities of Great Ife Alumni Atlanta Chapter -&gt;</h5>
+          </div>
+        </div>
+      </div>
+
+     </section>
+
+     <MidSection />
+
+     <section className="py-24">
+
      </section>
 
      <section id="banner" className="w-full banner-hero">

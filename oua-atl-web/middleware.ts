@@ -5,13 +5,13 @@ export async function middleware(request: NextRequest) {
   // const protectedRoutes
   const currentPath = request.nextUrl.pathname
   console.log('currentPath', currentPath)
-  const user = await verifyLogin(request)
+  // const user = await verifyLogin(request)
   // if (!user) {
   //   return NextResponse.redirect(new URL('/login', request.url))
   // }
   const response = NextResponse.next();
-  response.headers.set('x-custom-id', user?.id || '');
-  response.headers.set('x-custom-role', user?.role || '');
+  // response.headers.set('x-custom-id', user?.id || '');
+  // response.headers.set('x-custom-role', user?.role || '');
   return response;
 }
  
