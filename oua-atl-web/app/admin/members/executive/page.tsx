@@ -58,7 +58,7 @@ const page = async () => {
 
   const data = await getData()
   console.log(data.payload.data, 'data')
-  const members: any[] = data.payload.data.map((item: any) => ({ ...item, is_active: item.is_active ? 'Active' : 'Inactive' })) || []
+  const members: any[] = data?.payload?.data?.map((item: any) => ({ ...item, is_active: item.is_active ? 'Active' : 'Inactive' })) || []
 
   return (
     <>
