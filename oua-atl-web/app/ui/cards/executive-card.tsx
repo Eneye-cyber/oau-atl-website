@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from 'next/image'
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -15,11 +16,10 @@ export function ExecutiveCard({ name, title, imageSrc, linkedinUrl }: ExecutiveC
     <Card className="overflow-hidden">
       <CardContent className="p-0">
         <div className="aspect-square relative">
-          <Image
-            src={'/img/placeholder.svg'}
+          <img
+            src={imageSrc ?? '/img/placeholder.svg'}
             // src={imageSrc}
             alt={`${name}, ${title}`}
-            fill
             className="object-cover"
           />
         </div>
