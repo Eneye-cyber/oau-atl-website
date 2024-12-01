@@ -14,7 +14,7 @@ export const SignUpFormDataSchema = z.object({
     (date) => /^\d{2}\/\d{2}$/.test(date), // Regular expression for MM/DD format
     { message: 'Birth date must be in MM/DD format' }
   ),
-  yearGraduated: z.string().min(1, 'Graduation year is required'),
+  yearGraduated: z.union([z.number().min(1966, "Graduation year is required"), z.string().transform((val) => Number(val))]),
   studyField: z.string().min(1, 'Field of study is required'),
   address: z.string().min(1, 'Street is required'),
   address2: z.string(),
@@ -98,4 +98,23 @@ export const CreateProjectSchema = z.object({
   city: z.string().min(1, 'Location city is required'),
   state: z.string().min(1, 'Location State is required'),
   postalCode: z.string().min(1, 'Location postal code is required'),
+});
+
+export const ExecutiveSchema = z.object({
+  fullName: z.string().min(1, "Full name is required"),
+  imageUrl: z
+    .string()
+    .url("Profile picture must be a valid URL") // Or use custom file validation if uploading directly
+    .optional(),
+  studyField: z.string().min(1, "Course of study is required"),
+  yearGraduated: z.union([
+    z.number()
+    .min(1962, "Year must be 1900 or later")
+    .max(new Date().getFullYear(), "Year cannot be in the future"), 
+    z.string().transform((val) => Number(val))
+  ]),
+  bioSummary: z.string().min(1, "Bio summary is required"),
+  fullSummary: z.string().optional(), // Allow full summary to be optional
+  positionAssigned: z.string(),
+  email: z.string().min(1, 'Email is required').email('Invalid email address'),
 });

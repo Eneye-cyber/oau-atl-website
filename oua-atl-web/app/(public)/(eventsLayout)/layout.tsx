@@ -1,6 +1,7 @@
 import HeroSection from '@/app/ui/HeroSection'
 import UpcomingEvents from './ui/UpcomingEvents'
 import PastEvents from './ui/PastEvents'
+import { Suspense } from 'react'
 
 export default function EventLayout({ children }: {
   children: React.ReactNode
@@ -16,25 +17,28 @@ export default function EventLayout({ children }: {
             {children}
           </div>
 
-          <aside className="lg:pl-2.5 lg:border-l-2 lg:border-gray-300">
-            <div>
+          <aside className="lg:pl-2.5 max-w-64 lg:border-l-2 lg:border-gray-300">
+            <div className="mb-8">
               <h3 className="text-lg font-bold text-center mb-6 module-title ">
                 <span className='relative'>
                   Upcoming Events
                 </span>
               </h3>
 
-              <UpcomingEvents />
+              <Suspense fallback={(<div className="text-gray-900/50">Loading...</div>)}>
+                <UpcomingEvents />
+              </Suspense>
             </div>
 
-            <div>
+            <div className="py-4">
               <h3 className="text-lg font-bold text-center mb-6 module-title ">
                 <span className='relative'>
                   Past Events
                 </span>
               </h3>
-
-              <PastEvents />
+              <Suspense fallback={(<div className="text-gray-900/50">Loading...</div>)}>
+                <PastEvents />
+              </Suspense>
 
             </div>
           </aside>

@@ -25,7 +25,7 @@ const IconListComponent = ({className, iconsList}: { className?: string, iconsLi
 
   return <ul className={`${className} flex items-center gap-2`}>{element}</ul>
 }
-const TopBar = () => {
+const TopBar = ({role}: {role: string | null}) => {
   const icons = {
     facebook: {
       component: <FaFacebookF />,
@@ -54,9 +54,18 @@ const TopBar = () => {
           <IconListComponent className="ml-auto" iconsList={icons} />
 
           <div className="flex items-center md:mx-4">
-            <Link className="text-white hover:text-accent text-xs inline-flex py-1 px-2" href="/members/login">Login</Link>
-            <div className="border border-white h-4 "></div>
-            <Link className="text-white hover:text-accent text-xs inline-flex py-1 px-2" href="/members/register">Register</Link>
+            {
+              !role ? (
+                <>
+                  <Link className="text-white hover:text-accent text-xs inline-flex py-1 px-2" href="/members/login">Login</Link>
+                  <div className="border border-white h-4 "></div>
+                  <Link className="text-white hover:text-accent text-xs inline-flex py-1 px-2" href="/members/register">Register</Link>
+                </>
+              ) : (
+                <Link className="text-white hover:text-accent text-xs inline-flex py-1 px-2" href={role === "admin" ? "/admin" :"/members/login"}>Dashboard</Link>
+                
+              )
+            }
           </div>
       </div>
     </div>

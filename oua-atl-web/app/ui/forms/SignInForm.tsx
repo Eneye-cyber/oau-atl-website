@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { SignInFormDataSchema } from '@/app/lib/schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, SubmitHandler } from 'react-hook-form'
+import { toast } from "sonner"
 
 type Inputs = z.infer<typeof SignInFormDataSchema>
 
@@ -12,26 +13,69 @@ const SignInForm = () => {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
+    setError
   } = useForm<Inputs>({
     resolver: zodResolver(SignInFormDataSchema)
   })
 
   const processForm: SubmitHandler<Inputs> =async (data) => {
     try {
-      const response = await fetch('/api/members/auth', {
+      const response: Response = await fetch('/api/members/auth', {
         method: 'POST',
         body: JSON.stringify(data),
-      });
+        credentials: "include",
+    });
 
       console.log('response', response)
+
+      if(response.status === 401) {
+        const result = await response.json();
+        setError("email", {
+          type: "server", // Custom type for server-side errors
+          message: result.message || "Invalid credentials", 
+        });
+        setError("password", {
+          type: "server", // Custom type for server-side errors
+          message: result.message || "Invalid credentials", 
+        });
+  
+       return
+      }
+
+      if(response.status === 200) {
+        const result = await response.json();
+        console.log(result, result)
+        await verifyLogin()
+       return
+      }
+
+  
+      // console.log('result', result);
+      reset()
+      
+    } catch (err) {
+      alert('Server unavailable')
+    }
+  }
+
+
+  const verifyLogin = async () => {
+    try {
+      const response = await fetch('/api/members/auth', {
+        method: 'GET',
+        credentials: "include",
+    });
+
+      console.log('verification response', response)
   
       const result = await response.json();
-      console.log('result', result);
-      reset()
+      console.log('verification result', result);
+      // reset()
       
     } catch (error) {
       alert('Server unavailable')
+      console.log(error)
     }
   }
 
@@ -53,10 +97,11 @@ const SignInForm = () => {
           {...register('email')}
           required
           placeholder="Email address"
+          autoComplete='email'
           className="border rounded bg-gray-50 text-sm w-full py-2 px-3 text-gray-700 appearance-none focus:outline-none focus-within:border-primary-light ng-untouched ng-pristine ng-invalid"
         />
         {errors.email?.message && (
-          <p className=' text-sm text-red-400'>
+          <p className=' text-sm text-red-400 capitalize'>
             {errors.email.message}
           </p>
         )}

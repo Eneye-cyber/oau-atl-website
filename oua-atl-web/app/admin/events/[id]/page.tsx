@@ -6,7 +6,6 @@
  */
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import Image from 'next/image'
 import { FaChevronRight } from "react-icons/fa6";
 import { ClockIcon, MapPinIcon,  TicketIcon,  UsersIcon } from "@/app/ui/Icons"
 import { EventResponseObject } from "@/app/lib/types";

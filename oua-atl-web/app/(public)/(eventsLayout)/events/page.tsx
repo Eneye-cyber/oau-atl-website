@@ -1,6 +1,12 @@
 
+import type { Metadata } from "next";
 import {EventCard} from "@/app/ui/Cards" 
 import { EventResponseObject } from "@/app/lib/types";
+
+export const metadata: Metadata = {
+  title: "Events | Ife Alumni",
+  description: "Great Ife Alumni Association Inc. USA - Atlanta Branch. Donations, projects.",
+};
 
 const baseUrl = process.env.API_BASE
 interface DataResponse {

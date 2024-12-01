@@ -63,3 +63,47 @@ export async function POST(req: Request) {
   }
 }
 
+
+export async function GET(req: Request) {
+  try {
+    // Construct the target URL
+    const url = `${baseUrl}/auth/current`;
+    console.log('Requesting admin status from:', url);
+
+    // Make the fetch call to the external API
+    const incomingCookies = req.headers.get('cookie') || ''; 
+    console.log('bkCookie', incomingCookies)
+    const externalResponse = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: incomingCookies,
+      },
+      credentials: 'include', // Ensure cookies are sent with the request
+    });
+
+    // Check for errors in the external response
+    if (!externalResponse.ok) {
+      const errorResponse = await externalResponse.json();
+      console.error('External API error:', errorResponse);
+      return NextResponse.json(
+        { error: 'Failed to fetch login status', details: errorResponse },
+        { status: externalResponse.status }
+      );
+    }
+
+    // Parse and return the successful response
+    const result = await externalResponse.json();
+    return NextResponse.json(
+      { message: 'Login status retrieved successfully', data: result },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error('Server error:', error);
+
+    return NextResponse.json(
+      { error: 'Internal Server Error', details: error?.message },
+      { status: 500 }
+    );
+  }
+}

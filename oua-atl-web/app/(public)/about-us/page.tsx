@@ -1,5 +1,7 @@
 import HeroSection from '@/app/ui/HeroSection'
 import type { Metadata } from 'next'
+import {Suspense } from 'react'
+import ExecutiveMembers from './ui/ExecutiveMembers'
  
 export const metadata: Metadata = {
   title: 'About ATL OAU',
@@ -10,7 +12,7 @@ const page = () => {
     <>
       <HeroSection />
 
-      <section className="pad">
+      <section className="pad px-[5%]">
         <div className="container">
           <div className='py-20'>
             <h3 className="text-xl md:text-3xl font-bold text-center mb-6 module-title ">
@@ -31,7 +33,13 @@ const page = () => {
 
           </div>
         </div>
+
+        
       </section>
+
+      <Suspense fallback={(<div />)}>
+        <ExecutiveMembers></ExecutiveMembers>
+      </Suspense>
     </>
   )
 }

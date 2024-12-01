@@ -89,27 +89,20 @@ const page = async ({ params }: { params: { eventSlug: string } }) => {
                   <TicketIcon className="h-5 w-5" />
                   <span>Ticket Price: ${event.entrance_fee}</span>
                 </div>
-                <div className="flex items-start space-x-2 text-muted-foreground">
-                  <UsersIcon className="h-5 w-5" />
-                  <span>{event.tickets?.length ?? '0'}+ Attendees</span>
-                </div>
               </div>
               <div className="prose text-muted-foreground">
                 <p>
                   {event.content}
                 </p>  
               </div>
-              <div className="flex justify-between items-center">
-                <Button variant="outline">Edit Event</Button>
-                {/* <Button>Edit Event</Button> */}
-              </div>
+
             </div>
             </div>
           </div>
         </div>
 
         <section className="container">
-          <TicketsPage />
+          <TicketsPage fee={event.entrance_fee} date={event.start_date} />
         </section>
 
         <div className="container py-16">
@@ -222,7 +215,7 @@ const page = async ({ params }: { params: { eventSlug: string } }) => {
 }
 
 
-const TicketsPage = () => {
+const TicketsPage = ({fee, date}: {fee: number; date: string}) => {
   return (
     <div className="mx-auto bg-white shadow-md rounded-lg">
         <div className="pt-4">
@@ -236,16 +229,16 @@ const TicketsPage = () => {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b hover:bg-gray-50">
+              {/* <tr className="border-b hover:bg-gray-50">
                 <td className="py-2 px-8 font-semibold">Dinner Tickets (Members Only)</td>
                 <td className="py-2 px-8 hidden md:table-cell">Ended at: 23 Dec 18</td>
                 <td className="py-2 px-8 text-green-600">$25.00</td>
                 <td className="py-2 px-8 text-gray-500">N/A</td>
-              </tr>
+              </tr> */}
               <tr className="border-b hover:bg-gray-50">
                 <td className="py-2 px-8 font-semibold">Dinner Tickets</td>
-                <td className="py-2 px-8 hidden md:table-cell">Ended at: 23 Dec 18</td>
-                <td className="py-2 px-8 text-green-600">$50.00</td>
+                <td className="py-2 px-8 hidden md:table-cell">Ended at: {formatEventDates(date, date)}</td>
+                <td className="py-2 px-8 text-green-600">${fee}</td>
                 <td className="py-2 px-8 text-gray-500">N/A</td>
               </tr>
             </tbody>

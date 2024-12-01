@@ -7,6 +7,7 @@ import { EventResponseObject } from "@/app/lib/types";
 import { formatEventDates } from "@/lib/utils";
 
 export const EventCard = ({ event }: { event: EventResponseObject }) => {
+  const tags = event.tags.length > 3 ?  event.tags.slice(0, 3) : event.tags
   return (
     <Link href={`/events/${event.event_id}`} className='hover:underline'>
       <div className="relative rounded-lg overflow-hidden">
@@ -19,9 +20,9 @@ export const EventCard = ({ event }: { event: EventResponseObject }) => {
           style={{ aspectRatio: "400/300", objectFit: "cover" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 lg:bottom-8 lg:left-8">
+        <div className="absolute bottom-1 left-1 sm:bottom-6 sm:left-6 lg:bottom-2 lg:left-2">
           <div className="flex gap-2">
-            {event.tags.map((tag) => (
+            {tags.map((tag) => (
                 <Badge key={tag} variant="secondary" className="bg-primary text-primary-foreground">{tag}</Badge>
               ))}
           </div>

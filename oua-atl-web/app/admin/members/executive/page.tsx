@@ -1,41 +1,74 @@
 import DataTable from '@/app/ui/DataTable'
+import { cookies } from 'next/headers'; 
 import { Separator } from "@/components/ui/separator"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+// import {
+//   Pagination,
+//   PaginationContent,
+//   PaginationEllipsis,
+//   PaginationItem,
+//   PaginationLink,
+//   PaginationNext,
+//   PaginationPrevious,
+// } from "@/components/ui/pagination"
 
-const page = () => {
+const baseUrl = process.env.API_BASE;
+
+
+
+async function getData(): Promise<any> {
+  // Fetch data from your API here
+
+  // Wait for both promises to resolve
+  try {
+    const cookieStore = cookies(); // Access cookies
+    const url = `${baseUrl}/executives`;
+    const res: Response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: cookieStore as unknown as string
+      },
+      credentials: 'include', // Include cookies
+      cache: 'no-store', // Force no caching for fresh data
+    });
+    
+    if(res.ok) {
+      const result = await res.json()
+      console.log('exec result', result)
+      return result
+    }
+    const msg = res.statusText
+    throw new Error(msg ?? "Unknown error")
+} catch (error: any) {
+    console.log('error exec', error)
+    return {message: error.message, payload: []}
+}
+
+  
+}
+
+const page = async () => {
   const columns = [
-    { key: 'name', label: 'Full name' },
+    { key: 'full_name', label: 'Full name' },
     { key: 'email', label: 'Email' },
-    { key: 'position', label: 'Position assigned' },
+    { key: 'position_assigned', label: 'Position assigned' },
     { key: 'year', label: 'Graduating year' },
-    { key: 'status', label: 'Status' },
+    { key: 'is_active', label: 'Status' },
   ];
 
-  const data = [
-    { name: 'Funke Ajoke', email: "ajfunke@mail.com", position: "Chairman", year: '19/20', status: 'Active' },
-    { name: 'Sunny Ade', email: "adesunny@mail.com", position: "Music", year: '98/99', status: 'Active' },
-    { name: 'Bayo Bayero', email: "bbdon@mail.com", position: "Medicine & Surgery", year: '02/03', status: 'Active' },
-    { name: 'Sunny Ade', email: "adesunny@mail.com", position: "Music", year: '98/99', status: 'Active' },
-    { name: 'Bayo Bayero', email: "bbdon@mail.com", position: "Medicine & Surgery", year: '02/03', status: 'Active' },
-  ];
+  const data = await getData()
+  console.log(data.payload.data, 'data')
+  const members: any[] = data.payload.data.map((item: any) => ({ ...item, is_active: item.is_active ? 'Active' : 'Inactive' })) || []
 
   return (
     <>
       <section className="bg-white ring-1 ring-gray-950/5 rounded p-6">
         <div className="">
-          <DataTable path='members/executive' title="Executive Members" columns={columns} data={data} showActions={true} />
+          <DataTable path='members/executive' title="Executive Members" idKey="exec_id" columns={columns} data={members} showActions={true} />
 
           <Separator className="my-4" />
 
-          <div className="flex">
+          {/* <div className="flex">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>
@@ -60,7 +93,7 @@ const page = () => {
                 </PaginationItem>
               </PaginationContent>
             </Pagination>
-          </div>
+          </div> */}
 
         </div>
       </section>
