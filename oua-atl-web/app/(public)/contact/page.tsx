@@ -19,10 +19,11 @@ const page = () => {
               <div className="ct_title mt-3 text-3xl font-semibold">
                 <h4>Contact Information</h4>			
               </div>
+              <p>greatifealumni@gmail.com</p>
             </div>
 
             <div className="md:col-span-8">
-              <div className="ct_title mt-3 text-3xl font-semibold">
+              <div className="ct_title mt-3 text-3xl font-semibold space-y-10 ">
                 <h4>Contact Form</h4>
 
                 <ContactForm />

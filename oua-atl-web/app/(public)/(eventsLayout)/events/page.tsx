@@ -1,7 +1,11 @@
+/* eslint-disable @next/next/no-img-element */
 
 import type { Metadata } from "next";
 import {EventCard} from "@/app/ui/Cards" 
 import { EventResponseObject } from "@/app/lib/types";
+import { Suspense } from 'react'
+import PastEvents from '@/app/ui/PastEvents'
+import TableLoader from '@/app/ui/loaders/TableLoader'
 
 export const metadata: Metadata = {
   title: "Events | Ife Alumni",
@@ -17,7 +21,7 @@ async function getData(): Promise<DataResponse> {
   if (!baseUrl) throw new Error("API_BASE environment variable is not set.");
   try {
     const url = `${baseUrl}/physical-events/latest`;
-    const res = await fetch(url, { method: 'GET', credentials: 'include', cache: "no-store", });
+    const res = await fetch(url, { method: 'GET', credentials: 'include', cache: 'default' });
 
     if (!res.ok) {
       return { message: `Error ${res.status}: ${res.statusText}`, payload: { data: [], page: 1, totalCount: 0, totalPages: 1 } };
@@ -40,17 +44,25 @@ const page = async () => {
   }
 
   return (
-    <div className='pr-8'>
+    <div className='px-[5%] sm:px-[3%] md:px-0'>
       <div>
-        <h1 className="text-2xl sm:text-4xl font-bold">Upcoming Events</h1>
+        <h1 className="text-2xl sm:text-3xl mb-3 font-bold">Upcoming Events</h1>
 
-        <ul className="py-6 grid grid-cols-1 gap-y-6 md:grid-cols-2 md:gap-4 xl:grid-cols-3 xl:gap-6">
+        <ul className="py-6 grid grid-cols-1 gap-y-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 xl:gap-6 md:gap-4">
           {events.map((event, item) => (
               <li key={item}>
                 <EventCard event={event}  />
               </li>
             ))}
+
+
         </ul>
+      </div>
+
+      <div className="container py-16">
+        <Suspense fallback={(<div className=""><TableLoader /></div>)}>
+          <PastEvents />
+        </Suspense>
       </div>
     </div>
   )

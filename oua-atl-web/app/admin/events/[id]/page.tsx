@@ -5,7 +5,7 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import { FaChevronRight } from "react-icons/fa6";
 import { ClockIcon, MapPinIcon,  TicketIcon,  UsersIcon } from "@/app/ui/Icons"
 import { EventResponseObject } from "@/app/lib/types";
@@ -112,7 +112,7 @@ export default async function page({ params }: { params: { id: string } }) {
                 </p>  
               </div>
               <div className="flex justify-between items-center">
-                <Button variant="outline">Edit Event</Button>
+                <Link href={`/admin/events/${event.event_id}/edit`}>Edit Event</Link>
                 {/* <Button>Edit Event</Button> */}
               </div>
             </div>

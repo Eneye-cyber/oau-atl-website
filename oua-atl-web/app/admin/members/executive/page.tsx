@@ -49,10 +49,10 @@ async function getData(): Promise<any> {
 
 const page = async () => {
   const columns = [
+    { key: 'image_url', label: 'Image' },
     { key: 'full_name', label: 'Full name' },
-    { key: 'email', label: 'Email' },
     { key: 'position_assigned', label: 'Position assigned' },
-    { key: 'year', label: 'Graduating year' },
+    { key: 'year_graduated:', label: 'Graduating year' },
     { key: 'is_active', label: 'Status' },
   ];
 

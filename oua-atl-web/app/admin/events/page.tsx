@@ -7,7 +7,12 @@ import StatsFeed from './ui/StatsFeed';
 import StatLoader from '@/app/ui/loaders/StatLoader';
 import EventsTable from './ui/EventsTable';
 import TableLoader from '@/app/ui/loaders/TableLoader';
+import type { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Manage Events | Ife Alumni",
+  description: "Great Ife Alumni Association Inc. USA - Atlanta Branch. Donations, projects.",
+};
 
 
 interface Event {

@@ -1,53 +1,107 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
- 
-export async function middleware(request: NextRequest) {
-  // const protectedRoutes
-  const currentPath = request.nextUrl.pathname
-  console.log('currentPath', currentPath)
-  const user = await verifyLogin(request)
-  // if (!user) {
-  //   return NextResponse.redirect(new URL('/login', request.url))
-  // }
-  const response = NextResponse.next();
-  response.headers.set('x-custom-id', user?.id || '');
-  response.headers.set('x-custom-role', user?.role || '');
-  return response;
-}
- 
-const verifyLogin = async (request: NextRequest): Promise<{ id: string; email: string; role: string;} | null> => {
-  try {
-    // Use absolute URL for fetch calls in Edge Runtime
-    const incomingCookies = request.headers.get('cookie') || ''; 
-    console.log('middleWareCookies', incomingCookies)
-    const response = await fetch(`${request.nextUrl.origin}/api/admin/auth`, {
-      method: 'GET',
-      credentials: 'include', // Pass cookies if needed
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: incomingCookies,
-      },
-    });
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-    console.log('verification response:', response.status);
+interface User {
+  id: string;
+  email: string;
+  role: string;
+}
+
+const ROUTES = {
+  ADMIN_LOGIN: '/admin/login',
+  MEMBERS_LOGIN: '/members/login',
+  MEMBERS_REGISTER: '/members/register',
+};
+
+const verifyLogin = async (request: NextRequest): Promise<User | null> => {
+  const TIMEOUT_MS = 30000; // 5 seconds timeout for the fetch request
+
+  try {
+    const incomingCookies = request.headers.get('cookie') || '';
+    console.log('middlewareCookies:', incomingCookies);
+    if(!incomingCookies) return null;
+
+    // Adding a timeout wrapper around fetch
+    const response = await Promise.race([
+      fetch(`${request.nextUrl.origin}/api/admin/auth`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: incomingCookies,
+        },
+      }),
+      new Promise<Response>((_, reject) =>
+        setTimeout(() => reject(new Error('Request timed out')), TIMEOUT_MS)
+      ),
+    ]);
 
     if (response.ok) {
       const result = await response.json();
-      console.log('verification result middle:', result);
-      const user = result?.data?.user || null;
-      return user; // Adjust based on your API response
+      const user: User | null = result?.data?.user || null;
+      if (!user) throw new Error('Error getting user object');
+      console.log('verification result:', user.role);
+      return user;
+    } else {
+      console.error(`Verification failed with status: ${response.status}`);
+      throw new Error(response.statusText ?? 'Error getting user')
     }
-  } catch (error) {
-    console.error('Error verifying login:', error);
+  } catch (error: any) {
+    console.error('Error verifying login:', error.message);
+    return null
   }
-
-  return null; // Default to unauthenticated
+  return null;
 };
 
 
-// See "Matching Paths" below to learn more
+
+export async function middleware(request: NextRequest) {
+  const currentPath = request.nextUrl.pathname;
+  const user = await verifyLogin(request);
+
+  const isFormRoute = (path: string, allowedPaths: string[]) =>
+    allowedPaths.includes(path);
+
+  if (!user) {
+    let response;
+    console.log('unaunthicated')
+    if ((currentPath.startsWith('/admin') || currentPath.startsWith('/members')) 
+      && 
+      !isFormRoute(currentPath, [ROUTES.ADMIN_LOGIN, ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER])
+    ) {
+      console.log(1)
+      response = NextResponse.redirect(new URL('/', request.url));
+    } else {
+      console.log(2)
+      response = NextResponse.next();
+    }
+    response.headers.set('Set-Cookie', 'session=; Path=/; HttpOnly; Secure; Max-Age=0;');
+    return response;
+  }
+
+  const isAdmin = user.role === 'admin';
+  const isMember = user.role === 'member';
+
+  if (isAdmin && currentPath === ROUTES.ADMIN_LOGIN) {
+    return NextResponse.redirect(new URL('/admin', request.url));
+  }
+  if (isMember && [ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER].includes(currentPath)) {
+    return NextResponse.redirect(new URL('/members', request.url));
+  }
+  if (currentPath.startsWith('/admin') && !isAdmin) {
+    return NextResponse.redirect(new URL('/admin/login', request.url));
+  }
+  if (currentPath.startsWith('/members') && !isMember) {
+    return NextResponse.redirect(new URL('/members/login', request.url));
+  }
+
+  const response = NextResponse.next();
+  response.headers.set('x-custom-id', user.id || '');
+  response.headers.set('x-custom-role', user.role || '');
+  return response;
+}
+
 export const config = {
-  matcher: [
-    '/((?!api|_next|favicon.ico|public).*)', // Exclude API, all _next assets, favicon, and public assets
-  ],
+  matcher: [// Match all paths except those starting with "/api" or other static assets
+    '/((?!api/|_next/|favicon.ico|public/).*)',],
 };

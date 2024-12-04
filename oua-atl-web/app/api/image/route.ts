@@ -35,7 +35,7 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     // Create a new FormData object to send to the external API
     const externalFormData = new FormData();
-    externalFormData.append('image', file);
+    externalFormData.append('images', file);
 
     // External API URL
     const url = `${baseUrl}/images`;

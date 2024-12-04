@@ -1,16 +1,33 @@
 'use client';
-import { InputHTMLAttributes, useState, forwardRef } from "react";
+import { InputHTMLAttributes, useState, forwardRef, useEffect } from "react";
 import { useFormContext } from "react-hook-form"; // Import form context
+import { LucideTrash2 } from 'lucide-react'
 
 const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>((props, ref) => {
   const [fileName, setFileName] = useState<string>(""); // Stores the file name
   const [fileUrl, setFileUrl] = useState<string>(""); // Stores the file URL
   const [isUploading, setIsUploading] = useState(false); // Tracks upload state
 
-  const { setValue } = useFormContext(); // Access React Hook Form's setValue function
+  const { setValue, getValues } = useFormContext(); // Access React Hook Form's setValue function
+
+  useEffect(() => {
+    // setValue(props.name || "imageUrl", fileUrl); // Update form state
+    const value = getValues(props.name || "imageUrl")
+    console.log('value', value)
+    if(value) {
+      setFileName(value.split("/").at(-1)); // Set the file name
+      setFileUrl(value);
+    }
+  }, []);
+
+  const clear = () => {
+      setFileName(""); // Set the file name
+      setFileUrl(""); // Set the file URL
+      setValue(props.name || "imageUrl", ""); // Update form state
+  }
 
   const uploadFile = async (file: File) => {
-    const url = `/api/image`; // Replace with your actual fetch URL
+    const url = `/api/image`; // 
     const formData = new FormData();
     formData.append("file", file);
 
@@ -27,16 +44,16 @@ const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInput
       }
 
       const data = await response.json();
-      if (data.payload.success) {
-        setFileName(data.payload.fileName); // Set the file name
-        setFileUrl(data.payload.url); // Set the file URL
-        setValue(props.name || "imageUrl", data.payload.url); // Update form state
+      if (data.payload[0].success) {
+        setFileName(data.payload[0].fileName); // Set the file name
+        setFileUrl(data.payload[0].url); // Set the file URL
+        setValue(props.name || "imageUrl", data.payload[0].url); // Update form state
       } else {
         throw new Error("File upload unsuccessful!");
       }
     } catch (error) {
       console.error(error);
-        setValue(props.name || "imageUrl", 'data.payload.url'); // Update form state
+        setValue(props.name || "imageUrl", ''); // Update form state
         alert("File upload failed. Please try again.");
     } finally {
       setIsUploading(false);
@@ -69,10 +86,12 @@ const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInput
 
       {/* Display File Name */}
       {fileName && (
-        <div className="uploaded-file">
+        <div className="uploaded-file flex justify-between">
           <p className="text-sm text-gray-700">
             <strong>Uploaded File:</strong> {fileName}
           </p>
+
+          <button onClick={clear}><LucideTrash2 className="h-3 text-red-500" /></button>
         </div>
       )}
 

@@ -1,12 +1,23 @@
 
 import DrawerNavigation from "./ui/DrawerNavigation"
 import TopBar from "./ui/TopBar";
+import { headers } from 'next/headers';
+const baseUrl = process.env?.API_BASE ?? "https://oau-atl-server.onrender.com/api/v1";
 
 export default function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+    const headersList = headers();
+    const id = headersList.get('x-custom-id');
+
+    if(!id) {
+      document.cookie = 'session=; Path=/; HttpOnly; Secure; Max-Age=0;';
+      window.location.href = '/admin/login'
+      return
+    }
+
   return (
     <>
     {/* <PreLoader /> */}
@@ -19,7 +30,7 @@ export default function Layout({
         </main>
       </section>
 
-      <DrawerNavigation />
+      <DrawerNavigation userId={id} baseUrl={baseUrl} />
 
 
     </div>

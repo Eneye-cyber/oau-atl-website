@@ -39,7 +39,8 @@ async function getData(): Promise<any> {
 const LatestExecutives = async () => {
   const data = await getData()
   console.log(data.payload, 'data')
-  const members: any[] = data.payload || []
+  let members: any[] = data.payload || []
+  members = members.length > 3 ? members.slice(0, 3) : members
 
   return (
     <>

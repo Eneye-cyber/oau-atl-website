@@ -87,6 +87,40 @@ export const CreateEventSchema = z.object({
   }
 });
 
+export const EditEventSchema = z.object({
+  title: z.string().min(1, 'Event name is required'),
+  imageURL: z.string().min(1, 'Event image is required'),
+  startDate: z.string().min(1, 'Start date is required'),
+  endDate: z.string().optional(),
+  tags: z.string().min(1, 'Tags are required').refine(
+    (tags) =>
+      !tags || // Allow empty or undefined
+      tags.split(',').every((tag) => tag.trim().length > 0),
+    { message: 'Hobbies must be a comma-separated list of non-empty values' }
+  )
+  .transform((tags) =>
+    tags
+      ? tags.split(',').map((tag) => tag.trim()) // Transform only if provided
+      : []
+  ),
+  content: z.string().min(1, 'Event description is required'),
+  entranceFee: z.number().min(0, 'Ticket price must be at least 0'),
+  isFeatured: z.enum(['0', '1']),
+  locationName: z.string().min(1, 'Location name is required'),
+  city: z.string().min(1, 'Location city is required'),
+  state: z.string().min(1, 'Location State is required'),
+  address: z.string().min(1, 'Location address is required'),
+}).superRefine((val, ctx) => {
+  const { startDate, endDate } = val; // Access parent to get startDate value
+  if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'End date must be later than start date',
+      path: ['startDate', 'endDate'],
+    })// endDate must be later than startDate
+  }
+});
+
 export const CreateProjectSchema = z.object({
   amountGoal: z.union([z.number().min(0, "Amount goal must be at least 0"), z.string().transform((val) => Number(val))]), // Ensure it's non-negative
   projectText: z.string().min(1, "Project description is required"),

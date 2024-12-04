@@ -2,11 +2,14 @@
 import Image from 'next/image'
 import type { Metadata } from "next";
 import { Badge } from "@/components/ui/badge"
+import { Suspense } from 'react'
+import UpcomingEvents from '@/app/ui/UpcomingEvents'
+import TableLoader from '@/app/ui/loaders/TableLoader'
 // import HeroSection from '@/app/ui/HeroSection'
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
-import { Button } from "@/components/ui/button"
+
 import { EventResponseObject } from "@/app/lib/types";
 import { formatEventDates, formatEventTimes } from "@/lib/utils";
+import { ClockIcon, MapPinIcon, TicketIcon } from "@/app/ui/Icons"
 
 const baseUrl = process.env.API_BASE
 export const metadata: Metadata = {
@@ -106,107 +109,9 @@ const page = async ({ params }: { params: { eventSlug: string } }) => {
         </section>
 
         <div className="container py-16">
-          <h2 className="text-2xl font-bold mb-6">Other Upcoming Events</h2>
-          <Carousel opts={{ align: "start" }} className="w-full">
-            <CarouselContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              <CarouselItem>
-                <div className="relative rounded-lg overflow-hidden">
-                  <Image
-                    src="/img/placeholder.svg"
-                    alt="AI Conference 2024"
-                    width="400"
-                    height="300"
-                    className="w-full h-full object-cover"
-                    style={{ aspectRatio: "400/300", objectFit: "cover" }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 lg:bottom-8 lg:left-8">
-                    <div className="flex gap-2">
-                      <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                        Conference
-                      </Badge>
-                      <Badge variant="secondary" className="bg-accent text-accent-foreground">
-                        AI
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8">
-                    <Button variant="outline" size="sm">
-                      Learn More
-                    </Button>
-                  </div>
-                </div>
-                <div className="mt-4 space-y-2">
-                  <h3 className="text-lg font-semibold">AI Conference 2024</h3>
-                  <p className="text-muted-foreground">July 10 - 12, 2024</p>
-                </div>
-              </CarouselItem>
-              <CarouselItem>
-                <div className="relative rounded-lg overflow-hidden">
-                  <Image
-                    src="/img/placeholder.svg"
-                    alt="Blockchain Summit 2024"
-                    width="400"
-                    height="300"
-                    className="w-full h-full object-cover"
-                    style={{ aspectRatio: "400/300", objectFit: "cover" }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 lg:bottom-8 lg:left-8">
-                    <div className="flex gap-2">
-                      <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                        Conference
-                      </Badge>
-                      <Badge variant="secondary" className="bg-accent text-accent-foreground">
-                        Blockchain
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8">
-                    <Button variant="outline" size="sm">
-                      Learn More
-                    </Button>
-                  </div>
-                </div>
-                <div className="mt-4 space-y-2">
-                  <h3 className="text-lg font-semibold">Blockchain Summit 2024</h3>
-                  <p className="text-muted-foreground">September 5 - 7, 2024</p>
-                </div>
-              </CarouselItem>
-              <CarouselItem>
-                <div className="relative rounded-lg overflow-hidden">
-                  <Image
-                    src="/img/placeholder.svg"
-                    alt="Cybersecurity Expo 2024"
-                    width="400"
-                    height="300"
-                    className="w-full h-full object-cover"
-                    style={{ aspectRatio: "400/300", objectFit: "cover" }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 lg:bottom-8 lg:left-8">
-                    <div className="flex gap-2">
-                      <Badge variant="secondary" className="bg-primary text-primary-foreground">
-                        Conference
-                      </Badge>
-                      <Badge variant="secondary" className="bg-accent text-accent-foreground">
-                        Cybersecurity
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="absolute top-4 right-4 sm:top-6 sm:right-6 lg:top-8 lg:right-8">
-                    <Button variant="outline" size="sm">
-                      Learn More
-                    </Button>
-                  </div>
-                </div>
-                <div className="mt-4 space-y-2">
-                  <h3 className="text-lg font-semibold">Cybersecurity Expo 2024</h3>
-                  <p className="text-muted-foreground">November 15 - 17, 2024</p>
-                </div>
-              </CarouselItem>
-            </CarouselContent>
-          </Carousel>
+          <Suspense fallback={(<div className=""><TableLoader /></div>)}>
+            <UpcomingEvents id={event.event_id} />
+          </Suspense>
         </div>
 
       </article>
@@ -229,15 +134,10 @@ const TicketsPage = ({fee, date}: {fee: number; date: string}) => {
               </tr>
             </thead>
             <tbody>
-              {/* <tr className="border-b hover:bg-gray-50">
-                <td className="py-2 px-8 font-semibold">Dinner Tickets (Members Only)</td>
-                <td className="py-2 px-8 hidden md:table-cell">Ended at: 23 Dec 18</td>
-                <td className="py-2 px-8 text-green-600">$25.00</td>
-                <td className="py-2 px-8 text-gray-500">N/A</td>
-              </tr> */}
+
               <tr className="border-b hover:bg-gray-50">
                 <td className="py-2 px-8 font-semibold">Dinner Tickets</td>
-                <td className="py-2 px-8 hidden md:table-cell">Ended at: {formatEventDates(date, date)}</td>
+                <td className="py-2 px-8 hidden md:table-cell">Sale ends at: {formatEventDates(date, date)}</td>
                 <td className="py-2 px-8 text-green-600">${fee}</td>
                 <td className="py-2 px-8 text-gray-500">N/A</td>
               </tr>
@@ -257,90 +157,5 @@ const TicketsPage = ({fee, date}: {fee: number; date: string}) => {
 };
 
 
-function ClockIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-    </svg>
-  )
-}
 
-
-function MapPinIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-      <circle cx="12" cy="10" r="3" />
-    </svg>
-  )
-}
-
-
-function TicketIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
-      <path d="M13 5v2" />
-      <path d="M13 17v2" />
-      <path d="M13 11v2" />
-    </svg>
-  )
-}
-
-
-function UsersIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  )
-}
 export default page

@@ -4,6 +4,9 @@ import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { useRouter } from 'next/navigation';
+import { logout } from '@/lib/utils/api';
+
 import DrawerLink from './DrawerLink';
 
 const links = [
@@ -45,10 +48,39 @@ const links = [
   },
 ];
 
-const DrawerNavigation = () => {
+const DrawerNavigation = ({userId, baseUrl}: {userId: string, baseUrl: string}) => {
   const [destinationEl, setDestinationEl] = useState<HTMLElement | null>(null);
   const [documentNode, setDocumentNode] = useState<HTMLElement | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const cookies = document.cookie ?? ''
+    console.log(userId, baseUrl)
+    const data = {id: userId}
+    try {
+
+      const response: Response = await fetch('/api/admin/logout', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+      console.log('response', response)
+
+      if(response.ok) {
+        const result = await response.json();
+        console.log('result', result)
+        document.cookie = 'session=; Path=/; HttpOnly; Secure; Max-Age=0;';
+
+        // Redirect to the home page
+        return router.push('/');
+      }
+
+      throw new Error(response.statusText ?? 'Something went wrong')
+    } catch (error: any) {
+      alert(error.message)
+    }
+  };
 
   // Ensure `destinationEl` is set only on the client
   useEffect(() => {
@@ -119,7 +151,7 @@ const DrawerNavigation = () => {
           </div>
 
           <div className="pl-7 pr-3 sm:py-3">
-            <DrawerLink label="Log Out" href="/admin/logout" icon="icons/logout.svg" activeIcon="icons/logout.svg" />
+            <DrawerLink label="Log Out" href="#" onClick={() => handleLogout()} icon="icons/logout.svg" activeIcon="icons/logout.svg" />
           </div>
         </div>
       </aside>

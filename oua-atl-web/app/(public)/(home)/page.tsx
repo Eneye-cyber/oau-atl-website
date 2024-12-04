@@ -1,6 +1,10 @@
 import Button from "@/app/ui/shared/Button"
 import HeroSlider from "./ui/HeroSlider"
 import MidSection from "./ui/MidSection"
+import { Suspense } from 'react'
+import TableLoader from "@/app/ui/loaders/TableLoader"
+import PastProjects from "@/app/ui/PastProjects"
+
 
 const page = () => {
   return (
@@ -23,8 +27,13 @@ const page = () => {
 
      <MidSection />
 
-     <section className="py-24">
+     <section className="py-24 px-3">
+      <div className="container">
+        <Suspense fallback={<TableLoader />}>
+          <PastProjects />
+        </Suspense>
 
+      </div>
      </section>
 
      <section id="banner" className="w-full banner-hero">

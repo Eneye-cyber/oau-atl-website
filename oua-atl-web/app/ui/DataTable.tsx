@@ -86,8 +86,10 @@ const ActionMenu = ({ path, id }: { path?: string; id?: string }) => {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <LuFileEdit className="inline-block mr-1" />
-            Edit
+            <Link href={`/admin/${path}/${id}/edit`}>
+              <LuFileEdit className="inline-block mr-1" />
+              Edit
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setShowDeleteModal(true)}>
             <LuTrash2 className="inline-block mr-1" />

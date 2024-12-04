@@ -106,7 +106,7 @@ const MidSection = () => {
               Make a difference
             </p>
             <p className="text-sm mt-4 text-gray-700 text-balance">
-              Discover a range of financial instruments and personalized advice designed to meet your unique requirements.
+                You can support Great Ife students and faculty in a variety of ways and help the University sustain and build upon it&apos;s excellence
             </p>
             <div className="mt-6 text-xs font-medium grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-2 text-gray-950">
               <div className="inline-flex items-center gap-2 text-xs text-gray-700">
