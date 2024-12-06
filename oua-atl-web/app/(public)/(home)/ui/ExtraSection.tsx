@@ -9,14 +9,14 @@ const ExtraSection = () => {
         <p className="max-w-xl text-lg mx-auto text-muted-foreground">Let&apos;s harness the power of our alumni network. Your involvement will foster a thriving learning environment and create lasting impact.</p>
       </div>
 
-      <div className="grid sm:grid-cols-6 sm:gap-2 lg:gap-4 xl:gap-6 py-12">
+      <div className="grid sm:grid-cols-6 gap-6 sm:gap-2 lg:gap-4 xl:gap-6 py-12">
         <figure className="sm:col-span-2 flex flex-col gap-4">
           <Image
               src="/img/int_book.jpg"
               alt="#_"
               width={360}
-              height={300}
-              className="bg-gray-200  overflow-hidden w-full object-cover object-center"
+              height={236}
+              className="bg-gray-200  overflow-hidden w-full object-cover object-center max-h-60"
             />
           <figcaption className="">
             <h5 className="text-jet-black text-lg md:text-2xl font-medium mb-2 uppercase peer-hover:underline">Join An Interest Group</h5>
@@ -30,8 +30,8 @@ const ExtraSection = () => {
                 src="/img/reunion.jpg"
                 alt="#_"
                 width={360}
-                height={300}
-                className="bg-gray-200  overflow-hidden w-full object-cover object-center"
+                height={236}
+                className="bg-gray-200  overflow-hidden w-full object-cover object-center max-h-60"
               />
             <figcaption className="">
               <h5 className="text-jet-black text-lg md:text-2xl font-medium mb-2 uppercase peer-hover:underline">The Alumni Experience</h5>
@@ -45,8 +45,8 @@ const ExtraSection = () => {
               src="/img/mem-due.jpg"
               alt="#_"
               width={360}
-              height={300}
-              className="bg-gray-200  overflow-hidden w-full object-cover object-center"
+              height={236}
+              className="bg-gray-200  overflow-hidden w-full object-cover object-center max-h-60"
             />
           <figcaption className="">
             <h5 className="text-jet-black text-lg md:text-2xl font-medium mb-2 uppercase peer-hover:underline">Membership dues</h5>

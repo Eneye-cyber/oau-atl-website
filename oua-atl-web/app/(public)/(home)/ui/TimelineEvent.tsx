@@ -22,7 +22,7 @@ const events: TimelineEvent[] = [
 
 export default function Timeline() {
   return (
-    <div className="mx-auto px-4 py-8">
+    <div className="mx-auto sm:px-4 py-8">
       <div className="relative">
         {/* Vertical line */}
         <div className="absolute left-3 transform w-1 h-full bg-gradient-to-b from-accent to-accent/30 rounded-full"></div>
@@ -47,7 +47,7 @@ export default function Timeline() {
       </div>
 
       <div className="text-right pt-4">
-        <Link href="events" className='font-bold text-primary'>More upcoming events &nbsp; <ArrowRight /></Link>
+        <Link href="events" className='font-bold text-primary'>More upcoming events &nbsp; <ArrowRight className='inline-flex' /></Link>
       </div>
     </div>
   )
