@@ -4,6 +4,8 @@ import MidSection from "./ui/MidSection"
 import { Suspense } from 'react'
 import TableLoader from "@/app/ui/loaders/TableLoader"
 import PastProjects from "@/app/ui/PastProjects"
+import EventSection from "./ui/EventSection"
+import ExtraSection from "./ui/ExtraSection"
 
 
 const page = () => {
@@ -37,6 +39,15 @@ const page = () => {
       </div>
      </section>
 
+     <section className="py-20 pad">
+      <div className="container">
+        <Suspense fallback={<TableLoader />}>
+          <EventSection />
+        </Suspense>
+
+      </div>
+     </section>
+
      <section id="banner" className="w-full banner-hero">
       <div className="container py-8">
         <div className="flex-column items-center space-y-2  md:flex-between md:flex-row">
@@ -49,6 +60,15 @@ const page = () => {
         </div>
       </div>
 
+     </section>
+
+     <section className="py-20 pad">
+      <div className="container">
+        <Suspense fallback={<TableLoader />}>
+          <ExtraSection />
+        </Suspense>
+
+      </div>
      </section>
 
     </>
