@@ -1,5 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
+import Image from "next/image"
+
 const MidSection = () => {
   return (
     <section className="">
@@ -91,12 +93,15 @@ const MidSection = () => {
               </div>
             </div>
           </div>
-          <div className="h-full md:order-first">
-            <img
-              src="https://i.pinimg.com/564x/59/41/a0/5941a02c048f6226031a0487451c2651.jpg"
+          <div className="h-full md:order-first relative">
+            <Image
+              src="/img/reunion.jpg"
               alt="#_"
-              className="bg-gray-200 shadow-box shadow-gray-500/30 overflow-hidden aspect-square w-full h-full object-cover object-center"
+              width={464}
+              height={464}
+              className="bg-gray-200 shadow-box shadow-gray-500 overflow-hidden aspect-square w-full h-full object-cover object-center"
             />
+            <div className="absolute inset-0 bg-gradient-to-tl from-black/40 to-transparent"></div>
           </div>
         </div>
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-24 items-center md:flex-row-reverse">
@@ -190,10 +195,12 @@ const MidSection = () => {
             </div>
           </div>
           <div className="h-full">
-            <img
-              src="https://images.unsplash.com/photo-1587300003388-59208cc962cb"
+            <Image
+              src="/img/scholarship1.jpg"
               alt="#_"
-              className="bg-gray-200 shadow-box shadow-gray-500/30 overflow-hidden aspect-square w-full h-full object-cover object-center"
+              width={464}
+              height={464}
+              className="bg-gray-200 shadow-box shadow-gray-500/30 overflow-hidden aspect-square w-full h-full object-cover object-right"
             />
           </div>
         </div>
