@@ -2,8 +2,8 @@
 
 const MidSection = () => {
   return (
-    <section className="py-24">
-  <div className="px-8 py-24 mx-auto md:px-12 lg:px-32 max-w-screen-xl flex flex-col lg:h-svh justify-center">
+    <section className="">
+  <div className="px-8 py-8  mx-auto md:px-12 lg:px-32 max-w-screen-xl flex flex-col justify-center">
     <div className="flex flex-col">
       <div className="mt-6 pt-12 flex flex-col lg:gap-24">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-24 items-center">

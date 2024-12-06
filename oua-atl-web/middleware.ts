@@ -57,6 +57,7 @@ const verifyLogin = async (request: NextRequest): Promise<User | null> => {
 
 export async function middleware(request: NextRequest) {
   const currentPath = request.nextUrl.pathname;
+  // const user = {id: '', role: ''};
   const user = await verifyLogin(request);
 
   const isFormRoute = (path: string, allowedPaths: string[]) =>
@@ -96,8 +97,8 @@ export async function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next();
-  response.headers.set('x-custom-id', user.id || '');
-  response.headers.set('x-custom-role', user.role || '');
+  response.headers.set('x-custom-id', user?.id || '');
+  response.headers.set('x-custom-role', user?.role || '');
   return response;
 }
 

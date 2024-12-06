@@ -21,14 +21,14 @@ module.exports = {
   				DEFAULT: 'hsl(var(--primary))',
   				foreground: 'hsl(var(--primary-foreground))'
   			},
-  			'primary-light': 'var(--primary-light)',
+  			'primary-light': 'hsl(var(--primary-light))',
   			accent: {
   				DEFAULT: 'hsl(var(--accent))',
   				foreground: 'hsl(var(--accent-foreground))'
   			},
-  			'jet-black': 'var(--jet-black)',
-  			'nero-black': 'var(--nero-black)',
-  			body: 'var(--body)',
+  			'jet-black': 'hsl(var(--jet-black))',
+  			'nero-black': 'hsl(var(--nero-black))',
+  			body: 'hsl(var(--body))',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

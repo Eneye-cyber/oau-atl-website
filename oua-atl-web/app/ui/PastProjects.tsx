@@ -45,7 +45,7 @@ async function getData(): Promise<any> {
   // Wait for both promises to resolve
   try {
     const cookieStore = cookies(); // Access cookies
-    const url = `${baseUrl}/projects?status=completed`;
+    const url = `${baseUrl}/projects`;
     const res: Response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -79,12 +79,12 @@ const PastEvents = async () => {
   projects = projects.length > 3 ? projects.slice(0, 3) : projects
   return (
     <>
-      <h2 className="text-3xl font-bold text-center mb-8">Our Projects</h2>
+      <h2 className="text-4xl tracking-tighter font-semibold text-gray-700 text-balance text-center mb-16">Our Projects</h2>
       <Carousel opts={{ align: "start" }} className="w-full">
         <CarouselContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {projects.map((project, index) => (
             <CarouselItem key={index}>
-              <Card className="overflow-hidden transition-all hover:shadow-lg">
+              <Card className="overflow-hidden transition-all hover:shadow-lg h-full flex flex-col">
                 <CardContent className="p-0">
                   <div className="relative h-48">
                     <Image
@@ -99,7 +99,7 @@ const PastEvents = async () => {
                     <p className="mt-2 text-sm text-gray-600 truncate line-clamp-2">{project.project_text}</p>
                   </div>
                 </CardContent>
-                <CardFooter className="p-4">
+                <CardFooter className="p-4 mt-auto">
                   <Button asChild className="w-full">
                     <Link href={`/projects/${project.project_id}`}>View Project</Link>
                   </Button>

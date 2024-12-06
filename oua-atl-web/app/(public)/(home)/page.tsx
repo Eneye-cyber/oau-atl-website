@@ -14,11 +14,11 @@ const page = () => {
         <HeroSlider />
       </div>
      </section>
-     <section id="banner" className="w-full banner-hero">
+     <section id="banner" className="w-full banner-hero pad">
       <div className="container py-4">
         <div className="flex-center">
           <div className="text-center text-jet-black">
-            <h5 className="text-xl font-bold">Learn about the activities of Great Ife Alumni Atlanta Chapter -&gt;</h5>
+            <h5 className="text-xl font-bold">Learn about the activities of Great Ife Alumni Atlanta Chapter</h5>
           </div>
         </div>
       </div>
@@ -27,7 +27,8 @@ const page = () => {
 
      <MidSection />
 
-     <section className="py-24 px-3">
+
+     <section className="py-20 my-12 px-3 bg-gray-100">
       <div className="container">
         <Suspense fallback={<TableLoader />}>
           <PastProjects />

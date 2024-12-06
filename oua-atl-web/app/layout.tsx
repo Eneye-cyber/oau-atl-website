@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { roboto } from "@/app/ui/fonts";
 import "./globals.css";
+import TopLoader from "@/components/TopLoader";
 
 
 export const metadata: Metadata = {
@@ -16,7 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${roboto.className} ${roboto.variable}`}>
-        {children}
+        <TopLoader />
+        <>
+          {children}
+        </>
       </body>
     </html>
   );
