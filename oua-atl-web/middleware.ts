@@ -77,7 +77,7 @@ export async function middleware(request: NextRequest) {
       console.log(2)
       response = NextResponse.next();
     }
-    response.headers.set('Set-Cookie', 'session=; Path=/; HttpOnly; Secure; Max-Age=0;');
+    response.cookies.set('connect.sid', '', { maxAge: 0 }); 
     return response;
   }
 
@@ -104,6 +104,8 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [// Match all paths except those starting with "/api" or other static assets
-    '/((?!api/|_next/|favicon.ico|public/).*)',],
+  matcher: [
+    // Match all paths except those starting with "/api" or other static assets
+    '/((?!api/|_next/|favicon.ico|public/).*)',
+  ],
 };
