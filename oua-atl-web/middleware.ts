@@ -83,6 +83,7 @@ export async function middleware(request: NextRequest) {
 
   const isAdmin = user.role === 'admin';
   const isMember = user.role === 'member';
+  
   if (isAdmin && currentPath === ROUTES.ADMIN_LOGIN) {
     return NextResponse.redirect(new URL('/admin', request.url));
   }
