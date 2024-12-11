@@ -1,4 +1,5 @@
 
+import { redirect } from "next/navigation";
 import DrawerNavigation from "./ui/DrawerNavigation"
 import TopBar from "./ui/TopBar";
 import { headers } from 'next/headers';
@@ -14,8 +15,7 @@ export default function Layout({
 
     if(!id) {
       
-      // document.cookie = 'session=; Path=/; HttpOnly; Secure; Max-Age=0;';
-      window.location.href = '/admin/login'
+      redirect("/admin/login")
       return
     }
 

@@ -12,7 +12,9 @@ const MemberLayout = ({
 
   return (
     <article className="p-6 container flex-1 flex flex-col gap-6 md:gap-12">
-
+      <section className='flex sm:hidden'>
+        <Button className="ml-auto" href="/admin/members/executive/create">Create Executive Member</Button>
+      </section>
 
       <section className=" bg-white ring-1 ring-gray-950/5 rounded">
         <div className="flex items-end justify-between mb-6 p-3 sm:p-6">
