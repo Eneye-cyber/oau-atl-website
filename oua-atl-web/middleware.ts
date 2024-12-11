@@ -84,16 +84,10 @@ export async function middleware(request: NextRequest) {
   const isAdmin = user.role === 'admin';
   const isMember = user.role === 'member';
   if (isAdmin && currentPath === ROUTES.ADMIN_LOGIN) {
-    const loggedInResponse = NextResponse.redirect(new URL('/admin', request.url));
-    loggedInResponse.headers.set('x-custom-id', user?.id || '');
-    loggedInResponse.headers.set('x-custom-role', user?.role || '');
-    return loggedInResponse;
+    return NextResponse.redirect(new URL('/admin', request.url));
   }
   if (isMember && [ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER].includes(currentPath)) {
-    const loggedInResponse = NextResponse.redirect(new URL('/', request.url));
-    loggedInResponse.headers.set('x-custom-id', user?.id || '');
-    loggedInResponse.headers.set('x-custom-role', user?.role || '');
-    return loggedInResponse;
+    return NextResponse.redirect(new URL('/', request.url));
   }
   if (currentPath.startsWith('/admin') && !isAdmin) {
     return NextResponse.redirect(new URL('/admin/login', request.url));
