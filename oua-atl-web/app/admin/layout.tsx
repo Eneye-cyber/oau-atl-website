@@ -1,5 +1,5 @@
 
-import { redirect } from "next/navigation";
+// import { redirect } from "next/navigation";
 import DrawerNavigation from "./ui/DrawerNavigation"
 import TopBar from "./ui/TopBar";
 import { headers } from 'next/headers';
@@ -11,13 +11,11 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
     const headersList = headers();
-    const id = headersList.get('x-custom-id');
+    const id = headersList.get('x-custom-id') ?? '';
 
-    if(!id) {
-      
-      redirect("/admin/login")
-      return
-    }
+    // if(!id) {
+    //   redirect("/admin/login")
+    // }
 
   return (
     <>
