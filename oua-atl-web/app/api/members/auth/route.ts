@@ -12,6 +12,7 @@ export async function POST(req: Request) {
 
   try {
     // Parse request body
+    console.log('Proocess members login');
     const data = await req.json();
     const url = `${baseUrl}/users/auth/login`;
 

@@ -31,3 +31,10 @@ export interface Contact {
   contact_id: string; // UUID
   created_at: string; // ISO 8601 timestamp
 }
+
+export interface GalleryResponseObjects {
+  gallery_id: string; // UUID of the gallery
+  gallery_title: string; // Title of the gallery
+  created_at: string; // ISO string timestamp of creation
+  item_count: number; // Number of items in the gallery
+};

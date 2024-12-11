@@ -41,6 +41,22 @@ export const SignUpFormDataSchema = z.object({
   }
   })
 
+  export const ResetPasswordFormDataSchema = z.object({
+    id: z.string().optional(),
+    email: z.string().min(1, 'Email is required').email('Invalid email address'),
+    oldPassword: passwordSchema,
+    newPassword: passwordSchema
+  }).superRefine((val, ctx) => {
+    if (val.oldPassword === val.newPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'New password cannot be the same as old password',
+        path: ['newPassword'],
+      })
+    }
+    })
+
+
 export const SignInFormDataSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
   password: passwordSchema,

@@ -1,4 +1,4 @@
-import ImageUploader from "../../ui/ImageUploader"
+import MultipleImageUploader from "../../ui/MultipleImageUploader"
 
 const page = () => {
   const isSubmitting = false;
@@ -25,7 +25,7 @@ const page = () => {
           </div>
 
         </section>
-        <ImageUploader />
+        <MultipleImageUploader />
 
         
       </section>

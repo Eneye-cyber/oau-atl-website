@@ -11,6 +11,7 @@ const ROUTES = {
   ADMIN_LOGIN: '/admin/login',
   MEMBERS_LOGIN: '/members/login',
   MEMBERS_REGISTER: '/members/register',
+  MEMBERS_AREA: '/members-area',
 };
 
 const verifyLogin = async (request: NextRequest): Promise<User | null> => {
@@ -68,7 +69,7 @@ export async function middleware(request: NextRequest) {
     console.log('unaunthicated')
     if ((currentPath.startsWith('/admin') || currentPath.startsWith('/members')) 
       && 
-      !isFormRoute(currentPath, [ROUTES.ADMIN_LOGIN, ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER])
+      !isFormRoute(currentPath, [ROUTES.ADMIN_LOGIN, ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER, ROUTES.MEMBERS_AREA])
     ) {
       console.log(1)
       response = NextResponse.redirect(new URL('/', request.url));
@@ -87,7 +88,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/admin', request.url));
   }
   if (isMember && [ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER].includes(currentPath)) {
-    return NextResponse.redirect(new URL('/members', request.url));
+    return NextResponse.redirect(new URL('/', request.url));
   }
   if (currentPath.startsWith('/admin') && !isAdmin) {
     return NextResponse.redirect(new URL('/admin/login', request.url));

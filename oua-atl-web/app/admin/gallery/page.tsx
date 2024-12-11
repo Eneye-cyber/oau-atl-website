@@ -6,8 +6,39 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { LuMoreVertical, LuEye, LuFileEdit, LuTrash2 } from 'react-icons/lu';
 import Button from '@/app/ui/shared/Button'
 // import { Button } from "@/components/ui/button"
+import type { Metadata } from "next";
+import type { GalleryResponseObjects } from "@/app/lib/types";
+const baseUrl = process.env.API_BASE
 
-const PhotoAlbum = () => {
+export const metadata: Metadata = {
+  title: "Gallery | Ife Alumni",
+};
+
+type GalleryResponse = {
+  message: string; // Message associated with the response
+  payload: GalleryResponseObjects[] | []; // Array of gallery items
+};
+
+async function getData(): Promise<GalleryResponse> {
+  if (!baseUrl) throw new Error("API_BASE environment variable is not set.");
+  try {
+    const url = `${baseUrl}/gallery`;
+    const res = await fetch(url, { method: 'GET', credentials: 'include', cache: "no-store", });
+
+    if (!res.ok) {
+      return { message: `Error ${res.status}: ${res.statusText}`, payload: [] };
+    }
+
+    const result = await res.json();
+    return result;
+  } catch (error: any) {
+    console.error('Fetch Error:', error);
+    return { message: error.message || 'An unexpected error occurred.', payload: [] };
+  }
+}
+
+
+const PhotoAlbum = ({name, count}: {name: string; count: number}) => {
   return (
     <>
     <Link href="/admin/gallery/album/id" className="hover:underline w-full">
@@ -51,15 +82,19 @@ const PhotoAlbum = () => {
             <div className="z-0 absolute inset-0 bg-black opacity-0 group-hover:opacity-70" />
         </div>
         <figcaption className="h-14">
-          <div className="text-sm font-medium pt-2 break-words tracking-normal overflow-hidden text-ellipsis line-clamp-2 max-h-[40px]">Album Name</div>
-          <div className="pt-2 text-gray-950/40 text-xs">10 items</div>
+          <div className="text-sm font-medium pt-2 break-words tracking-normal overflow-hidden text-ellipsis line-clamp-2 max-h-[40px]">{name}</div>
+          <div className="pt-2 text-gray-950/40 text-xs">{count} items</div>
         </figcaption>
       </figure>
     </Link>
     </>
   )
 }
-const page = () => {
+
+const page = async () => {
+  const data = await getData();
+  console.log(data, 'gal')
+  const albums: GalleryResponseObjects[] | [] = data?.payload ?? []
   return (
     <article className="p-6 container space-y-6 flex-1 flex flex-col">
       <div className="flex items-end justify-between py-6">
@@ -83,10 +118,9 @@ const page = () => {
         <DropdownMenuSeparator className="bg-gray-950/5" />
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-6 lg:gap-x-6">
-          <PhotoAlbum />
-          <PhotoAlbum />
-          <PhotoAlbum />
-          <PhotoAlbum />
+          {albums.map((item, index) =>  <PhotoAlbum key={index} name={item.gallery_title} count={item.item_count} />)}
+         
+          
         </div>
       </section>
     </article>

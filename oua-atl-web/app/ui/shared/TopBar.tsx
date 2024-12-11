@@ -48,6 +48,8 @@ const TopBar = ({role}: {role: string | null}) => {
       link: 'http://'
     },
   }
+  const isAdmin = role === "admin"
+  const linkClass = "text-white hover:text-accent text-xs inline-flex py-1 px-2"
   return (
     <div className="bg-primary w-full h-10 pad">
       <div className="container flex items-center h-full justify-between sm:justify-normal">
@@ -57,12 +59,18 @@ const TopBar = ({role}: {role: string | null}) => {
             {
               !role ? (
                 <>
-                  <Link className="text-white hover:text-accent text-xs inline-flex py-1 px-2" href="/members/login">Login</Link>
+                  <Link className={`${linkClass}`} href="/members/login">Login</Link>
                   <div className="border border-white h-4 "></div>
-                  <Link className="text-white hover:text-accent text-xs inline-flex py-1 px-2" href="/members/register">Register</Link>
+                  <Link className={`${linkClass}`} href="/members/register">Register</Link>
                 </>
               ) : (
-                <Link className="text-white hover:text-accent text-xs inline-flex py-1 px-2" href={role === "admin" ? "/admin" :"/members/login"}>Dashboard</Link>
+                <>
+                  <Link className={`${linkClass}`} href={isAdmin ? "/admin" :"/members/profile"}>{isAdmin ? 'Dashboard' : 'Account'}</Link>
+                  <form className="inline-block border-l border-muted-foreground h-fit" action="/api/logout" method="POST">
+                    <input type="submit" className={`${linkClass}`} value="Sign Out" />
+                  </form>
+                </>
+                
                 
               )
             }
