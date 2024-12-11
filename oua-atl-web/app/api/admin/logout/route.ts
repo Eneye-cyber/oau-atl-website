@@ -36,10 +36,14 @@ export async function POST(req: Request) {
       console.error('External logout failed:', errorResponse);
       console.error('Status:', );
       if(externalResponse.statusText === "Unauthorized") {
-        return NextResponse.json(
+        const nextResponse = NextResponse.json(
           { message: "Logged out" },
           { status: 200 }
         );
+        nextResponse.headers.set('Set-Cookie', 'session=; Path=/; HttpOnly; Secure; Max-Age=0;');
+
+        console.log('Response:', nextResponse);
+        return nextResponse;
       }
       return NextResponse.json(
         { message: externalResponse.statusText ?? 'Login failed', details: errorResponse },
@@ -53,7 +57,6 @@ export async function POST(req: Request) {
     // Create NextResponse and set cookies
     const nextResponse = NextResponse.json({ message: "Logged out" }, { status: 200 });
     nextResponse.headers.set('Set-Cookie', 'session=; Path=/; HttpOnly; Secure; Max-Age=0;');
-    nextResponse.headers.set('Set-Cookie', 'session_admin=; Path=/; HttpOnly; Secure; Max-Age=0;'); 
 
     console.log('Response:', nextResponse);
     return nextResponse;

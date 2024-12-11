@@ -5,7 +5,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { useRouter } from 'next/navigation';
-import { logout } from '@/lib/utils/api';
 
 import DrawerLink from './DrawerLink';
 
@@ -55,7 +54,6 @@ const DrawerNavigation = ({userId, baseUrl}: {userId: string, baseUrl: string}) 
   const router = useRouter();
 
   const handleLogout = async () => {
-    const cookies = document.cookie ?? ''
     console.log(userId, baseUrl)
     const data = {id: userId}
     try {
@@ -70,8 +68,7 @@ const DrawerNavigation = ({userId, baseUrl}: {userId: string, baseUrl: string}) 
       if(response.ok) {
         const result = await response.json();
         console.log('result', result)
-        document.cookie = 'session=; Path=/; HttpOnly; Secure; Max-Age=0;';
-
+        
         // Redirect to the home page
         return router.push('/');
       }

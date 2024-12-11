@@ -13,7 +13,8 @@ export default function Layout({
     const id = headersList.get('x-custom-id');
 
     if(!id) {
-      document.cookie = 'session=; Path=/; HttpOnly; Secure; Max-Age=0;';
+      
+      // document.cookie = 'session=; Path=/; HttpOnly; Secure; Max-Age=0;';
       window.location.href = '/admin/login'
       return
     }
