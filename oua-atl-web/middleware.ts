@@ -66,6 +66,7 @@ export async function middleware(request: NextRequest) {
   const currentPath = request.nextUrl.pathname;
   // const user = {id: '', role: ''};
   const user = await verifyLogin(request);
+  console.log('middleware user', user, 'vid')
 
   const isFormRoute = (path: string, allowedPaths: string[]) =>
     allowedPaths.includes(path);
@@ -84,6 +85,7 @@ export async function middleware(request: NextRequest) {
       console.log(2)
       response = NextResponse.next();
     }
+    response.cookies.delete('connect.sid'); 
     response.headers.delete('x-custom-id'); 
     response.headers.delete('x-custom-role'); 
     return response;
