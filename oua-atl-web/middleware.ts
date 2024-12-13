@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers'
 import type { NextRequest } from 'next/server';
 
 interface User {
@@ -19,6 +20,11 @@ const verifyLogin = async (request: NextRequest): Promise<User | null> => {
 
   try {
     const incomingCookies = request.headers.get('cookie') || '';
+    const cookie = cookies().get('connect.sid')?.value || '';
+  
+
+    console.log('cookie:', cookie);
+    
     console.log('middlewareCookies:', incomingCookies);
     if(!incomingCookies) return null;
 
@@ -51,12 +57,12 @@ const verifyLogin = async (request: NextRequest): Promise<User | null> => {
     console.error('Error verifying login:', error.message);
     return null
   }
-  return null;
 };
 
 
 
 export async function middleware(request: NextRequest) {
+  console.log('current route', request.nextUrl.pathname);
   const currentPath = request.nextUrl.pathname;
   // const user = {id: '', role: ''};
   const user = await verifyLogin(request);
@@ -67,6 +73,7 @@ export async function middleware(request: NextRequest) {
   if (!user) {
     let response;
     console.log('unaunthicated')
+    cookies().set('connect.sid', '', { maxAge: 0 });
     if ((currentPath.startsWith('/admin') || currentPath.startsWith('/members')) 
       && 
       !isFormRoute(currentPath, [ROUTES.ADMIN_LOGIN, ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER, ROUTES.MEMBERS_AREA])
@@ -77,7 +84,8 @@ export async function middleware(request: NextRequest) {
       console.log(2)
       response = NextResponse.next();
     }
-    response.cookies.set('connect.sid', '', { maxAge: 0 }); 
+    response.headers.delete('x-custom-id'); 
+    response.headers.delete('x-custom-role'); 
     return response;
   }
 
@@ -86,18 +94,22 @@ export async function middleware(request: NextRequest) {
   
   
   if (isAdmin && currentPath === ROUTES.ADMIN_LOGIN) {
+    console.log('User is admin')
     let response = NextResponse.redirect(new URL('/', request.url));
     response.headers.set('x-custom-id', user?.id || '');
     response.headers.set('x-custom-role', user?.role || '');
     return response;
   }
   if (isMember && [ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER].includes(currentPath)) {
+    console.log('User is member')
     return NextResponse.redirect(new URL('/', request.url));
   }
   if (currentPath.startsWith('/admin') && !isAdmin) {
+    console.log('User is not an admin')
     return NextResponse.redirect(new URL('/admin/login', request.url));
   }
   if (currentPath.startsWith('/members') && !isMember) {
+    console.log('User is not a member')
     return NextResponse.redirect(new URL('/members/login', request.url));
   }
 
@@ -110,6 +122,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Match all paths except those starting with "/api" or other static assets
-    '/((?!api/|_next/|favicon.ico|public/).*)',
+    '/((?!api/|_next/|favicon.ico|public/|icons/).*)',
   ],
 };

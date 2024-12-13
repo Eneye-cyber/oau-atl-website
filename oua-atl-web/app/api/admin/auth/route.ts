@@ -48,12 +48,15 @@ export async function POST(req: Request) {
     console.log('Cookies:', cookies);
 
     // Create NextResponse and set cookies
-    const nextResponse = NextResponse.redirect('/admin', 302);
+    const nextResponse = NextResponse.json(result, { status: 200 });
     if (cookies) {
       nextResponse.headers.set('Set-Cookie', cookies); // Pass cookies to the client
     }
 
+    console.log('login result', result)
+
     if (result.data?.user) {
+
       const user = result.data?.user;
       nextResponse.headers.set('x-custom-id', user?.id || '');
       nextResponse.headers.set('x-custom-role', user?.role || '');
