@@ -81,11 +81,11 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  const isAdmin = user.role === 'admin';
-  const isMember = user.role === 'member';
+  const isAdmin = user?.role === 'admin';
+  const isMember = user?.role === 'member';
   
   if (isAdmin && currentPath === ROUTES.ADMIN_LOGIN) {
-    return NextResponse.redirect(new URL('/admin', request.url));
+    return NextResponse.redirect(new URL('/', request.url));
   }
   if (isMember && [ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER].includes(currentPath)) {
     return NextResponse.redirect(new URL('/', request.url));
