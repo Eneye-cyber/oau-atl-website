@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers'
+// import { cookies } from 'next/headers'
 import type { NextRequest } from 'next/server';
 
 interface User {
@@ -20,10 +20,10 @@ const verifyLogin = async (request: NextRequest): Promise<User | null> => {
 
   try {
     const incomingCookies = request.headers.get('cookie') || '';
-    const cookie = cookies().get('connect.sid')?.value || '';
+    // const cookie = cookies().get('connect.sid')?.value || '';
   
 
-    console.log('cookie:', cookie);
+    // console.log('cookie:', cookie);
     
     console.log('middlewareCookies:', incomingCookies);
     if(!incomingCookies) return null;
@@ -74,7 +74,7 @@ export async function middleware(request: NextRequest) {
   if (!user) {
     let response;
     console.log('unaunthicated')
-    cookies().set('connect.sid', '', { maxAge: 0 });
+    // cookies().set('connect.sid', '', { maxAge: 0 });
     if ((currentPath.startsWith('/admin') || currentPath.startsWith('/members')) 
       && 
       !isFormRoute(currentPath, [ROUTES.ADMIN_LOGIN, ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER, ROUTES.MEMBERS_AREA])
