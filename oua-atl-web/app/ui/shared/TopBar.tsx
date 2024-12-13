@@ -1,4 +1,5 @@
-
+'use client'
+import { useEffect, useState } from 'react';
 import {
   FaFacebookF,
   FaTwitter,
@@ -25,7 +26,18 @@ const IconListComponent = ({className, iconsList}: { className?: string, iconsLi
 
   return <ul className={`${className} flex items-center gap-2`}>{element}</ul>
 }
-const TopBar = ({role}: {role: string | null}) => {
+const TopBar = () => {
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchRole() {
+      const response = await fetch('/api/user');
+      const data = await response.json();
+      setRole(data.role);
+    }
+    fetchRole();
+  }, []);
+
   const icons = {
     facebook: {
       component: <FaFacebookF />,
