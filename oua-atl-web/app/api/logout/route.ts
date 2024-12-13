@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   const response = NextResponse.redirect(referer || `${url}/`);
 
   response.cookies.set('connect.sid', '', { maxAge: 0 }); // Clear auth token or session cookie
-  response.headers.set('x-custom-id', '')
-  response.headers.set('x-custom-role', '')
+  response.cookies.set('x-custom-id', '')
+  response.cookies.set('x-custom-role', '')
   return response;
 }

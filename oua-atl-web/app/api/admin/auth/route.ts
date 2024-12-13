@@ -58,8 +58,8 @@ export async function POST(req: Request) {
     if (result.data?.user) {
 
       const user = result.data?.user;
-      nextResponse.headers.set('x-custom-id', user?.id || '');
-      nextResponse.headers.set('x-custom-role', user?.role || '');
+      nextResponse.cookies.set('x-custom-id', user?.id || '');
+      nextResponse.cookies.set('x-custom-role', user?.role || '');
     }
     
     return nextResponse;

@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation";
 import DrawerNavigation from "./ui/DrawerNavigation"
 import TopBar from "./ui/TopBar";
-import { headers } from 'next/headers';
+import { cookies } from 'next/headers';
 const baseUrl = process.env?.API_BASE ?? "https://oau-atl-server.onrender.com/api/v1";
 
 export default async function Layout({
@@ -10,9 +10,9 @@ export default async function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-    const headersList =  headers();
-    const id = headersList.get('x-custom-id') ?? 'ttt';
-    console.log('headers', headersList.entries(), headersList.values())
+    const cookiesList =  cookies();
+    const id = cookiesList.get('x-custom-id')?.value ?? '';
+    // console.log('cookies', cookiesList.entries(), cookiesList.values())
     // if(!id) {
     //   redirect("/admin/login")
     // }

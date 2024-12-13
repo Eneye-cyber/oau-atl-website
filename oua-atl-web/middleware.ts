@@ -86,8 +86,8 @@ export async function middleware(request: NextRequest) {
       response = NextResponse.next();
     }
     response.cookies.delete('connect.sid'); 
-    response.headers.delete('x-custom-id'); 
-    response.headers.delete('x-custom-role'); 
+    response.cookies.delete('x-custom-id'); 
+    response.cookies.delete('x-custom-role'); 
     return response;
   }
 
@@ -98,8 +98,8 @@ export async function middleware(request: NextRequest) {
   // if (isAdmin && currentPath === ROUTES.ADMIN_LOGIN) {
   //   console.log('User is admin')
   //   let response = NextResponse.redirect(new URL('/', request.url));
-  //   response.headers.set('x-custom-id', user?.id || '');
-  //   response.headers.set('x-custom-role', user?.role || '');
+  //   response.cookies.set('x-custom-id', user?.id || '');
+  //   response.cookies.set('x-custom-role', user?.role || '');
   //   return response;
   // }
   // if (isMember && [ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER].includes(currentPath)) {
@@ -116,8 +116,8 @@ export async function middleware(request: NextRequest) {
   // }
 
   const response = NextResponse.next();
-  response.headers.set('x-custom-id', user?.id || '');
-  response.headers.set('x-custom-role', user?.role || '');
+  response.cookies.set('x-custom-id', user?.id || '');
+  response.cookies.set('x-custom-role', user?.role || '');
   return response;
 }
 

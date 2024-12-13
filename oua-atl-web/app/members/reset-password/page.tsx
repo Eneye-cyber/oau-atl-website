@@ -1,11 +1,11 @@
 import ResetPasswordForm from "@/app/ui/forms/ResetPasswordForm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { headers } from 'next/headers';
+import { cookies } from 'next/headers';
 
 
 const page = async () => {
-  const headersList = headers();
-  const id = headersList.get('x-custom-id') ?? '';
+  const cookiesList = cookies();
+  const id = cookiesList.get('x-custom-id')?.value ?? '';
   return (
     <div className="bg-gray-100 flex-1">
       <div className="p-4 sm:p-6 lg:p-8">
