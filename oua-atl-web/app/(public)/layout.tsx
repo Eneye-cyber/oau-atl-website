@@ -1,7 +1,7 @@
 import TopBar from '@/app/ui/shared/TopBar'
 import NavBar from '@/app/ui/shared/NavBar'
 import Footer from '@/app/ui/shared/Footer'
-import { headers, cookies } from 'next/headers';
+import { headers } from 'next/headers';
 
 export default function PublicLayout({ children }: {
   children: React.ReactNode
@@ -9,14 +9,14 @@ export default function PublicLayout({ children }: {
   const headersList = headers();
   const role = headersList.get('x-custom-role') ?? null;
 
-  const cookieStore = cookies();
-  const flashMessage = cookieStore.get('flash-message')?.value;
-  // const userId = headersList.get('x-custom-id') ?? null;
+  // const cookieStore = cookies();
+  // const flashMessage = cookieStore.get('flash-message')?.value;
+  // // const userId = headersList.get('x-custom-id') ?? null;
 
-   // Clear the flash message cookie
-   if (flashMessage) {
-    cookies().set('flash-message', '', { maxAge: 0 });
-  }
+  //  // Clear the flash message cookie
+  //  if (flashMessage) {
+  //   cookies().set('flash-message', '', { maxAge: 0 });
+  // }
   return (
     <>
     <div className='flex-column h-full min-h-screen'>
@@ -26,7 +26,7 @@ export default function PublicLayout({ children }: {
       </header>
 
       <main className='min-h-96 flex-1'>
-        {flashMessage && (
+        {/* {flashMessage && (
           <ol 
             className="fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]"
           >
@@ -46,7 +46,7 @@ export default function PublicLayout({ children }: {
               
             </li>
           </ol>
-          )}
+          )} */}
 
         {children}
       </main>

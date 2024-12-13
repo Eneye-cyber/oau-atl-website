@@ -5,17 +5,18 @@ import TopBar from "./ui/TopBar";
 import { headers } from 'next/headers';
 const baseUrl = process.env?.API_BASE ?? "https://oau-atl-server.onrender.com/api/v1";
 
-export default function Layout({
+export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-    const headersList = headers();
-    const id = headersList.get('x-custom-id') ?? '';
-
-    if(!id) {
-      redirect("/admin/login")
-    }
+    const headersList =  headers();
+    const id = headersList.get('x-custom-id') ?? 'ttt';
+    console.log('headers', headersList.entries(), headersList.values())
+    // if(!id) {
+    //   redirect("/admin/login")
+    // }
+    console.log(id, 'id')
 
   return (
     <>
