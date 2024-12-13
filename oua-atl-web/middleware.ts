@@ -95,25 +95,25 @@ export async function middleware(request: NextRequest) {
   const isMember = user?.role === 'member';
   
   
-  if (isAdmin && currentPath === ROUTES.ADMIN_LOGIN) {
-    console.log('User is admin')
-    let response = NextResponse.redirect(new URL('/', request.url));
-    response.headers.set('x-custom-id', user?.id || '');
-    response.headers.set('x-custom-role', user?.role || '');
-    return response;
-  }
-  if (isMember && [ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER].includes(currentPath)) {
-    console.log('User is member')
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-  if (currentPath.startsWith('/admin') && !isAdmin) {
-    console.log('User is not an admin')
-    return NextResponse.redirect(new URL('/admin/login', request.url));
-  }
-  if (currentPath.startsWith('/members') && !isMember) {
-    console.log('User is not a member')
-    return NextResponse.redirect(new URL('/members/login', request.url));
-  }
+  // if (isAdmin && currentPath === ROUTES.ADMIN_LOGIN) {
+  //   console.log('User is admin')
+  //   let response = NextResponse.redirect(new URL('/', request.url));
+  //   response.headers.set('x-custom-id', user?.id || '');
+  //   response.headers.set('x-custom-role', user?.role || '');
+  //   return response;
+  // }
+  // if (isMember && [ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER].includes(currentPath)) {
+  //   console.log('User is member')
+  //   return NextResponse.redirect(new URL('/', request.url));
+  // }
+  // if (currentPath.startsWith('/admin') && !isAdmin) {
+  //   console.log('User is not an admin')
+  //   return NextResponse.redirect(new URL('/admin/login', request.url));
+  // }
+  // if (currentPath.startsWith('/members') && !isMember) {
+  //   console.log('User is not a member')
+  //   return NextResponse.redirect(new URL('/members/login', request.url));
+  // }
 
   const response = NextResponse.next();
   response.headers.set('x-custom-id', user?.id || '');
