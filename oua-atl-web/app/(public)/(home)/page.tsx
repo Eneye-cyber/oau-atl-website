@@ -1,11 +1,12 @@
 import Button from "@/app/ui/shared/Button"
-import HeroSlider from "./ui/HeroSlider"
-import MidSection from "./ui/MidSection"
+import HeroSlider from "./section/HeroSlider"
+import MidSection from "./section/MidSection"
 import { Suspense } from 'react'
 import TableLoader from "@/app/ui/loaders/TableLoader"
 import PastProjects from "@/app/ui/PastProjects"
-import EventSection from "./ui/EventSection"
-import ExtraSection from "./ui/ExtraSection"
+import EventSection from "./section/EventSection"
+import ExtraSection from "./section/ExtraSection"
+import BannerSection from "./section/BannerSection"
 
 
 const page = () => {
@@ -16,16 +17,7 @@ const page = () => {
         <HeroSlider />
       </div>
      </section>
-     <section id="banner" className="w-full banner-hero pad">
-      <div className="container py-4">
-        <div className="flex-center">
-          <div className="text-center text-jet-black">
-            <h5 className="text-xl font-bold">Learn about the activities of Great Ife Alumni Atlanta Chapter</h5>
-          </div>
-        </div>
-      </div>
-
-     </section>
+     <BannerSection />
 
      <MidSection />
 
@@ -35,7 +27,6 @@ const page = () => {
         <Suspense fallback={<TableLoader />}>
           <PastProjects />
         </Suspense>
-
       </div>
      </section>
 

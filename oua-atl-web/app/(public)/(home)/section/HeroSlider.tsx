@@ -3,43 +3,28 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link'
 
-// Sample data for slides
-// const slides = [
-//   { id: 1, image: '/img/1.jpg', title: 'Slide 1' },
-//   { id: 2, image: '/img/2.jpg', title: 'Slide 2' },
-//   { id: 3, image: '/img/3.jpg', title: 'Slide 3' },
-// ];
+
 
 const slides = [
   {
     id: 1, image: '/img/1.jpg',
     Heading: "NOT JUST FUN AND GAMES",
     Text: "WE ALSO MEET REGULARLY TO SUPPORT ONE ANOTHER AS WELL AS THE UNIVERSITY OH, AND THERE'S FOOD.",
-    Button: (
-      <Link href={"/events"} className="text-sm font-medium border-white border hover:bg-accent hover:border-accent rounded text-white px-6 py-2">
-        Find Meeting
-      </Link>
-    ),
+    Link: {href: 'events', label: " Find Meeting"}
+
   },
   {
     id: 2, image: '/img/2.jpg',
     Heading: "THE ART OF GIVING SOMETHING BACK",
     Text: "FIND OUT ABOUT THE INITIATIVES AND PROJECTS WE ARE WORKING ON AS WELL AS HOW YOU CAN HELP. WE'D LOVE TO HEAR FROM YOU.",
-    Button: (
-      <Link href={"/projects"} className="text-sm font-medium border-white border hover:bg-accent hover:border-accent rounded text-white px-6 py-2">
-        Join Us Today
-      </Link>
-    ),
+    Link: {href: 'projects', label: "Join Us Today"}
+
   },
   {
     id: 3, image: '/img/3.jpg',
     Heading: "NOT JUST FUN AND GAMES",
     Text: "WE ALSO MEET REGULARLY TO SUPPORT ONE ANOTHER AS WELL AS THE UNIVERSITY OH, AND THERE'S FOOD.",
-    Button: (
-      <Link href={"/contact"} className="text-sm font-medium border-white border hover:bg-accent hover:border-accent rounded text-white px-6 py-2">
-        Find Meeting
-      </Link>
-    ),
+    Link: {href: 'contact', label: "Find Meeting"}
   },
 ]
 
@@ -113,32 +98,16 @@ const HeroSlider = () => {
                 <div className="text-center max-w-screen-md relative z-10 md:py-4 md:mt-8 md:px-4">
                   <h1 className="text-4xl font-bold mb-2">{slide.Heading}</h1>
                   <p className="text-base font-light mb-4">{slide.Text}</p>
-                  {slide.Button}
+                  <Link href={`/${slide.Link?.href}`} className="text-sm font-medium border-white border hover:bg-accent hover:border-accent rounded text-white px-6 py-2">
+                    {slide.Link?.label}
+                  </Link>
                 </div>
 
               </div>
-              {/* {slide.title} */}
             </motion.div>
           ) : null
         )}
       </AnimatePresence>
-      {/* <div className="controls" style={{ position: 'absolute', bottom: '20px', width: '100%', textAlign: 'center' }}>
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentSlide(index)}
-            style={{
-              margin: '0 5px',
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              backgroundColor: currentSlide === index ? '#fff' : 'rgba(255, 255, 255, 0.5)',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          />
-        ))}
-      </div> */}
     </div>
   );
 };
