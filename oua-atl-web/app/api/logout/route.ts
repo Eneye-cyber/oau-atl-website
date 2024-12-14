@@ -11,3 +11,13 @@ export async function POST(req: Request) {
   response.cookies.set('x-custom-role', '')
   return response;
 }
+
+export async function GET(req: Request) {
+  const referer = req.headers.get('referer')
+  const response = NextResponse.redirect(referer || `${url}/`);
+
+  response.cookies.set('connect.sid', '', { maxAge: 0 }); // Clear auth token or session cookie
+  response.cookies.set('x-custom-id', '')
+  response.cookies.set('x-custom-role', '')
+  return response;
+}

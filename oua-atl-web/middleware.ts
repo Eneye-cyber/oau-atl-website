@@ -66,7 +66,7 @@ export async function middleware(request: NextRequest) {
   const currentPath = request.nextUrl.pathname;
   // const user = {id: '', role: ''};
   const user = await verifyLogin(request);
-  console.log('middleware user', user, 'vid')
+  // console.log('middleware user', user, 'vid')
 
   const isFormRoute = (path: string, allowedPaths: string[]) =>
     allowedPaths.includes(path);
@@ -91,29 +91,6 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  const isAdmin = user?.role === 'admin';
-  const isMember = user?.role === 'member';
-  
-  
-  // if (isAdmin && currentPath === ROUTES.ADMIN_LOGIN) {
-  //   console.log('User is admin')
-  //   let response = NextResponse.redirect(new URL('/', request.url));
-  //   response.cookies.set('x-custom-id', user?.id || '');
-  //   response.cookies.set('x-custom-role', user?.role || '');
-  //   return response;
-  // }
-  // if (isMember && [ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER].includes(currentPath)) {
-  //   console.log('User is member')
-  //   return NextResponse.redirect(new URL('/', request.url));
-  // }
-  // if (currentPath.startsWith('/admin') && !isAdmin) {
-  //   console.log('User is not an admin')
-  //   return NextResponse.redirect(new URL('/admin/login', request.url));
-  // }
-  // if (currentPath.startsWith('/members') && !isMember) {
-  //   console.log('User is not a member')
-  //   return NextResponse.redirect(new URL('/members/login', request.url));
-  // }
 
   const response = NextResponse.next();
   response.cookies.set('x-custom-id', user?.id || '');
@@ -124,6 +101,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Match all paths except those starting with "/api" or other static assets
-    '/((?!api/|_next/|favicon.ico|public/|icons/).*)',
+    '/((?!api/|_next/|favicon.ico|public/|icons/|img/).*)',
   ],
 };

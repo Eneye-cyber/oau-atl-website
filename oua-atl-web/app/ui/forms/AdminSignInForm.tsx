@@ -59,6 +59,7 @@ const AccountForm = () => {
 
   return (
     <form
+      method="post"
       onSubmit={handleSubmit(processForm)}
       className="rounded-lg border bg-card text-card-foreground shadow-sm p-6 space-y-6"
     >

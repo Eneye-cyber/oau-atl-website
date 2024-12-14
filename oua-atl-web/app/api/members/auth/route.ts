@@ -50,6 +50,14 @@ export async function POST(req: Request) {
     if (cookies) {
       nextResponse.headers.set('Set-Cookie', cookies); // Pass cookies to the client
     }
+    console.log('login result', result)
+
+    if (result.data?.user) {
+
+      const user = result.data?.user;
+      nextResponse.cookies.set('x-custom-id', user?.id || '');
+      nextResponse.cookies.set('x-custom-role', user?.role || '');
+    }
 
     return nextResponse;
   } catch (error: any) {
