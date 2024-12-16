@@ -8,6 +8,7 @@ import {
   FaSquareInstagram,
 } from "react-icons/fa6";
 import Link from 'next/link'
+import { usePathname } from 'next/navigation';
 
 interface IconData {
   component: JSX.Element;
@@ -28,6 +29,7 @@ const IconListComponent = ({className, iconsList}: { className?: string, iconsLi
 }
 const TopBar = () => {
   const [role, setRole] = useState<string | null>(null);
+  const pathName = usePathname()
 
   useEffect(() => {
     async function fetchRole() {
@@ -35,8 +37,8 @@ const TopBar = () => {
       const data = await response.json();
       setRole(data.role);
     }
-    fetchRole();
-  }, []);
+    fetchRole().catch(e => console.error(e));;
+  }, [pathName]);
 
   const icons = {
     facebook: {
