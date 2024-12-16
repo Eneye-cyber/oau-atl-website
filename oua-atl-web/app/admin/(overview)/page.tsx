@@ -1,75 +1,41 @@
 import { Metadata } from 'next';
-import { Suspense } from 'react'
 import Link from 'next/link';
 import DataTable from '@/app/ui/DataTable';
 import { Separator } from "@/components/ui/separator";
 import { FaChevronRight } from "react-icons/fa6";
-import StatsFeed from './ui/StatsFeed';
-import StatLoader from '@/app/ui/loaders/StatLoader';
+import StatsOverview from '@/app/ui/StatsOverview';
+import { fetchData } from '@/lib/utils/api';
+import { DonationTable } from '@/lib/utils/tables';
 
 export const metadata: Metadata = {
   title: "Dashboard | Great Ife Alumni",
+  description: 'Admin dashboard overview of the Great Ife Alumni platform.',
 };
 
-const baseUrl = process.env.API_BASE;
-
-async function getLatestDonations() {
-  const url = `${baseUrl}/donations/latest`;
-  const res = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // Include cookies
-    cache: 'no-store', // Force no caching for fresh data
-  });
-  return res.json();
-}
-
-async function getLatestEnquiries() {
-  const url = `${baseUrl}/contact/latest`;
-  const res = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    cache: 'no-store', // Force no caching for fresh data
-  });
-  return res.json();
-}
-
 async function getData(): Promise<any[]> {
-  // Fetch data from your API here
-  const latestDonations = getLatestDonations();
-  const latestEnquiries = getLatestEnquiries();
+  const latestDonations = fetchData('donations/latest');
+  const latestEnquiries = fetchData('/contact/latest');
+  const eventStats = fetchData('physical-events/latest/count');
+  const projectsStats = fetchData('projects/active/count');
+  const overdueStats = fetchData('projects/overdue/count');
+  const subscribersStats = fetchData('physical-events/latest/count');
 
   // Wait for both promises to resolve
-  const [donations, enquiries] = await Promise.all([latestDonations, latestEnquiries]);
-  return [donations, enquiries];
+  const results = await Promise.all([
+    latestDonations, 
+    latestEnquiries, 
+    eventStats, 
+    projectsStats, 
+    overdueStats, 
+    subscribersStats, 
+  ]);
+  
+  return results;
 }
 
 const Page = async () => {
-  const [donations, enquiries] = await getData();
-
-  // console.log('Donations:', donations);
-  // console.log('Enquiries:', enquiries);
-
-  const columns = [
-    { key: 'index', label: 's/n' },
-    { key: 'name', label: 'Full name' },
-    { key: 'project', label: 'Project' },
-    { key: 'amount', label: 'Amount donated' },
-    { key: 'date', label: 'Date' },
-  ];
-
-  const data = [
-    { index: 1, name: 'Funke Ajoke', project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 2, name: 'Sunny Ade', project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 3, name: 'Bayo Bayero', project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 4, name: 'Sunny Ade', project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 5, name: 'Bayo Bayero', project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-  ];
+  const [ donations, enquiries, events, projects, overdue, subscribers] = await getData();
+;
 
   return (
     <article className="p-6 container">
@@ -84,22 +50,17 @@ const Page = async () => {
         </div>
       </div>
 
-      <Suspense fallback={(
-          <div className="grid md:grid-cols-4 gap-4">
-            <StatLoader />
-            <StatLoader />
-            <StatLoader />
-            <StatLoader />
-          </div>
-        )}
-      >
-        <StatsFeed />
-      </Suspense>
+      <div className="grid md:grid-cols-4 gap-4">
+        <StatsOverview label="Active alumni" value={subscribers.payload ?? 0} />
+        <StatsOverview label="Ongoing Projects" value={projects.payload ?? 0} />
+        <StatsOverview label="Upcoming Events" value={events?.payload ?? 0} />
+        <StatsOverview label="Overdue Projects" value={overdue?.payload ?? 0} />
+      </div>
       
 
       <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-y-6 gap-3 mt-12">
         <div className="overflow-auto lg:col-span-8">
-          <DataTable title="Latest Donations" columns={columns} data={donations.payload} />
+          <DataTable title="Latest Donations" columns={DonationTable} data={donations.payload} />
 
           <Separator className="my-4" />
 
@@ -121,7 +82,7 @@ const Page = async () => {
             </div>
 
             <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-1 bg-indigo-700 rounded-full" style={{ width: "100%" }}></div>
+              <div className="h-1 bg-indigo-700 rounded-full w-full"></div>
             </div>
 
             <ul className="text-sm text-gray-600 space-y-4 my-6 min-h-24">
