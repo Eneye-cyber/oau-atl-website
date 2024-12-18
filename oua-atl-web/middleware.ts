@@ -77,6 +77,7 @@ export async function middleware(request: NextRequest) {
   switch (user.role) {
     case 'guest':
       if (currentPath.startsWith('/admin') || currentPath.startsWith('/members')) {
+        console.log('guest access only', currentPath)
         const response = NextResponse.redirect(new URL(ROUTES.MEMBERS_LOGIN, request.url));
         response.cookies.delete('connect.sid');
         return response;
@@ -85,6 +86,7 @@ export async function middleware(request: NextRequest) {
 
     case 'member':
       if (currentPath.startsWith('/admin')) {
+        console.log('members access only', currentPath)
         const response = NextResponse.redirect(new URL('/', request.url));
         response.cookies.set('x-custom-id', user?.id || '', { secure: true, httpOnly: true });
         response.cookies.set('x-custom-role', user?.role || '', { secure: true, httpOnly: true });
@@ -94,6 +96,7 @@ export async function middleware(request: NextRequest) {
 
     case 'admin':
       if (currentPath.startsWith('/members')) {
+        console.log('admin access only', currentPath)
         const response = NextResponse.redirect(new URL('/', request.url));
         response.cookies.set('x-custom-id', user?.id || '', { secure: true, httpOnly: true });
         response.cookies.set('x-custom-role', user?.role || '', { secure: true, httpOnly: true });
@@ -101,6 +104,7 @@ export async function middleware(request: NextRequest) {
       }
       break;
   }
+  console.log('public access', currentPath)
 
   const response = NextResponse.next();
   response.cookies.set('x-custom-id', user?.id || '', { secure: true, httpOnly: true });
