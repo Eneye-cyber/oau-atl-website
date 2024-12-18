@@ -32,6 +32,7 @@ const verifyLogin = async (request: NextRequest): Promise<User> => {
           'Content-Type': 'application/json',
           Cookie: incomingCookies,
         },
+        cache: 'no-cache'
       }),
       new Promise<Response>((_, reject) =>
         setTimeout(() => reject(new Error('Request timed out')), TIMEOUT_MS)
@@ -105,7 +106,7 @@ export async function middleware(request: NextRequest) {
       }
       break;
   }
-  console.log('public access', currentPath)
+  console.log('public access', currentPath, user)
 
   const response = NextResponse.next();
   response.cookies.set('x-custom-id', user?.id || '' );
