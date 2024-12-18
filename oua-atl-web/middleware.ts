@@ -19,6 +19,7 @@ const verifyLogin = async (request: NextRequest): Promise<User> => {
 
   try {
     const incomingCookies = request.headers.get('cookie') || '';
+    console.log('incomingCookies', incomingCookies)
     if (!incomingCookies || !incomingCookies.includes('connect.sid')) {
       throw new Error('Authentication cookie missing or malformed');
     }
