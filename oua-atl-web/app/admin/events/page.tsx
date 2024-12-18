@@ -15,19 +15,10 @@ export const metadata: Metadata = {
 };
 
 
-interface Event {
-  image: string;
-  name: string;
-  date: string;
-  location: string;
-  price?: string
-}
-
-
 
 const Page = async ({ searchParams }: { searchParams: { status: string; page: string } }) => {
   const status = searchParams.status || "";
-  const page = searchParams.page || "1";
+  const page = Number(searchParams.page) || 1;
 
   
   return (
@@ -57,7 +48,7 @@ const Page = async ({ searchParams }: { searchParams: { status: string; page: st
       </Suspense>
       
       <section className=" py-4">
-        <Tabs tabs={[{label: 'Current', value: null}, {label: 'History', value: 'history'}]} />
+        <Tabs tabs={[{label: 'Current', value: null, href: '/admin/events'}, {label: 'History', value: 'history', href: '/admin/events?status=history'}]} />
       </section>
 
       <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6">

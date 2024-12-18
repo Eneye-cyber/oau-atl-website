@@ -123,7 +123,7 @@ const transformObject = (input: any) => {
     entranceFee: input.entranceFee, // Static value
     isFeatured: input.isFeatured === "1", // Static value
     tags: input.tags, // Static value
-    imageUrl: input.imageUrl, // Static value
+    imageURL: input.imageUrl, // Static value
     locationData: {
       address: input.address,
       city: input.city, // Use locationAddress as city

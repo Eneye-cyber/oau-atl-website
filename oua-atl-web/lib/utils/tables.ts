@@ -5,3 +5,11 @@ export const DonationTable = [
   { key: 'amount', label: 'Amount donated' },
   { key: 'date', label: 'Date' },
 ]
+
+export const EventColumns = [
+  { key: 'image_url', label: 'Image' },
+  { key: 'title', label: 'Event name' },
+  { key: 'start_date', label: 'Event date', type: 'date' },
+  { key: 'location', label: 'Event location' },
+  { key: 'entrance_fee', label: '($) Entrance fee' },
+];

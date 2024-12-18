@@ -1,3 +1,8 @@
+export interface ErrorResponse {
+  message: string;
+  error: boolean;
+}
+
 export interface EventResponseObject {
   tags: string[]; // Array of tags
   title: string; // Event title
@@ -20,6 +25,28 @@ export interface EventResponseObject {
   is_featured: boolean; // Whether the event is featured
   entrance_fee: number; // Entrance fee for the event
   tickets?: [],
+}
+
+export interface EventCollection {
+  tags: string[]; // Array of tags
+  title: string; // Event title
+  content: string; // Event description/content
+  end_date: string; // ISO date string for the end date
+  event_id: string; // UUID for the event ID
+  location: {
+    city: string; // Location city
+    state: string; // Location state
+    address: string; // Location address
+    latlong: {
+      lat: number; // Latitude
+      long: number; // Longitude
+    };
+    postal_code: string; // Postal code
+  };
+  image_url: string; // URL of the event image
+  start_date: string; // ISO date string for the start date
+  is_featured: boolean; // Whether the event is featured
+  entrance_fee: number; // Entrance fee for the event
 }
 
 export interface Contact {

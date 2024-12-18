@@ -92,7 +92,7 @@ const ActionMenu = ({ path, id }: { path?: string; id?: string }) => {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setShowDeleteModal(true)}>
-            <LuTrash2 className="inline-block mr-1" />
+            <LuTrash2 className="inline-block mr-1 cursor-pointer" />
             Delete
           </DropdownMenuItem>
         </DropdownMenuContent>

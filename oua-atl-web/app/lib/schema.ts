@@ -105,19 +105,25 @@ export const CreateEventSchema = z.object({
 
 export const EditEventSchema = z.object({
   title: z.string().min(1, 'Event name is required'),
-  imageURL: z.string().min(1, 'Event image is required'),
+  imageUrl: z.string().min(1, 'Event image is required'),
   startDate: z.string().min(1, 'Start date is required'),
   endDate: z.string().optional(),
-  tags: z.string().min(1, 'Tags are required').refine(
-    (tags) =>
-      !tags || // Allow empty or undefined
-      tags.split(',').every((tag) => tag.trim().length > 0),
-    { message: 'Hobbies must be a comma-separated list of non-empty values' }
-  )
+  tags: z
+  .union([
+    z.string().min(1, 'Tags are required').refine(
+      (tags) =>
+        tags.split(',').every((tag) => tag.trim().length > 0),
+      { message: 'Hobbies must be a comma-separated list of non-empty values' }
+    ),
+    z.array(z.string()).refine(
+      (tags) => tags.every((tag) => tag.trim().length > 0),
+      { message: 'Hobbies must be an array of non-empty strings' }
+    ),
+  ])
   .transform((tags) =>
-    tags
-      ? tags.split(',').map((tag) => tag.trim()) // Transform only if provided
-      : []
+    Array.isArray(tags)
+      ? tags.map((tag) => tag.trim()) // If it's already an array, trim all values
+      : tags.split(',').map((tag) => tag.trim()) // If it's a string, split and trim
   ),
   content: z.string().min(1, 'Event description is required'),
   entranceFee: z.number().min(0, 'Ticket price must be at least 0'),

@@ -18,7 +18,7 @@ const EditEvent = ({event}: {event: EventResponseObject}) => {
     resolver: zodResolver(EditEventSchema),
     defaultValues: {
       title: event.title || '', // Maps to `title` in the schema
-      imageURL: event.image_url || '', // Maps to `imageUrl` in the schema
+      imageUrl: event.image_url || '', // Maps to `imageUrl` in the schema
       startDate: formatDateForInput(event.start_date) || '', // Maps to `startDate` in the schema
       endDate: formatDateForInput(event.end_date) || undefined, // Maps to `endDate` in the schema
       content: event.content || '', // Maps to `content` in the schema
@@ -103,11 +103,11 @@ const EditEvent = ({event}: {event: EventResponseObject}) => {
             </div>
 
             <div className="sm:col-span-3">
-              <label htmlFor="imageURL" className="form-label">
+              <label htmlFor="imageUrl" className="form-label">
                 Event image *
               </label>
-              <ImageUploader id="imageURL" {...register('imageURL')}  />
-              {errors.imageURL?.message && <p className="text-sm text-red-400">{errors.imageURL.message}</p>}
+              <ImageUploader id="imageUrl" {...register('imageUrl')}  />
+              {errors.imageUrl?.message && <p className="text-sm text-red-400">{errors.imageUrl.message}</p>}
             </div>
 
             <div className="sm:col-span-3">
@@ -167,7 +167,7 @@ const EditEvent = ({event}: {event: EventResponseObject}) => {
 
               <div className="sm:col-span-3">
                 <label htmlFor="entranceFee" className="form-label">
-                  Ticket Price *
+                  Ticket Price ($)*
                 </label>
                 <input
                   id="entranceFee"

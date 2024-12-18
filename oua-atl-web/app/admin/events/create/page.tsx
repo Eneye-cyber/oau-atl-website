@@ -7,8 +7,6 @@ export const metadata: Metadata = {
 
 const page = () => {
 
-  const isSubmitting = false;
-
   return (
     <section className="p-3 md:p-6">
       <CreateEvent />

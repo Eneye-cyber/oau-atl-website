@@ -107,6 +107,49 @@ const PaginationEllipsis = ({
 )
 PaginationEllipsis.displayName = "PaginationEllipsis"
 
+const PaginationComponent = ({path, page, total}: {path: string; page: number, total: number}) => {
+
+  const paginationPath = path.includes("?") ? `${path}&page=` : `${path}?page=`
+  return (
+      <div className="flex">
+        <Pagination>
+          <PaginationContent>
+          {
+              page > 1 && (
+                <>
+                  <PaginationItem>
+                    <PaginationPrevious href={`${paginationPath}${page - 1}`} />
+                  </PaginationItem>
+                </>
+              )
+            }
+
+            { 
+              Array.from({length: total}).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink href={`${paginationPath}${index + 1}`} isActive={page === (index + 1)}>
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+
+              ))
+            }
+            {
+              page < total && (
+                <>
+                  <PaginationItem>
+                    <PaginationNext href={`${paginationPath}${page + 1}`} />
+                  </PaginationItem>
+                </>
+              )
+            }
+          </PaginationContent>
+        </Pagination>
+      </div>
+  );
+};
+
+
 export {
   Pagination,
   PaginationContent,
@@ -115,4 +158,5 @@ export {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  PaginationComponent
 }

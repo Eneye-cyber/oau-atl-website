@@ -13,6 +13,7 @@ import { ClockIcon, MapPinIcon, TicketIcon } from "@/app/ui/Icons"
 
 type EventFormData = z.infer<typeof CreateEventSchema>;
 
+
 const CreateEvent = () => {
   const router = useRouter();
   const [isPreview, setIsPreview] = useState(false); // State to toggle preview mode
@@ -30,6 +31,7 @@ const CreateEvent = () => {
     formState: { errors, isSubmitting },
     setError,
     watch,
+    trigger
   } = methods;
 
   const onSubmit: SubmitHandler<EventFormData> = async (data) => {
@@ -56,7 +58,9 @@ const CreateEvent = () => {
     }
   };
 
-  const handlePreview = () => {
+  const handlePreview = async () => {
+    const outputs = await trigger()
+    if(!outputs) return
     setFormData(watch()); // Capture current form data
     setIsPreview(true); // Enable preview mode
   };
@@ -156,7 +160,7 @@ const CreateEvent = () => {
 
               <div className="sm:col-span-3">
                 <label htmlFor="entranceFee" className="form-label">
-                  Ticket Price *
+                  Ticket Price ($)*
                 </label>
                 <input
                   id="entranceFee"
@@ -256,12 +260,12 @@ const CreateEvent = () => {
             >
               Preview
             </button>
-            {/* <input
+            <input
               type="submit"
               disabled={isSubmitting}
               value={isSubmitting ? 'Loading...' : 'Submit'}
               className="inline-flex w-72 py-3 text-white bg-primary text-base text-center hover:bg-jet-black cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
-            /> */}
+            />
           </div>
         </form>
       ) : (
