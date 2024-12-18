@@ -1,10 +1,9 @@
 import { NextResponse } from 'next/server';
-// import { cookies } from 'next/headers'
 import type { NextRequest } from 'next/server';
 
 interface User {
-  id: string;
-  email: string;
+  id: string | null;
+  email: string | null;
   role: string;
 }
 
@@ -15,20 +14,15 @@ const ROUTES = {
   MEMBERS_AREA: '/members-area',
 };
 
-const verifyLogin = async (request: NextRequest): Promise<User | null> => {
-  const TIMEOUT_MS = 30000; // 5 seconds timeout for the fetch request
+const verifyLogin = async (request: NextRequest): Promise<User> => {
+  const TIMEOUT_MS = 5000; // Reduced timeout to 5 seconds
 
   try {
     const incomingCookies = request.headers.get('cookie') || '';
-    // const cookie = cookies().get('connect.sid')?.value || '';
-  
+    if (!incomingCookies || !incomingCookies.includes('connect.sid')) {
+      throw new Error('Authentication cookie missing or malformed');
+    }
 
-    // console.log('cookie:', cookie);
-    
-    console.log('middlewareCookies:', incomingCookies);
-    if(!incomingCookies) return null;
-
-    // Adding a timeout wrapper around fetch
     const response = await Promise.race([
       fetch(`${request.nextUrl.origin}/api/admin/auth`, {
         method: 'GET',
@@ -44,63 +38,78 @@ const verifyLogin = async (request: NextRequest): Promise<User | null> => {
     ]);
 
     if (response.ok) {
-      const result = await response.json();
+      let result;
+      try {
+        result = await response.json();
+      } catch (err) {
+        throw new Error('Invalid response format');
+      }
+
       const user: User | null = result?.data?.user || null;
-      if (!user) throw new Error('Error getting user object');
-      console.log('verification result:', user.role);
-      return user;
-    } else {
-      console.error(`Verification failed with status: ${response.status}`);
-      throw new Error(response.statusText ?? 'Error getting user')
+      if (user) {
+        return user;
+      }
+      throw new Error('Error getting user object');
     }
-  } catch (error: any) {
-    console.error('Error verifying login:', error.message);
-    return null
+
+    throw new Error(`Verification failed with status: ${response.status}`);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error verifying login:', error.message);
+    } else {
+      console.error('Unknown error verifying login:', error);
+    }
+    return { id: null, email: null, role: 'guest' };
   }
 };
 
-
-
 export async function middleware(request: NextRequest) {
-  console.log('current route', request.nextUrl.pathname);
   const currentPath = request.nextUrl.pathname;
-  // const user = {id: '', role: ''};
-  const user = await verifyLogin(request);
-  // console.log('middleware user', user, 'vid')
+  const user: User = await verifyLogin(request);
 
-  const isFormRoute = (path: string, allowedPaths: string[]) =>
-    allowedPaths.includes(path);
-
-  if (!user) {
-    let response;
-    console.log('unaunthicated')
-    // cookies().set('connect.sid', '', { maxAge: 0 });
-    if ((currentPath.startsWith('/admin') || currentPath.startsWith('/members')) 
-      && 
-      !isFormRoute(currentPath, [ROUTES.ADMIN_LOGIN, ROUTES.MEMBERS_LOGIN, ROUTES.MEMBERS_REGISTER, ROUTES.MEMBERS_AREA])
-    ) {
-      console.log(1)
-      response = NextResponse.redirect(new URL('/', request.url));
-    } else {
-      console.log(2)
-      response = NextResponse.next();
-    }
-    response.cookies.delete('connect.sid'); 
-    response.cookies.delete('x-custom-id'); 
-    response.cookies.delete('x-custom-role'); 
+  if (currentPath.startsWith('/admin/register')) {
+    const response = NextResponse.next();
+    response.cookies.set('x-custom-id', user?.id || '', { secure: true, httpOnly: true });
+    response.cookies.set('x-custom-role', user?.role || '', { secure: true, httpOnly: true });
     return response;
   }
 
+  switch (user.role) {
+    case 'guest':
+      if (currentPath.startsWith('/admin') || currentPath.startsWith('/members')) {
+        const response = NextResponse.redirect(new URL(ROUTES.MEMBERS_LOGIN, request.url));
+        response.cookies.delete('connect.sid');
+        return response;
+      }
+      break;
+
+    case 'member':
+      if (currentPath.startsWith('/admin')) {
+        const response = NextResponse.redirect(new URL('/', request.url));
+        response.cookies.set('x-custom-id', user?.id || '', { secure: true, httpOnly: true });
+        response.cookies.set('x-custom-role', user?.role || '', { secure: true, httpOnly: true });
+        return response;
+      }
+      break;
+
+    case 'admin':
+      if (currentPath.startsWith('/members')) {
+        const response = NextResponse.redirect(new URL('/', request.url));
+        response.cookies.set('x-custom-id', user?.id || '', { secure: true, httpOnly: true });
+        response.cookies.set('x-custom-role', user?.role || '', { secure: true, httpOnly: true });
+        return response;
+      }
+      break;
+  }
 
   const response = NextResponse.next();
-  response.cookies.set('x-custom-id', user?.id || '');
-  response.cookies.set('x-custom-role', user?.role || '');
+  response.cookies.set('x-custom-id', user?.id || '', { secure: true, httpOnly: true });
+  response.cookies.set('x-custom-role', user?.role || '', { secure: true, httpOnly: true });
   return response;
 }
 
 export const config = {
   matcher: [
-    // Match all paths except those starting with "/api" or other static assets
-    '/((?!api/|_next/|favicon.ico|public/|icons/|img/).*)',
+    '/((?!api/|_next/|favicon.ico|public/|icons/|img/|members/login|members/register|admin/login).*)',
   ],
 };

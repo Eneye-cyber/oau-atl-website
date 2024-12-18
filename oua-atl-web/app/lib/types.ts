@@ -3,6 +3,42 @@ export interface ErrorResponse {
   error: boolean;
 }
 
+export interface PaginatedResponse<T> {
+  message: string;
+  payload: {
+    data: T;
+    page: number;
+    totalCount: number;
+    totalPages: number;
+  };
+  error?: boolean;
+}
+
+type Location = {
+  city: string;
+  state: string;
+  address: string | null;
+  latlong: {
+    latitude: number; // Replace with actual type if known (e.g., number)
+    longitude: number; // Replace with actual type if known (e.g., number)
+  };
+  place_id: string;
+  postal_code: string;
+};
+
+export type ProjectCollection = {
+  location: Location;
+  image_url: string;
+  project_id: string;
+  amount_goal: number;
+  is_featured: boolean;
+  date_created: string; // ISO 8601 date format
+  project_text: string;
+  project_title: string;
+  donation_count: number;
+  amount_collected: number;
+};
+
 export interface EventResponseObject {
   tags: string[]; // Array of tags
   title: string; // Event title

@@ -27,8 +27,8 @@ const IconListComponent = ({className, iconsList}: { className?: string, iconsLi
 
   return <ul className={`${className} flex items-center gap-2`}>{element}</ul>
 }
-const TopBar = () => {
-  const [role, setRole] = useState<string | null>(null);
+const TopBar = ({userRole}: {userRole: "guest" | "member" | "admin"}) => {
+  const [role, setRole] = useState<string>(userRole);
   const pathName = usePathname()
 
   useEffect(() => {
@@ -63,6 +63,7 @@ const TopBar = () => {
     },
   }
   const isAdmin = role === "admin"
+  const isMember = role === "member"
   const linkClass = "text-white hover:text-accent text-xs inline-flex py-1 px-2"
   return (
     <div className="bg-primary w-full h-10 pad">
@@ -71,7 +72,7 @@ const TopBar = () => {
 
           <div className="flex items-center md:mx-4">
             {
-              !role ? (
+              (!role || role === "guest") ? (
                 <>
                   <Link className={`${linkClass}`} href="/members/login">Login</Link>
                   <div className="border border-white h-4 "></div>

@@ -13,3 +13,12 @@ export const EventColumns = [
   { key: 'location', label: 'Event location' },
   { key: 'entrance_fee', label: '($) Entrance fee' },
 ];
+
+export const ProjectColumns = [
+  { key: 'project_title', label: 'Project name' },
+  { key: 'amount_goal', label: 'Financial goal' },
+  { key: 'amount_collected', label: 'Contributed amount'  },
+  { key: 'donation_count', label: 'No of contributors'  },
+  { key: 'date_created', label: 'Project Opened', type: 'date' },
+  { key: 'location', label: 'Location' },
+];

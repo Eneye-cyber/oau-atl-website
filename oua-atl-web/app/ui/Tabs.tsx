@@ -23,12 +23,6 @@ type TabsProps = {
   href?: string;
 }[];
 
-const defaultProps = [
-  { label: "All", value: null },
-  { label: "Active", value: "active" },
-  { label: "Complete", value: "complete" },
-  { label: "Overdue", value: "overdue" },
-];
 
 const TabLink: FC<TabLinkProps> = ({ value, label, href }) => {
 

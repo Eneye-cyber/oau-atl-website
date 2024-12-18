@@ -47,7 +47,7 @@ export default function MembersLayout({ children }: {
     <>
     <div className='flex-column h-full min-h-screen'>
       <header aria-label="page-header" className='mb-uto'>
-        <TopBar />
+        <TopBar userRole={role} />
         <NavBar />
       </header>
     {

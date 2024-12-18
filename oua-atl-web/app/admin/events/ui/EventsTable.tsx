@@ -2,18 +2,9 @@ import DataTable from '@/app/ui/DataTable';
 import { fetchData } from '@/lib/utils/api';
 import { EventColumns } from '@/lib/utils/tables';
 import { PaginationComponent } from '@/components/ui/pagination';
-import { EventCollection } from '@/app/lib/types';
+import { EventCollection, PaginatedResponse } from '@/app/lib/types';
 
-interface EventResponse {
-  message: string;
-  payload: {
-    data: EventCollection[] | [];
-    page: number;
-    totalCount: number;
-    totalPages: number;
-  };
-  error?: boolean;
-}
+type EventCollectionResponse = PaginatedResponse<EventCollection[] | []>;
 
 async function getData(status: string, page: number) {
   const apiPath = status === 'history' ? 'physical-events/history' : 'physical-events/latest';
@@ -39,7 +30,7 @@ async function getData(status: string, page: number) {
 const EventsTable = async ({ status, page }: { status: string; page: number }) => {
   const path = status === 'history' ? '/admin/events?status=history' : '/admin/events';
 
-  const data: EventResponse = await getData(status, page);
+  const data: EventCollectionResponse = await getData(status, page);
   const tableData =
     data?.payload?.data.map((item: EventCollection) => ({
       ...item,

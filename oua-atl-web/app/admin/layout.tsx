@@ -1,6 +1,6 @@
-'use client';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+// 'use client';
+// import { useEffect, useState } from 'react';
+// import { useRouter } from 'next/navigation';
 import DrawerNavigation from './ui/DrawerNavigation';
 import TopBar from './ui/TopBar';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -11,41 +11,41 @@ export default function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
-  const [role, setRole] = useState<string | null>(null);
-  const [id, setId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // New loading state
+  // const router = useRouter();
+  // const [role, setRole] = useState<string | null>(null);
+  // const [id, setId] = useState<string | null>(null);
+  // const [isLoading, setIsLoading] = useState(true); // New loading state
 
-  useEffect(() => {
-    async function fetchRole() {
-      try {
-        const response = await fetch('/api/user', { credentials: 'include' });
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-        const data = await response.json();
-        setRole(data.role);
-        setId(data.id);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        router.replace('/admin/login');
-      } finally {
-        setIsLoading(false); // Stop loading regardless of success or failure
-      }
-    }
-    fetchRole();
-  }, [router]);
+  // useEffect(() => {
+  //   async function fetchRole() {
+  //     try {
+  //       const response = await fetch('/api/user', { credentials: 'include' });
+  //       if (!response.ok) {
+  //         throw new Error('Failed to fetch user data');
+  //       }
+  //       const data = await response.json();
+  //       setRole(data.role);
+  //       setId(data.id);
+  //     } catch (error) {
+  //       console.error('Error fetching user data:', error);
+  //       router.replace('/admin/login');
+  //     } finally {
+  //       setIsLoading(false); // Stop loading regardless of success or failure
+  //     }
+  //   }
+  //   fetchRole();
+  // }, [router]);
 
-  // Show a loading state while fetching user data
-  if (isLoading) {
-    return <LoadingSpinner></LoadingSpinner>;
-  }
+  // // Show a loading state while fetching user data
+  // if (isLoading) {
+  //   return <LoadingSpinner></LoadingSpinner>;
+  // }
 
-  // Redirect if the user is not an admin or is unauthenticated
-  if (!id || role !== 'admin') {
-    router.replace(role !== 'admin' ? '/' : '/admin/login');
-    return null; // Prevent rendering until navigation completes
-  }
+  // // Redirect if the user is not an admin or is unauthenticated
+  // if (!id || role !== 'admin') {
+  //   router.replace(role !== 'admin' ? '/' : '/admin/login');
+  //   return null; // Prevent rendering until navigation completes
+  // }
 
   return (
     <div

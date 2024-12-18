@@ -10,20 +10,18 @@ import Tabs from '@/app/ui/Tabs'
 import { FaChevronRight } from "react-icons/fa6";
 import TableLoader from '@/app/ui/loaders/TableLoader';
 
-interface Project {
-  id: string;
-  name: string;
-  goal: number;
-  amount: number;
-  contributors: number;
-  deadline?: string;
-  status: "Active" | "Complete" | "Overdue";
-}
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Manage Projects | Ife Alumni",
+  description: "Great Ife Alumni Association Inc. USA - Atlanta Branch. Donations, projects.",
+};
+
 
 const Page = async ({ searchParams }: { searchParams: { status: string; page: string } }) => {
 
   const status = searchParams.status || "";
-  const page = searchParams.page || "1";
+  const page = Number(searchParams.page) || 1;
 
 
   return (
@@ -55,9 +53,15 @@ const Page = async ({ searchParams }: { searchParams: { status: string; page: st
 
 
       <section className="flex flex-col gap-10 py-14">
-        <Tabs />
+        <Tabs tabs={[
+            { label: "All", value: null, href: '/admin/projects' },
+            { label: "Active", value: "active", href: '/admin/projects?status=active' },
+            { label: "Complete", value: "complete", href: '/admin/projects?status=complete'  },
+            { label: "Overdue", value: "overdue", href: '/admin/projects?status=overdue'  },
+          ]} 
+        />
         
-        <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6">
+        <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 space-y-4">
           <Suspense fallback={(<TableLoader />)} >
             <ProjectsTable status={status} page={page} />
           </Suspense>

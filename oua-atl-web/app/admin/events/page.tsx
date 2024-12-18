@@ -51,7 +51,7 @@ const Page = async ({ searchParams }: { searchParams: { status: string; page: st
         <Tabs tabs={[{label: 'Current', value: null, href: '/admin/events'}, {label: 'History', value: 'history', href: '/admin/events?status=history'}]} />
       </section>
 
-      <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6">
+      <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 space-y-4">
         <Suspense fallback={(<TableLoader />)} >
           <EventsTable status={status} page={page}  />
         </Suspense>
