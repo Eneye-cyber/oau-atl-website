@@ -67,11 +67,14 @@ const verifyLogin = async (request: NextRequest): Promise<User> => {
 
 export async function middleware(request: NextRequest) {
   const currentPath = request.nextUrl.pathname;
+  const cookie = request.cookies?.get('connect.sid')?.value
+  const cookieName = request.cookies?.get('connect.sid')?.name
   const user: User = await verifyLogin(request);
 
   if (currentPath.startsWith('/admin/register')) {
     const response = NextResponse.next();
-    response.cookies.set('x-custom-id', user?.id || '' );
+        response.cookies.set('connect.sid', cookie ?? '');
+        response.cookies.set('x-custom-id', user?.id || '' );
     response.cookies.set('x-custom-role', user?.role || '' );
     return response;
   }
@@ -90,6 +93,7 @@ export async function middleware(request: NextRequest) {
       if (currentPath.startsWith('/admin')) {
         console.log('members access only', currentPath)
         const response = NextResponse.redirect(new URL('/', request.url));
+        response.cookies.set('connect.sid', cookie ?? '');
         response.cookies.set('x-custom-id', user?.id || '' );
         response.cookies.set('x-custom-role', user?.role || '' );
         return response;
@@ -100,6 +104,7 @@ export async function middleware(request: NextRequest) {
       if (currentPath.startsWith('/members')) {
         console.log('admin access only', currentPath)
         const response = NextResponse.redirect(new URL('/', request.url));
+        response.cookies.set('connect.sid', cookie ?? '');
         response.cookies.set('x-custom-id', user?.id || '' );
         response.cookies.set('x-custom-role', user?.role || '' );
         return response;
@@ -109,6 +114,7 @@ export async function middleware(request: NextRequest) {
   console.log('public access', currentPath, user)
 
   const response = NextResponse.next();
+  response.cookies.set('connect.sid', cookie ?? '');
   response.cookies.set('x-custom-id', user?.id || '' );
   response.cookies.set('x-custom-role', user?.role || '' );
   return response;

@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 
 const baseUrl = process.env.API_BASE

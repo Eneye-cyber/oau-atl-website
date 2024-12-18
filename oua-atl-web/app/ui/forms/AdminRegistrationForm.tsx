@@ -83,7 +83,7 @@ const AccountForm = () => {
       className="rounded-lg border bg-card text-card-foreground shadow-sm p-6 space-y-6"
     >
       <div>
-        <h2 className="text-2xl font-semibold leading-none tracking-tight">Admin Login</h2>
+        <h2 className="text-2xl font-semibold leading-none tracking-tight">Admin Registration</h2>
         <p className="text-sm text-muted-foreground">
           This login page is strictly for website administrators.
         </p>
