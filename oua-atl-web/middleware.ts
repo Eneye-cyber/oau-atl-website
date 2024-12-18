@@ -15,7 +15,7 @@ const ROUTES = {
 };
 
 const verifyLogin = async (request: NextRequest): Promise<User> => {
-  const TIMEOUT_MS = 5000; // Reduced timeout to 5 seconds
+  const TIMEOUT_MS = 30000; // Reduced timeout to 5 seconds
 
   try {
     const incomingCookies = request.headers.get('cookie') || '';
@@ -69,11 +69,11 @@ export async function middleware(request: NextRequest) {
 
   if (currentPath.startsWith('/admin/register')) {
     const response = NextResponse.next();
-    response.cookies.set('x-custom-id', user?.id || '', { secure: true, httpOnly: true });
-    response.cookies.set('x-custom-role', user?.role || '', { secure: true, httpOnly: true });
+    response.cookies.set('x-custom-id', user?.id || '' );
+    response.cookies.set('x-custom-role', user?.role || '' );
     return response;
   }
-
+  console.log(user, 'user')
   switch (user.role) {
     case 'guest':
       if (currentPath.startsWith('/admin') || currentPath.startsWith('/members')) {
@@ -88,8 +88,8 @@ export async function middleware(request: NextRequest) {
       if (currentPath.startsWith('/admin')) {
         console.log('members access only', currentPath)
         const response = NextResponse.redirect(new URL('/', request.url));
-        response.cookies.set('x-custom-id', user?.id || '', { secure: true, httpOnly: true });
-        response.cookies.set('x-custom-role', user?.role || '', { secure: true, httpOnly: true });
+        response.cookies.set('x-custom-id', user?.id || '' );
+        response.cookies.set('x-custom-role', user?.role || '' );
         return response;
       }
       break;
@@ -98,8 +98,8 @@ export async function middleware(request: NextRequest) {
       if (currentPath.startsWith('/members')) {
         console.log('admin access only', currentPath)
         const response = NextResponse.redirect(new URL('/', request.url));
-        response.cookies.set('x-custom-id', user?.id || '', { secure: true, httpOnly: true });
-        response.cookies.set('x-custom-role', user?.role || '', { secure: true, httpOnly: true });
+        response.cookies.set('x-custom-id', user?.id || '' );
+        response.cookies.set('x-custom-role', user?.role || '' );
         return response;
       }
       break;
@@ -107,8 +107,8 @@ export async function middleware(request: NextRequest) {
   console.log('public access', currentPath)
 
   const response = NextResponse.next();
-  response.cookies.set('x-custom-id', user?.id || '', { secure: true, httpOnly: true });
-  response.cookies.set('x-custom-role', user?.role || '', { secure: true, httpOnly: true });
+  response.cookies.set('x-custom-id', user?.id || '' );
+  response.cookies.set('x-custom-role', user?.role || '' );
   return response;
 }
 
