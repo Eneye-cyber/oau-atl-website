@@ -1,18 +1,16 @@
 'use client'
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { z } from 'zod';
+import { SignUpFormDataSchema } from '@/app/lib/schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, SubmitHandler, FieldErrors } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
-import { z } from 'zod'
-import { SignUpFormDataSchema } from '@/app/lib/schema'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm, SubmitHandler } from 'react-hook-form'
-import { useRouter } from "next/navigation"; 
+type Inputs = z.infer<typeof SignUpFormDataSchema>;
 
-type Inputs = z.infer<typeof SignUpFormDataSchema>
-interface Result {
-  "message": string;
-}
 const steps = [
   {
     id: 'Step 1',
@@ -22,20 +20,35 @@ const steps = [
   {
     id: 'Step 2',
     name: 'Personal Information',
-    fields: ['firstName', 'lastName', 'email', 'phone', 'birthDate', 'yearGraduated', 'studyField'], 
+    fields: ['firstName', 'lastName', 'phone', 'birthDate', 'yearGraduated', 'studyField'],
   },
   {
     id: 'Step 3',
     name: 'Additional Information',
-    fields: ['address', 'city', 'zipCode'], 
+    fields: ['address', 'city', 'zipCode', 'hobbies', 'address2'],
   },
 ];
 
+const fieldMeta: Record<string, { label: string; className: string; placeholder?: string }>  = {
+  username: { label: "Username", className: "sm:col-span-2" },
+  email: { label: "Email address", className: "sm:col-span-4" },
+  password: { label: "Password", className: "sm:col-span-3", placeholder: '********'  },
+  confirm_password: { label: "Confirm Password", className: "sm:col-span-3", placeholder: '********'  },
+  firstName: { label: "First name", className: "sm:col-span-3" },
+  lastName: { label: "Last name", className: "sm:col-span-3" },
+  phone: { label: "Phone number", className: "sm:col-span-4" },
+  birthDate: { label: "Birthday (Month/Day)", className: "sm:col-span-2", placeholder: 'MM/DD' },
+  studyField: { label: "Field of Study", className: "sm:col-span-4" },
+  yearGraduated: { label: "Year Graduated", className: "sm:col-span-2", placeholder: 'YYYY' },
+  address: { label: "Street address", className: "col-span-full" },
+  city: { label: "City", className: "sm:col-span-2 sm:col-start-1" },
+  zipCode: { label: "ZIP / Postal code", className: "sm:col-span-2" },
+  hobbies: { label: "Hobbies", className: "col-span-full" },
+  address2: { label: "Secondary address", className: "col-span-full" },
+};
+
 export default function SignUpForm() {
-  const [previousStep, setPreviousStep] = useState(0)
-  const [currentStep, setCurrentStep] = useState(0)
-  const delta = currentStep - previousStep
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [currentStep, setCurrentStep] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
 
@@ -43,91 +56,72 @@ export default function SignUpForm() {
     register,
     handleSubmit,
     trigger,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
   } = useForm<Inputs>({
-    resolver: zodResolver(SignUpFormDataSchema)
-  })
-  const closeDialog = () => {
-    if(errorMessage) {
-      setErrorMessage(null);
-      setSuccessMessage(null);
-      return
-    }
-    router.push("/members/login");
-  }
+    resolver: zodResolver(SignUpFormDataSchema),
+  });
 
   const processForm: SubmitHandler<Inputs> = async (data) => {
     try {
-      console.log('start')
       const response: Response = await fetch('/api/members/register', {
         method: 'POST',
         body: JSON.stringify(data),
       });
 
-      // console.log('response', response)
-      if(response.status === 200) {
-        const result: Result = await response.json();
-        console.log('result', result);
-      // reset()
-        setErrorMessage(null);
-        setSuccessMessage(result.message ?? 'Sign up successful');
-        return
+      if (response.status === 200) {
+        const result = await response.json();
+        if (result?.message) {
+          sessionStorage.setItem('flashMessage', 'Account created successfully!');
+          router.push('/members/login');
+        }
+        return;
       }
-      
-      console.log('result', response.statusText);
-      throw new Error(response.statusText ?? "Something went wrong")
-      
-    } catch (error: any) {
-      console.error(error)
-      setSuccessMessage(null);
-      setErrorMessage(error.message ?? 'An error occurred');
 
+      throw new Error(response.statusText ?? 'Something went wrong');
+    } catch (error: unknown) {
+      toast.error('Server unavailable', {
+        description: error instanceof Error ? error.message : 'An error occurred',
+      });
     }
-  }
-
-  type FieldName = keyof Inputs
-
+  };
 
   const next = async () => {
-    const fields = steps[currentStep].fields
-    const output = await trigger(fields as FieldName[], { shouldFocus: true })
-    console.log(output)
-    if (!output) {
-      console.log(errors); // Log errors for debugging.
+    const fields = steps[currentStep].fields;
+    const isStepValid = await trigger(fields as (keyof Inputs)[], { shouldFocus: true });
+
+    if (!isStepValid) {
+      Object.entries(errors).forEach(([field, error]) => {
+        toast.error(field, {
+          description: error?.message ?? 'Invalid input value entered',
+        });
+      });
       return;
     }
-    console.log('log',errors); // Log errors for debugging.
 
-    console.log(currentStep, steps.length)
     if (currentStep === steps.length - 1) {
-      console.log('handle submit')
-      await handleSubmit(processForm)()
+      await handleSubmit(processForm)();
       return;
     }
 
-    if (currentStep < steps.length - 1) {
-      setPreviousStep(currentStep)
-      setCurrentStep(step => step + 1)
-    }
-  }
+    setCurrentStep((prev) => prev + 1);
+  };
 
   const prev = () => {
     if (currentStep > 0) {
-      setPreviousStep(currentStep)
-      setCurrentStep(step => step - 1)
+      setCurrentStep((prev) => prev - 1);
     }
-  }
+  };
 
   return (
-    <section className="flex flex-col justify-between ">
-      {/* steps */}
+    <section className="flex flex-col justify-between">
+      {/* Steps Navigation */}
       <nav aria-label="Progress">
         <ol role="list" className="flex space-x-2 md:space-x-8 md:space-y-0">
           {steps.map((step, index) => (
             <li key={step.name} className="flex-1">
               {currentStep > index ? (
                 <div className="group flex w-full flex-col border-primary-light transition-colors border-t-4 pb-0 pl-0 pt-4">
-                  <span className="sm:inline text-sm font-medium text-primary-light transition-colors ">{step.id}</span>
+                  <span className="text-sm font-medium text-primary-light transition-colors">{step.id}</span>
                   <span className="text-sm font-medium">{step.name}</span>
                 </div>
               ) : currentStep === index ? (
@@ -152,218 +146,66 @@ export default function SignUpForm() {
       {/* Form */}
       <form onSubmit={handleSubmit(processForm)}>
         <section className="mt-6 md:mt-12 py-6 md:py-12">
-          {currentStep === 0 && (
-            <motion.div
-              initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Account Setup</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">Set up your account details to access our services</p>
-              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div className="sm:col-span-2">
-                  <label htmlFor="username" className="form-label">
-                    Username
+          <motion.div
+            key={currentStep}
+            initial={{ x: currentStep > 0 ? '50%' : '-50%', opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+          >
+            <div className="grid md:grid-cols-6 gap-x-3 gap-4">
+              {/* Render fields based on the current step */}
+              {steps[currentStep].fields.map((field) => (
+                <div key={field} className={`${fieldMeta?.[field]?.className}`}>
+                  <label htmlFor={field} className="form-label capitalize">
+                    {fieldMeta?.[field]?.label}
                   </label>
-                  <input type="text" id="username" {...register("username")} autoComplete="off" className="form-input" />
-                  {errors.username?.message && <p className="text-sm text-red-400">{errors.username.message}</p>}
+                  <input
+                    id={field}
+                    type={`${['password', 'confirm_password'].includes(field) ? 'password' : 'text'}`}
+                    {...register(field as keyof Inputs)}
+                    className="form-input"
+                    autoComplete="off"
+                    placeholder={fieldMeta?.[field]?.placeholder}
+                  />
+                  {errors[field as keyof Inputs]?.message && (
+                    <p className="text-sm text-red-400">{errors[field as keyof Inputs]?.message}</p>
+                  )}
                 </div>
+              ))}
 
-                <div className="sm:col-span-4">
-                  <label htmlFor="email" className="form-label">
-                    Email address
-                  </label>
-                  <input id="email" type="email" {...register("email")} autoComplete="email" className="form-input" />
-                  {errors.email?.message && <p className="text-sm text-red-400">{errors.email.message}</p>}
-                </div>
-
-                <div className="sm:col-span-3">
-                  <label htmlFor="password" className="form-label">
-                    Password
-                  </label>
-                  <input type="password" id="password" {...register("password")} autoComplete="new-password" className="form-input" />
-                  {errors.password?.message && <p className="text-sm text-red-400">{errors.password.message}</p>}
-                </div>
-
-                <div className="sm:col-span-3">
-                  <label htmlFor="confirm_password" className="form-label">
-                    Confirm Password
-                  </label>
-                  <input type="password" id="confirm_password" {...register("confirm_password")} autoComplete="new-password" className="form-input" />
-                  {errors.confirm_password?.message && <p className="text-sm text-red-400">{errors.confirm_password.message}</p>}
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {currentStep === 1 && (
-            <motion.div
-              initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">Provide us with your personal details to help us know you better.</p>
-
-              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div className="sm:col-span-3">
-                  <label htmlFor="firstName" className="form-label">
-                    First name
-                  </label>
-                  <input type="text" id="firstName" {...register("firstName")} autoComplete="given-name" className="form-input" />
-                  {errors.firstName?.message && <p className="text-sm text-red-400">{errors.firstName.message}</p>}
-                </div>
-
-                <div className="sm:col-span-3">
-                  <label htmlFor="lastName" className="form-label">
-                    Last name
-                  </label>
-                  <input type="text" id="lastName" {...register("lastName")} autoComplete="family-name" className="form-input" />
-                  {errors.lastName?.message && <p className="text-sm text-red-400">{errors.lastName.message}</p>}
-                </div>
-
-                <div className="sm:col-span-4">
-                  <label htmlFor="phone" className="form-label">
-                    Phone number
-                  </label>
-                  <input type="text" id="phone" {...register("phone")} autoComplete="tel" className="form-input" />
-                  {errors.phone?.message && <p className="text-sm text-red-400">{errors.phone.message}</p>}
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label htmlFor="birthday" className="form-label">
-                    Birthday (Month/Day)
-                  </label>
-                  <input type="text" id="birthday" {...register("birthDate")} autoComplete="bday-month" className="form-input" />
-                  {errors.birthDate?.message && <p className="text-sm text-red-400">{errors.birthDate.message}</p>}
-                </div>
-
-                <div className="sm:col-span-4">
-                  <label htmlFor="field_of_study" className="form-label">
-                    Field of Study
-                  </label>
-                  <input type="text" id="field_of_study" {...register("studyField")} autoComplete="on" className="form-input" />
-                  {errors.studyField?.message && <p className="text-sm text-red-400">{errors.studyField.message}</p>}
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label htmlFor="graduation_year" className="form-label">
-                    Year Graduated
-                  </label>
-                  <input type="number" min="1966" max={new Date().getFullYear()} id="graduation_year" {...register("yearGraduated")} className="form-input" />
-                  {errors.yearGraduated?.message && <p className="text-sm text-red-400">{errors.yearGraduated.message}</p>}
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {currentStep === 2 && (
-            <>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">Additional Information</h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">Complete additional details to finish your profile.</p>
-
-              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div className="col-span-full">
-                  <label htmlFor="street" className="form-label">
-                    Street address
-                  </label>
-                  <div>
-                    <input type="text" id="street" {...register("address")} autoComplete="street-address" className="form-input" />
-                    {errors.address?.message && <p className="text-sm text-red-400">{errors.address.message}</p>}
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2 sm:col-start-1">
-                  <label htmlFor="city" className="form-label">
-                    City
-                  </label>
-                  <div>
-                    <input type="text" id="city" {...register("city")} autoComplete="city" className="form-input" />
-                    {errors.city?.message && <p className="text-sm text-red-400">{errors.city.message}</p>}
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label htmlFor="zip" className="form-label">
-                    ZIP / Postal code
-                  </label>
-                  <div>
-                    <input type="text" id="zip" {...register("zipCode")} autoComplete="postal-code" className="form-input" />
-                    {errors.zipCode?.message && <p className="text-sm text-red-400">{errors.zipCode.message}</p>}
-                  </div>
-                </div>
-
-                <div className="col-span-full">
-                  <label htmlFor="hobbies" className="form-label">
-                    Hobbies
-                  </label>
-                  <div>
-                    <input type="text" id="hobbies" {...register("hobbies")} autoComplete="on"  placeholder="Enter hobbies separated by commas" className="form-input" />
-                    {errors.hobbies?.message && <p className="text-sm text-red-400">{errors.hobbies.message}</p>}
-                  </div>
-                </div>
-
-                <div className="col-span-full">
-                  <label htmlFor="address2" className="form-label">
-                    Secondary address
-                  </label>
-                  <div>
-                    <input type="text" id="address2" {...register("address2")} autoComplete="secondary-address" className="form-input" />
-                    {errors.address2?.message && <p className="text-sm text-red-400">{errors.address2.message}</p>}
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
+            </div>
+          </motion.div>
         </section>
 
+        {/* Navigation Buttons */}
+        <div className="mt-8 pt-5 flex justify-between gap-3">
+          <button
+            type="button"
+            onClick={prev}
+            disabled={currentStep === 0}
+            className="rounded w-full sm:w-fit bg-white px-2 py-1 text-sm font-semibold text-sky-900 shadow-sm ring-1 ring-inset ring-sky-300 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Previous
+          </button>
 
-        {/* Navigation */}
-        <div className="mt-8 pt-5">
-          <div className="flex justify-between">
+          {currentStep < steps.length - 1 ? (
             <button
               type="button"
-              onClick={prev}
-              disabled={currentStep === 0}
-              className="rounded bg-white px-2 py-1 text-sm font-semibold text-sky-900 shadow-sm ring-1 ring-inset ring-sky-300 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={next}
+              className="rounded bg-white px-2 py-1 text-sm font-semibold text-primary-light shadow-sm ring-1 ring-inset ring-primary-light hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Previous
+              Next
             </button>
-            {
-              currentStep !== steps.length - 1 &&
-              (
-                <button
-                  type="button"
-                  onClick={next}
-                  disabled={currentStep === steps.length - 1}
-                  className="rounded bg-white px-2 py-1 text-sm font-semibold text-primary-light shadow-sm ring-1 ring-inset ring-primary-light hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Next
-                </button>
-              ) 
-            }
-
-            <input type="submit" onClick={next} disabled={isSubmitting} value={isSubmitting ? 'Loading...' : "Register"}  className={`${currentStep !== steps.length - 1 ? 'hidden' : 'inline-flex'} w-full sm:w-fit ml-auto bg-primary text-white px-4 py-2 rounded-lg hover:bg-jet-black cursor-pointer`} />
-          </div>
+          ) : (
+            <input
+              type="submit"
+              disabled={isSubmitting}
+              value={isSubmitting ? 'Loading...' : 'Register'}
+              className="w-full sm:w-fit ml-auto bg-primary text-white px-4 py-2 rounded-lg hover:bg-jet-black cursor-pointer"
+            />
+          )}
         </div>
       </form>
-
-      {/* Success Dialog */}
-      {/* Success Dialog */}
-      {(successMessage || errorMessage) && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-8 rounded shadow-md w-full max-w-64 text-center">
-            <h2 className="text-lg font-bold text-green-600 capitalize">{successMessage ? successMessage : errorMessage}</h2>
-            <button
-              onClick={closeDialog}
-              className="mt-4 px-6 py-1 bg-primary font-light text-white text-sm rounded hover:bg-primary-dark"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </section>
-  )
+  );
 }

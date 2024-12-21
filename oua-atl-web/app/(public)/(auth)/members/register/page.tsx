@@ -1,5 +1,10 @@
-import Link from 'next/link'
+import type { Metadata } from "next";
 import SignUpForm from '@/app/ui/forms/SignUpForm'
+
+export const metadata: Metadata = {
+  title: "Register | Ife Alumni",
+  
+}
 
 const page = () => {
   const labelClass = "font-semibold text-jet-black text-sm mb-2 block"

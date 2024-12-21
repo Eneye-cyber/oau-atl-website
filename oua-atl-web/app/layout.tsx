@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { roboto } from "@/app/ui/fonts";
 import "./globals.css";
 import TopLoader from "@/components/TopLoader";
+import { Toaster } from "@/components/ui/sonner"
 
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({
         <>
           {children}
         </>
+        <Toaster  position="top-right" richColors expand={true} />
       </body>
     </html>
   );

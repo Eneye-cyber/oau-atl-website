@@ -1,19 +1,31 @@
 'use client';
+import { useEffect } from "react";
 import Link from 'next/link'
 import { z } from 'zod'
 import { SignInFormDataSchema } from '@/app/lib/schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useRouter } from "next/navigation"; 
- 
+import { toast } from "sonner"
+
 type Inputs = z.infer<typeof SignInFormDataSchema>
 
 const SignInForm = () => {
   const router = useRouter();
+  
+  useEffect(() => {
+    const message = sessionStorage.getItem("flashMessage");
+    if (message) {
+      toast.success(message, {
+        description: 'A verification mail has been sent to your mail',
+      })
+      sessionStorage.removeItem("flashMessage"); // Clear the flash message after displaying
+    }
+  }, []);
+
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
     setError
   } = useForm<Inputs>({
@@ -51,16 +63,16 @@ const SignInForm = () => {
        return
       }
 
-  
-      // console.log('result', result);
-      // reset()
+      throw new Error(response.statusText ?? "Something went wrong")
+
       
-    } catch (err) {
+    } catch (err: any) {
       alert('Server unavailable')
+      toast.error('Server unavailable', {
+        description: err?.message ?? 'An error occurred',
+      })
     }
   }
-
-
 
   // type FieldName = keyof Inputs
 
