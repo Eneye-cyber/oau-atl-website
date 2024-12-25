@@ -81,11 +81,15 @@ const TopBar = ({userRole}: {userRole: "guest" | "member" | "admin"}) => {
               ) : (
                 <>
                   <Link className={`${linkClass}`} href={isAdmin ? "/admin" :"/members/profile"}>{isAdmin ? 'Dashboard' : 'Account'}</Link>
-                  {!isAdmin && (
+                  {!isAdmin ? (
                     <form className="inline-block border-l border-muted-foreground h-fit" action="/api/logout" method="POST">
                       <input type="submit" className={`${linkClass}`} value="Sign Out" />
                     </form>
 
+                  ) : (
+                    <div className="inline-block border-l border-muted-foreground h-fit">
+                      <Link className={`${linkClass}`} href={`/customize${pathName}`}>Customize</Link>
+                    </div>
                   )}
                 </>
                 
