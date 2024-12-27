@@ -223,7 +223,7 @@ const CreateProject = () => {
 
           <ProjectCard
             project={{image_url: formData?.imageURL, project_text: formData?.projectText, amount_goal: formData?.amountGoal, amount_collected: 0, donation_count: 0}}
-            percentage={0} onShare={null} onDonate={null}
+            percentage={0}
           />
 
           <div className="py-6 flex justify-end space-x-4">

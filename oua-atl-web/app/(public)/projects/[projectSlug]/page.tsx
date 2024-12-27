@@ -34,6 +34,9 @@ const page = async ({ params }: { params: { projectSlug: string } }) => {
   const data: {message: string, payload: any | null} = await getData(params.projectSlug);
   console.log(data);
   const project: any | null = data.payload ?? null
+  if(project) {
+    project['id'] = params.projectSlug
+  }
   function calculatePercentage(current: number, target: number) {
     if (target === 0) return 0; // Avoid division by zero
     return (current / target) * 100;
@@ -47,14 +50,6 @@ const page = async ({ params }: { params: { projectSlug: string } }) => {
   }
   const percentage = calculatePercentage(Number(project.amount_collected), Number(project.amount_goal));
 
-  const handleShare = () => {
-    console.log("Share button clicked!");
-  };
-
-  const handleDonate = () => {
-    console.log("Donate button clicked!");
-  };
-
   return (
     <article className="md:py-6">
       <div className="md:py-8 text-center">
@@ -66,8 +61,6 @@ const page = async ({ params }: { params: { projectSlug: string } }) => {
       <ProjectCard
         project={project}
         percentage={percentage}
-        onShare={handleShare}
-        onDonate={handleDonate}
       />
 
     </article>

@@ -9,6 +9,7 @@ module.exports = {
     darkMode: ["class"],
     content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+		"./components/**/*.{js,ts,jsx,tsx}",
 
     // Or if using `src` directory:
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
@@ -64,6 +65,9 @@ module.exports = {
   		},
   		fontFamily: {
   			roboto: ['var(--font-roboto)']
+  		},
+			utilities: {
+  			strikethrough: 'text-decoration: line-through'
   		},
   		height: {
   			hero: '36.25rem'

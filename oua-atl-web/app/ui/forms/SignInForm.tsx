@@ -7,10 +7,17 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useRouter } from "next/navigation"; 
 import { toast } from "sonner"
+import { AuthResponse, UserRoleResponse } from "@/app/lib/types";
+// import { Input } from "../ui/input";
+// import { Button } from "../ui/button";
+interface User extends UserRoleResponse {
+  email: string | null;
+}
+
 
 type Inputs = z.infer<typeof SignInFormDataSchema>
 
-const SignInForm = () => {
+const SignInForm = ({noRedirect = false, onLoginSuccess}: {noRedirect?: boolean; onLoginSuccess?: (arg: User) => void}) => {
   const router = useRouter();
   
   useEffect(() => {
@@ -57,10 +64,14 @@ const SignInForm = () => {
       }
 
       if(response.status === 200) {
-        const result = await response.json();
-        console.log(result, result)
-        router.push("/")
-       return
+        const result: AuthResponse = await response.json();
+        if(!noRedirect) {
+          router.push("/")
+          return
+        }
+        onLoginSuccess && onLoginSuccess(result.user)
+        return
+        
       }
 
       throw new Error(response.statusText ?? "Something went wrong")

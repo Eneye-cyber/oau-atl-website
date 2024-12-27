@@ -1,7 +1,9 @@
 'use client';
 import Image from 'next/image'
+import DonationAction from './actions/DonationAction';
 
 interface Project {
+  id?: string;
   image_url?: string;
   project_text?: string;
   amount_collected?: number;
@@ -12,14 +14,12 @@ interface Project {
 interface ProjectCardProps {
   project: Project;
   percentage: number;
-  onShare?: (() => void) | null;
-  onDonate?: (() => void) | null;
 }
 const ProjectCard: React.FC<ProjectCardProps> = ({ 
   project, 
   percentage, 
-  onShare, 
-  onDonate 
+  // onShare, 
+  // onDonate 
 }) => {
   return (
     <div className="container grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -79,19 +79,26 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
           <div className="mt-4 space-y-3">
             <button
-              disabled={!onShare}
+              // disabled={!onShare}
               className="inline-block px-4 py-2 w-full text-center bg-white border text-primary rounded-md shadow hover:bg-primary-light disabled:opacity-65 disabled:pointer-events-none"
-              onClick={onShare || undefined}
+              // onClick={onShare || undefined}
             >
               Share
             </button>
-            <button
-              disabled={!onDonate}
-              className="inline-block px-4 py-2 w-full text-center bg-primary text-white rounded-md shadow hover:bg-primary-light disabled:opacity-40 disabled:pointer-events-none"
-              onClick={onDonate || undefined}
+            { (project?.id && project?.amount_goal && project?.amount_collected) 
+              ?
+              <DonationAction projectID={project.id} maxAmount={Number(project.amount_goal) - Number(project.amount_collected)} />
+              :
+              <button
+              disabled={true}
+              className={`inline-block px-4 py-2 w-full bg-primary text-white rounded-md shadow 
+              hover:bg-primary-light opacity-40 pointer-events-none`}
             >
               Donate
             </button>
+
+            }
+
           </div>
         </div>
       </aside>

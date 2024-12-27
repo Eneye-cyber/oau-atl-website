@@ -26,6 +26,34 @@ type Location = {
   postal_code: string;
 };
 
+export type UserRoleResponse = {
+  role: string | null;
+  id: string | null;
+  message?: string;
+}
+
+export type AuthResponse = {
+  message: string;
+  user: {
+    email: string;
+    id: string;
+    role: "member" | "admin" ; // Explicitly specifying "member" as one possible value, but keeping it open for others
+  };
+};
+
+export type PaymentResponse = {
+  message: string;
+  payload?: {
+    orderID: string;
+    approvalUrl: string;
+  };
+  user?: {
+    id: string;
+    email: string;
+    role: string;
+  };
+}
+
 export type ProjectCollection = {
   location: Location;
   image_url: string;
@@ -37,6 +65,16 @@ export type ProjectCollection = {
   project_title: string;
   donation_count: number;
   amount_collected: number;
+};
+
+
+
+export interface GalleryCollection {
+  gallery_id: string; // UUID of the gallery
+  gallery_title: string; // Title of the gallery
+  created_at: string; // ISO string timestamp of creation
+  item_count: number; // Number of items in the gallery
+  image_url: string;
 };
 
 export interface EventResponseObject {
@@ -94,10 +132,3 @@ export interface Contact {
   contact_id: string; // UUID
   created_at: string; // ISO 8601 timestamp
 }
-
-export interface GalleryResponseObjects {
-  gallery_id: string; // UUID of the gallery
-  gallery_title: string; // Title of the gallery
-  created_at: string; // ISO string timestamp of creation
-  item_count: number; // Number of items in the gallery
-};

@@ -37,7 +37,7 @@ const TopBar = ({userRole}: {userRole: "guest" | "member" | "admin"}) => {
       const data = await response.json();
       setRole(data.role);
     }
-    fetchRole().catch(e => console.error(e));;
+    fetchRole().catch(e => console.error(e));
   }, [pathName]);
 
   const icons = {

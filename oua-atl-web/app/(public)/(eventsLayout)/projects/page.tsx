@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import DonationAction from "@/components/actions/DonationAction";
 const baseUrl = process.env.API_BASE
 interface DataResponse {
   message: string,
@@ -159,13 +160,8 @@ function ProjectCard({id, image, summary, title, goal, raised, status, address}:
         </p>
 
         <div className="mt-4">
-          <Link
-            // href="/projects?view=cause&id=127-scholarship-fund"
-            href={`/projects/${id}`}
-            className="inline-block px-4 py-2 w-full text-center bg-primary text-white rounded-md shadow hover:bg-primary-light"
-          >
-            Donate
-          </Link>
+            {/* The backend developer has ensured a project cannot be overfunded */}
+          <DonationAction projectID={id} maxAmount={Number(goal) - Number(raised)} />
         </div>
       </div>
     </div>

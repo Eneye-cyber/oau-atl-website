@@ -7,7 +7,8 @@ import { LuMoreVertical, LuEye, LuFileEdit, LuTrash2 } from 'react-icons/lu';
 import Button from '@/app/ui/shared/Button'
 // import { Button } from "@/components/ui/button"
 import type { Metadata } from "next";
-import type { GalleryResponseObjects } from "@/app/lib/types";
+import type { GalleryCollection } from "@/app/lib/types";
+import { fetchData } from "@/lib/utils/api";
 const baseUrl = process.env.API_BASE
 
 export const metadata: Metadata = {
@@ -16,27 +17,14 @@ export const metadata: Metadata = {
 
 type GalleryResponse = {
   message: string; // Message associated with the response
-  payload: GalleryResponseObjects[] | []; // Array of gallery items
+  payload: GalleryCollection[] | []; // Array of gallery items
+  error?: boolean
 };
 
 async function getData(): Promise<GalleryResponse> {
-  if (!baseUrl) throw new Error("API_BASE environment variable is not set.");
-  try {
-    const url = `${baseUrl}/gallery`;
-    const res = await fetch(url, { method: 'GET', credentials: 'include', cache: "no-store", });
-
-    if (!res.ok) {
-      return { message: `Error ${res.status}: ${res.statusText}`, payload: [] };
-    }
-
-    const result = await res.json();
-    return result;
-  } catch (error: any) {
-    console.error('Fetch Error:', error);
-    return { message: error.message || 'An unexpected error occurred.', payload: [] };
-  }
+  const result = await fetchData('gallery');
+  return result;
 }
-
 
 const PhotoAlbum = ({name, count}: {name: string; count: number}) => {
   return (
@@ -94,7 +82,7 @@ const PhotoAlbum = ({name, count}: {name: string; count: number}) => {
 const page = async () => {
   const data = await getData();
   console.log(data, 'gal')
-  const albums: GalleryResponseObjects[] | [] = data?.payload ?? []
+  const albums: GalleryCollection[] | [] = data?.payload ?? []
   return (
     <article className="p-6 container space-y-6 flex-1 flex flex-col">
       <div className="flex items-end justify-between py-6">
