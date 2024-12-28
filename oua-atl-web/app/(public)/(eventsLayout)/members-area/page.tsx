@@ -1,3 +1,4 @@
+import SubscriptionAction from "@/components/actions/SubscriptionAction"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check } from 'lucide-react'
@@ -19,11 +20,11 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
   return (
     <Card className="flex flex-col">
       <CardHeader>
-        <CardTitle>{plan.name}</CardTitle>
+        <CardTitle className="capitalize">{plan.name}</CardTitle>
         <CardDescription>{plan.description}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1">
-        <p className="text-4xl font-bold">{plan.price}</p>
+        <p className="text-4xl font-bold">${plan.price}</p>
         <p className="text-sm text-gray-500 dark:text-gray-400">per month</p>
         <ul className="mt-4 space-y-2">
           {plan.features.map((feature) => (
@@ -35,7 +36,7 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
         </ul>
       </CardContent>
       <CardFooter>
-        <Button className="w-full">Subscribe to {plan.name}</Button>
+        <SubscriptionAction amountAttempted={Number(plan.price)} planName={plan.name}/>
       </CardFooter>
     </Card>
   )
@@ -45,20 +46,20 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
 const page = () => {
   const pricingPlans = [
     {
-      name: "Montly Plan",
-      price: "$20",
+      name: "monthly",
+      price: "20",
       description: "",
       features: ["Budget Plan", "Easy to Manage", "Monthly instalments", "Available All Year Round"],
     },
     {
-      name: "Earlybird Plan",
-      price: "$150",
+      name: "earlybird",
+      price: "150",
       description: "",
       features: ["Save $90/ year", "Earlybird Discount", "Single Annual Payment", "Valid Until March 31st"],
     },
     {
-      name: "Annual Plan",
-      price: "$180.00",
+      name: "annual",
+      price: "180.00",
       description: "",
       features: [
         "Peace of Mind Plan",

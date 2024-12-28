@@ -27,13 +27,10 @@ const page = async ({searchParams}: { searchParams: {trxref: string; reference: 
               {
                 paymentStatus?.error 
                   ? "Invalid or previously captured payment reference" : 
-                "Thank you for your contribution. Your donation has been processed successfully."
+                "Your membership subscription has been processed successfully."
               }
             </p>
-            {/* <div className="bg-gray-50 p-4 rounded-lg">
-              <p className="text-sm text-gray-600 mb-2">Order Number: <span className="font-semibold">{orderNumber}</span></p>
-              <p className="text-sm text-gray-600">Amount Paid: <span className="font-semibold">{amount}</span></p>
-            </div> */}
+
           </CardContent>
           <CardFooter className="flex justify-center">
             <Link href="/projects">

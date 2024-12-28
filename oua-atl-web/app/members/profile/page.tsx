@@ -1,16 +1,19 @@
 import UserProfile from '@/app/ui/cards/UserProfile';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
 const baseUrl = process.env?.API_BASE ?? ''
 
-async function getData(id: string): Promise<{ message: string; payload: any | null }> {
+async function getData(): Promise<{ message: string; payload: any | null }> {
   if (!baseUrl) throw new Error("API_BASE environment variable is not set.");
+  const cookieStore = cookies();
+
+  const id = cookieStore.get('x-custom-id')?.value ?? null
+  const incomingCookies = cookieStore.getAll().map(cookie => `${cookie.name}=${encodeURIComponent(cookie.value)}`).join('; ');
   try {
     const url = `${baseUrl}/users/${id}/profile`;
     console.log('Requesting profile from ', url)
-    const cookiesList = cookies();
+
     const res = await fetch(url, { 
-      headers : { Cookie: cookiesList as unknown as string }, method: 'GET', credentials: 'include' 
+      headers : { Cookie: incomingCookies }, method: 'GET', credentials: 'include' 
     });
 
     if (!res.ok) {
@@ -26,12 +29,7 @@ async function getData(id: string): Promise<{ message: string; payload: any | nu
 }
 
 const page = async () => {
-  const cookiesList = cookies();
-  const userId = cookiesList.get('x-custom-id')?.value ?? null;
-
-  if(!userId) redirect("/")
-
-    const data = await getData(userId);
+  const data = await getData();
   return (
     <div>
       <UserProfile user={data.payload} />

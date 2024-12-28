@@ -11,7 +11,7 @@ if (!baseUrl) {
   throw new Error('API_BASE environment variable is not set');
 }
 
-const TIMEOUT_MS = 10000;
+const TIMEOUT_MS = 20000;
 
 export async function GET(req: Request): Promise<NextResponse<User>> {
   const cookieStore = cookies();

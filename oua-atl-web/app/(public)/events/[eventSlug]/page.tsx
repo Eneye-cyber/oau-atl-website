@@ -10,6 +10,7 @@ import TableLoader from '@/app/ui/loaders/TableLoader'
 import { EventResponseObject } from "@/app/lib/types";
 import { formatEventDates, formatEventTimes } from "@/lib/utils";
 import { ClockIcon, MapPinIcon, TicketIcon } from "@/app/ui/Icons"
+import BookingAction from '@/components/actions/BookingAction';
 
 const baseUrl = process.env.API_BASE
 export const metadata: Metadata = {
@@ -96,6 +97,7 @@ const page = async ({ params }: { params: { eventSlug: string } }) => {
               <div className="prose text-muted-foreground">
                 <p>
                   {event.content}
+                  {event.image_url}
                 </p>  
               </div>
 
@@ -105,7 +107,7 @@ const page = async ({ params }: { params: { eventSlug: string } }) => {
         </div>
 
         <section className="container">
-          <TicketsPage fee={event.entrance_fee} date={event.start_date} />
+          <TicketsPage id={event.event_id} fee={event.entrance_fee} date={event.start_date} />
         </section>
 
         <div className="container py-16">
@@ -120,7 +122,7 @@ const page = async ({ params }: { params: { eventSlug: string } }) => {
 }
 
 
-const TicketsPage = ({fee, date}: {fee: number; date: string}) => {
+const TicketsPage = ({id, fee, date}: {id:string; fee: number; date: string}) => {
   return (
     <div className="mx-auto bg-white shadow-md rounded-lg">
         <div className="pt-4">
@@ -145,12 +147,7 @@ const TicketsPage = ({fee, date}: {fee: number; date: string}) => {
           </table>
         </div>
         <div className="p-4 flex justify-end">
-          <button
-            type="submit"
-            className="w-full sm:w-fit ml-auto bg-primary text-white px-4 py-2 rounded-lg hover:bg-jet-black"
-          >
-            Order now
-          </button>
+          <BookingAction eventID={id} ticketPrice={Number(fee)}  />
         </div>
       </div>
   );

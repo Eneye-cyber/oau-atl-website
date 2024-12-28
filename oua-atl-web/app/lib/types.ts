@@ -54,6 +54,15 @@ export type PaymentResponse = {
   };
 }
 
+export type PostPaymentResponse = {
+  message: string;
+  payload: {
+      reference: string;
+  };
+  error?: boolean
+};
+
+
 export type ProjectCollection = {
   location: Location;
   image_url: string;
