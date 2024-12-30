@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { UserRoleResponse } from '@/app/lib/types';
+import { checkAccess } from './router/accessControl';
 
-interface User {
-  id: string | null;
+interface User extends UserRoleResponse {
   email: string | null;
-  role: string;
 }
-
 const ROUTES = {
   ADMIN_LOGIN: '/admin/login',
   MEMBERS_LOGIN: '/members/login',
@@ -15,101 +14,62 @@ const ROUTES = {
 };
 
 const verifyLogin = async (request: NextRequest): Promise<User> => {
-  const TIMEOUT_MS = 30000; // Reduced timeout to 5 seconds
 
+  const incomingCookies = request.headers.get('cookie') || '';
+  
   try {
-    const incomingCookies = request.headers.get('cookie') || '';
-    console.log('incomingCookies', incomingCookies)
     if (!incomingCookies || !incomingCookies.includes('connect.sid')) {
       throw new Error('Authentication cookie missing or malformed');
     }
-
-    const response = await Promise.race([
-      fetch(`${request.nextUrl.origin}/api/admin/auth`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          Cookie: incomingCookies,
-        },
-        cache: 'no-cache'
-      }),
-      new Promise<Response>((_, reject) =>
-        setTimeout(() => reject(new Error('Request timed out')), TIMEOUT_MS)
-      ),
-    ]);
+  
+    const response = await  fetch(`${request.nextUrl.origin}/api/current`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: incomingCookies,
+      },
+      cache: 'no-cache'
+    });
 
     if (response.ok) {
-      let result;
-      try {
-        result = await response.json();
-      } catch (err) {
-        throw new Error('Invalid response format');
-      }
-
-      const user: User | null = result?.data?.user || null;
-      if (user) {
-        return user;
-      }
-      throw new Error('Error getting user object');
+      const result: User = await response.json()
+      return result
     }
 
-    throw new Error(`Verification failed with status: ${response.status}`);
+    console.log(`Verification failed with status: ${response.status}`);
+    throw new Error(`Verification failed: ${response.statusText}`);
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error('Error verifying login:', error.message);
     } else {
       console.error('Unknown error verifying login:', error);
     }
-    return { id: null, email: null, role: 'guest' };
+    return { id: null, email: null, role: 'guest', message: 'Unsuccessfull authentication' };
   }
 };
 
 export async function middleware(request: NextRequest) {
   const currentPath = request.nextUrl.pathname;
   const cookie = request.cookies?.get('connect.sid')?.value
-  const cookieName = request.cookies?.get('connect.sid')?.name
   const user: User = await verifyLogin(request);
 
   if (currentPath.startsWith('/admin/register')) {
     const response = NextResponse.next();
-        response.cookies.set('connect.sid', cookie ?? '');
-        response.cookies.set('x-custom-id', user?.id || '' );
+    response.cookies.set('connect.sid', cookie ?? '');
+    response.cookies.set('x-custom-id', user?.id || '' );
     response.cookies.set('x-custom-role', user?.role || '' );
     return response;
   }
-  console.log(user, 'user')
-  switch (user.role) {
-    case 'guest':
-      if (currentPath.startsWith('/admin') || currentPath.startsWith('/members')) {
-        console.log('guest access only', currentPath)
-        const response = NextResponse.redirect(new URL(ROUTES.MEMBERS_LOGIN, request.url));
-        response.cookies.delete('connect.sid');
-        return response;
-      }
-      break;
 
-    case 'member':
-      if (currentPath.startsWith('/admin')) {
-        console.log('members access only', currentPath)
-        const response = NextResponse.redirect(new URL('/', request.url));
-        response.cookies.set('connect.sid', cookie ?? '');
-        response.cookies.set('x-custom-id', user?.id || '' );
-        response.cookies.set('x-custom-role', user?.role || '' );
-        return response;
-      }
-      break;
-
-    case 'admin':
-      if (currentPath.startsWith('/members')) {
-        console.log('admin access only', currentPath)
-        const response = NextResponse.redirect(new URL('/', request.url));
-        response.cookies.set('connect.sid', cookie ?? '');
-        response.cookies.set('x-custom-id', user?.id || '' );
-        response.cookies.set('x-custom-role', user?.role || '' );
-        return response;
-      }
-      break;
+  
+  // Check access using externalized logic
+  const redirectPath = checkAccess(user.role, currentPath);
+  if (redirectPath) {
+    console.log(`Access restricted for role ${user.role}. Redirecting to ${redirectPath}`);
+    const response = NextResponse.redirect(new URL(redirectPath, request.url));
+    response.cookies.delete('connect.sid');
+    return response;
   }
   console.log('public access', currentPath, user)
 

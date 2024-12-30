@@ -16,7 +16,6 @@ const TIMEOUT_MS = 20000;
 export async function GET(req: Request): Promise<NextResponse<User>> {
   const cookieStore = cookies();
   const incomingCookies = cookieStore.getAll().map(cookie => `${cookie.name}=${encodeURIComponent(cookie.value)}`).join('; ');
-  const incomingCookies2 = req.headers.get('cookie') || ''; 
 
   const url = `${baseUrl}/auth/current`;
 
@@ -28,7 +27,7 @@ export async function GET(req: Request): Promise<NextResponse<User>> {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: incomingCookies2,
+        Cookie: incomingCookies,
       },
       credentials: 'include',
       signal: controller.signal,
@@ -44,14 +43,14 @@ export async function GET(req: Request): Promise<NextResponse<User>> {
       }
 
       return NextResponse.json(
-        { role: null, id: null, email: null, message: 'Unauthorized' },
+        { role: 'guest', id: null, email: null, message: 'Unauthorized' },
         { status: 203 }
       );
     }
 
     if (response.status === 401) {
       return NextResponse.json(
-        { role: null, id: null, email: null, message: 'Unauthorized' },
+        { role: 'guest', id: null, email: null, message: 'Unauthorized' },
         { status: 401 }
       );
     }
@@ -66,7 +65,7 @@ export async function GET(req: Request): Promise<NextResponse<User>> {
     });
 
     return NextResponse.json(
-      { role: null, id: null, email: null, message: error?.message ?? 'An error occurred' },
+      { role: 'guest', id: null, email: null, message: error?.message ?? 'An error occurred' },
       { status: 500 }
     );
   }

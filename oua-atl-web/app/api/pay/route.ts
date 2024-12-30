@@ -10,7 +10,9 @@ if (!baseUrl) {
 
 const TIMEOUT_MS = 10000;
 const paymentUrl: Record<string, string> = {
-  'booking': `${baseUrl}/bookings/pay`
+  'booking': `${baseUrl}/bookings/pay`,
+  'donation': `${baseUrl}/donations/pay`,
+  'subscription': `${baseUrl}/subscriptions/pay`
 
 }
 

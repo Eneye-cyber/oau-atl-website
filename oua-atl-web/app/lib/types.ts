@@ -27,7 +27,7 @@ type Location = {
 };
 
 export type UserRoleResponse = {
-  role: string | null;
+  role: "guest" | "member" | "admin";
   id: string | null;
   message?: string;
 }

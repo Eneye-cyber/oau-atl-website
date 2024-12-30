@@ -16,7 +16,7 @@ const baseUrl = process.env.API_BASE;
 
 
 async function getData(): Promise<any> {
-  // Fetch data from your API here
+  
 
   // Wait for both promises to resolve
   try {

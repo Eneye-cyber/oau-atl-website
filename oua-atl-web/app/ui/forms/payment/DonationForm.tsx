@@ -12,6 +12,7 @@ interface User extends UserRoleResponse {
 
 // Define Zod schema
 const donationFormSchema = z.object({
+  paymentType: z.enum(['booking', 'donation', 'subscription']),
   projectID: z.string().min(2, "Project ID is required"),
   userID: z.string().min(2, "User ID is required"),
   userEmail: z.string().email("Invalid email address"),
@@ -45,6 +46,8 @@ const DonationForm = ({
       userID,
       userEmail,
       amountAttempted: 0, 
+      paymentType: 'donation'
+
     },
   });
 
@@ -52,7 +55,7 @@ const DonationForm = ({
     const body = JSON.stringify(data);
 
     try {
-      const response: Response = await fetch("/api/pay/donation", {
+      const response: Response = await fetch("/api/pay", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

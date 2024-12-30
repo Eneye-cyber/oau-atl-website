@@ -16,7 +16,7 @@ async function getStats(path: string) {
 }
 
 async function getData(): Promise<any[]> {
-  // Fetch data from your API here
+  
   const fetchactive = getStats('projects/active/count');
   const fetchcomplete = getStats('projects/completed/count');
   const fetchoverdue = getStats('projects/overdue/count');

@@ -1,14 +1,12 @@
-/* eslint-disable @next/next/no-img-element */
-// import Image from 'next/image'
-import { cookies } from 'next/headers'; 
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import Image from 'next/image'
 import Link from 'next/link'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { fetchData } from '../../lib/utils/api';
+import { PaginatedResponse, ProjectCollection } from '../lib/types';
 
 
-const baseUrl = process.env.API_BASE;
 
 const projectsFallback = [
   {
@@ -29,53 +27,24 @@ const projectsFallback = [
     image_url: '/img/placeholder.svg',
     project_id: 'weather-dashboard'
   },
-  {
-    project_title: 'Social Media Analytics',
-    project_text: 'Data visualization for social media metrics',
-    image_url: '/img/placeholder.svg',
-    project_id: 'social-media-analytics'
-  },
   
 ]
 
 
-async function getData(): Promise<any> {
-  // Fetch data from your API here
 
-  // Wait for both promises to resolve
-  try {
-    const cookieStore = cookies(); // Access cookies
-    const url = `${baseUrl}/projects`;
-    const res: Response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: cookieStore as unknown as string
-      },
-      credentials: 'include', // Include cookies
-    });
-    
-    if(res.ok) {
-      const result = await res.json()
-      console.log('latest project result', result)
-      return result
-    }
-    const msg = res.statusText
-    throw new Error(msg ?? "Unknown error")
-} catch (error: any) {
-    console.log('error latest project', error)
-    return {message: error.message, payload: []}
-}
-
+async function getData(): Promise<PaginatedResponse<ProjectCollection[]>> {
+  
+  const data = await fetchData('projects')
+  return data
   
 }
 
 
 
 const PastEvents = async () => {
-  const data = await getData()
-  console.log(data.payload.data, 'data')
-  let projects: any[] = data.payload?.data?.length > 0 ? data.payload.data : [...projectsFallback]
+  const data: PaginatedResponse<ProjectCollection[]> = await getData()
+  const hasError = data?.error || !data.payload.data.length 
+  let projects = !hasError ? data.payload.data : [...projectsFallback]
   projects = projects.length > 3 ? projects.slice(0, 3) : projects
   return (
     <>

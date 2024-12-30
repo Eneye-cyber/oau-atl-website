@@ -5,49 +5,24 @@ import { cookies } from 'next/headers';
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import { Badge } from "@/components/ui/badge"
 import { formatEventDates } from "@/lib/utils";
+import { fetchData } from "@/lib/utils/api"
+import { EventCollection, PaginatedResponse } from "@/app/lib/types"
 
 
-const baseUrl = process.env.API_BASE;
-
-
-
-async function getData(): Promise<any> {
-  // Fetch data from your API here
-
-  // Wait for both promises to resolve
-  try {
-    const cookieStore = cookies(); // Access cookies
-    const url = `${baseUrl}/physical-events/history`;
-    const res: Response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: cookieStore as unknown as string
-      },
-      credentials: 'include', // Include cookies
-    });
-    
-    if(res.ok) {
-      const result = await res.json()
-      console.log('latest event result', result)
-      return result
-    }
-    const msg = res.statusText
-    throw new Error(msg ?? "Unknown error")
-} catch (error: any) {
-    console.log('error latest event', error)
-    return {message: error.message, payload: []}
-}
-
+async function getData(): Promise<PaginatedResponse<EventCollection[]>> {
+  
+  const data = await fetchData('/physical-events/history')
+  return data
   
 }
 
 
 
+
+
 const PastEvents = async () => {
-  const data = await getData()
-  console.log(data.payload.data, 'data')
-  let events: any[] = data.payload?.data?.length > 0 ? data.payload.data : []
+  const data: PaginatedResponse<EventCollection[]> = await getData();
+  let events: EventCollection[] | [] = data.payload?.data ?? []
   events = events.length > 3 ? events.slice(0, 3) : events
   return (
     <>

@@ -21,12 +21,14 @@ const SubscriptionAction = ({ amountAttempted, planName }: { planName: string; a
       amountAttempted, 
       planName,
       userID: data.id,
-      userEmail: data.email
+      userEmail: data.email,
+      paymentType: 'subscription'
+
     }
 
 
     try {
-      const response: Response = await fetch("/api/pay/subscription", {
+      const response: Response = await fetch("/api/pay", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

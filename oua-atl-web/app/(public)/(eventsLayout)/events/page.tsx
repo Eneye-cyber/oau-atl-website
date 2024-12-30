@@ -2,46 +2,41 @@
 
 import type { Metadata } from "next";
 import {EventCard} from "@/app/ui/Cards" 
-import { EventResponseObject } from "@/app/lib/types";
 import { Suspense } from 'react'
 import PastEvents from '@/app/ui/PastEvents'
 import TableLoader from '@/app/ui/loaders/TableLoader'
+
+import { fetchData } from "@/lib/utils/api"
+import { EventCollection, PaginatedResponse } from "@/app/lib/types"
 
 export const metadata: Metadata = {
   title: "Events | Ife Alumni",
   description: "Great Ife Alumni Association Inc. USA - Atlanta Branch. Donations, projects.",
 };
 
-const baseUrl = process.env.API_BASE
-interface DataResponse {
-  message: string,
-  payload: { data: EventResponseObject[] | [], page: number, totalCount: number, totalPages: number } 
-}
-async function getData(): Promise<DataResponse> {
-  if (!baseUrl) throw new Error("API_BASE environment variable is not set.");
-  try {
-    const url = `${baseUrl}/physical-events/latest`;
-    console.log('Getting events from; ', url)
-    const res = await fetch(url, { method: 'GET', credentials: 'include', cache: 'no-cache' });
 
-    if (!res.ok) {
-      return { message: `Error ${res.status}: ${res.statusText}`, payload: { data: [], page: 1, totalCount: 0, totalPages: 1 } };
-    }
-
-    const result = await res.json();
-    return result;
-  } catch (error: any) {
-    console.error('Fetch Error:', error);
-    return { message: error.message || 'An unexpected error occurred.', payload: { data: [], page: 1, totalCount: 0, totalPages: 1 } };
-  }
+async function getData(): Promise<PaginatedResponse<EventCollection[]>> {
+  
+  const data = await fetchData('/physical-events/latest')
+  return data
+  
 }
 const page = async () => {
-  const data: DataResponse = await getData();
-  console.log(data);
-  const events: EventResponseObject[] | [] = data.payload?.data ?? []
+  const data: PaginatedResponse<EventCollection[]> = await getData();
+  const events: EventCollection[] | [] = data.payload?.data ?? []
 
   if (!events.length) {
-    return <h3>Events not found</h3>;
+    return (
+      <div className="flex flex-col items-center justify-center text-center py-12">
+      
+      <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+        No Events Found
+      </h3>
+      <p className="text-gray-500 dark:text-gray-400">
+        We couldn’t find any upcoming event at the moment. Please check back later.
+      </p>
+    </div>
+    );
   }
 
   return (

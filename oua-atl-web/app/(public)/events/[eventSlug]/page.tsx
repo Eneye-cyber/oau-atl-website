@@ -1,49 +1,46 @@
-/* eslint-disable @next/next/no-img-element */
 import Image from 'next/image'
 import type { Metadata } from "next";
 import { Badge } from "@/components/ui/badge"
 import { Suspense } from 'react'
 import UpcomingEvents from '@/app/ui/UpcomingEvents'
 import TableLoader from '@/app/ui/loaders/TableLoader'
-// import HeroSection from '@/app/ui/HeroSection'
 
 import { EventResponseObject } from "@/app/lib/types";
 import { formatEventDates, formatEventTimes } from "@/lib/utils";
 import { ClockIcon, MapPinIcon, TicketIcon } from "@/app/ui/Icons"
 import BookingAction from '@/components/actions/BookingAction';
+import { fetchData } from '@/lib/utils/api';
 
-const baseUrl = process.env.API_BASE
 export const metadata: Metadata = {
   title: "Events | Ife Alumni",
   description: "Great Ife Alumni Association Inc. USA - Atlanta Branch. Events and Hangount.",
 };
 
-async function getData(id: string): Promise<{ message: string; payload: EventResponseObject | null }> {
-  if (!baseUrl) throw new Error("API_BASE environment variable is not set.");
-  try {
-    const url = `${baseUrl}/physical-events/${id}`;
-    const res = await fetch(url, { method: 'GET', credentials: 'include',  });
+async function getData(id: string): Promise<{ message: string; payload: EventResponseObject | null; error?: boolean; }> {
+  const data = fetchData(`/physical-events/${id}`)
+  return data
 
-    if (!res.ok) {
-      return { message: `Error ${res.status}: ${res.statusText}`, payload: null };
-    }
-
-    const result = await res.json();
-    return result;
-  } catch (error: any) {
-    console.error('Fetch Error:', error);
-    return { message: error.message || 'An unexpected error occurred.', payload: null };
-  }
 }
 
 
 const page = async ({ params }: { params: { eventSlug: string } }) => {
-  const data: {message: string, payload: EventResponseObject | null} = await getData(params.eventSlug);
-  console.log(data);
+  const data: {message: string, payload: EventResponseObject | null; error?: boolean} = await getData(params.eventSlug);
+
   const event: EventResponseObject | null = data.payload ?? null
 
-  if (!event) {
-    return <h3>Event not found</h3>;
+  if (!event || data.error) {
+    return (
+      <div className="flex flex-col items-center justify-center text-center py-12">
+      
+      <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+        Event not Found
+      </h3>
+      <p className="text-gray-500 dark:text-gray-400">
+        We couldn’t find this event at the moment. Please check back later.
+      </p>
+      {data?.message && <p className="text-sm text-red-600">{data.message}</p>}
+    </div>
+    );
   }
   
   return (
@@ -55,8 +52,8 @@ const page = async ({ params }: { params: { eventSlug: string } }) => {
           <div className="w-full mx-auto py-6 sm:py-8 lg:py-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
               <div className="relative rounded-lg overflow-hidden">
-                <img
-                  src={event.image_url ?? "/img/placeholder.svg"}
+                <Image
+                  src={event?.image_url ?? "/img/placeholder.svg"}
                   alt={event.title}
                   width="700"
                   height="500"

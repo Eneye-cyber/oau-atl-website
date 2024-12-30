@@ -3,12 +3,11 @@ import { z } from 'zod';
 import { ContactFormDataSchema } from '@/app/lib/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useState } from 'react';
+import { toast } from 'sonner';
 
 type Inputs = z.infer<typeof ContactFormDataSchema>;
 
 const ContactForm = () => {
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -29,17 +28,17 @@ const ContactForm = () => {
         body: JSON.stringify(data),
       });
 
-      if (!response.ok) throw new Error('Failed to submit form');
+      if (!response.ok) throw new Error(response.statusText);
 
       const result = await response.json();
-      console.log('result', result);
 
       // Show success message and reset form
-      setSuccessMessage(result.message);
+      toast.success(result.message)
       reset();
-    } catch (error) {
-      alert('Server unavailable');
-      console.error(error);
+    } catch (error: unknown) {
+      if(error instanceof Error) {
+        toast.error('Backend error', { description: error?.message ?? 'Something went wrong'})
+      }
     }
   };
 
@@ -110,20 +109,7 @@ const ContactForm = () => {
         </div>
       </form>
 
-      {/* Success Dialog */}
-      {successMessage && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-8 rounded shadow-md w-full max-w-64 text-center">
-            <h2 className="text-lg font-bold text-green-600 capitalize">{successMessage}</h2>
-            <button
-              onClick={() => setSuccessMessage(null)}
-              className="mt-4 px-6 py-1 bg-primary font-light text-white text-sm rounded hover:bg-primary-dark"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+     
     </div>
   );
 };

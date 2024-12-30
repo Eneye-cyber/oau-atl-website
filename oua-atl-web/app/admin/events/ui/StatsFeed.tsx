@@ -3,7 +3,7 @@ import StatsOverview from '@/app/ui/StatsOverview';
 import { fetchData } from '@/lib/utils/api';
 
 async function getData(): Promise<any[]> {
-  // Fetch data from your API here
+  
   const upcomingEvent = fetchData('physical-events/latest/count');
   const pastEvent = fetchData('physical-events/history/count');
 

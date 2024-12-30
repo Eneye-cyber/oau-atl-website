@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   description: '...',
 }
 async function getData(): Promise<Enquiries[]> {
-  // Fetch data from your API here.
+  .
   return [
     {  name: 'Tech Conference', email: '2024-11-25', message: 'New York'},
     {  name: 'Tech Conference', email: '2024-11-25', message: 'New York'},

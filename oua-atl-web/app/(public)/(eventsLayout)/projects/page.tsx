@@ -1,45 +1,44 @@
-/* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import DonationAction from "@/components/actions/DonationAction";
-const baseUrl = process.env.API_BASE
-interface DataResponse {
-  message: string,
-  payload: { data: any[] | [], page: number, totalCount: number, totalPages: number } 
-}
+import { PaginatedResponse, ProjectCollection } from "@/app/lib/types";
+import { fetchData } from "@/lib/utils/api";
+
+
+
 
 export const metadata: Metadata = {
   title: "Projects | Ife Alumni",
   description: "Great Ife Alumni Association Inc. USA - Atlanta Branch. Donations, projects.",
 };
-
-async function getData(): Promise<DataResponse> {
-  if (!baseUrl) throw new Error("API_BASE environment variable is not set.");
-  try {
-    const url = `${baseUrl}/projects?status=active`;
-    const res = await fetch(url, { method: 'GET', credentials: 'include', cache: "no-store", });
-
-    if (!res.ok) {
-      return { message: `Error ${res.status}: ${res.statusText}`, payload: { data: [], page: 1, totalCount: 0, totalPages: 1 } };
-    }
-
-    const result = await res.json();
-    return result;
-  } catch (error: any) {
-    console.error('Fetch Error:', error);
-    return { message: error.message || 'An unexpected error occurred.', payload: { data: [], page: 1, totalCount: 0, totalPages: 1 } };
-  }
+async function getData(): Promise<PaginatedResponse<ProjectCollection[]>> {
+  
+  const data = await fetchData('/projects?status=active')
+  return data
+  
 }
 
 
-const page = async () => {
-  const data: DataResponse = await getData();
-  console.log(data);
-  const projects: any[] | [] = data.payload?.data ?? []
 
-  if (!projects.length) {
-    return <h3>Project not found</h3>;
+const page = async () => {
+   const data: PaginatedResponse<ProjectCollection[]> = await getData()
+  const hasError = data?.error || !data.payload.data.length 
+  const projects: any[] | [] = !hasError ? data.payload.data : []
+
+  if (hasError) {
+    return  (
+      <div className="flex flex-col items-center justify-center text-center py-12">
+      
+      <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+        No Project Found
+      </h3>
+      <p className="text-gray-500 dark:text-gray-400">
+        We couldn’t find any upcoming project at the moment. Please check back later.
+      </p>
+      {data?.message && <p className="text-sm text-red-600">{data.message}</p>}
+    </div>
+    );
   }
   return (
     <div>
@@ -86,7 +85,7 @@ function ProjectCard({id, image, summary, title, goal, raised, status, address}:
         {/* Image Section */}
         <div className="relative w-full lg:w-1/3">
           <Link href={`/projects/${id}`} title={title}>
-            <img
+            <Image
               src={image ?? "/img/project.jpg"}
               alt={title}
               width={420}

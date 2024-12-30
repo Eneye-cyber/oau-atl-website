@@ -5,12 +5,22 @@ import Link from 'next/link'
 import { capturePayment } from '@/lib/utils/api'
 import { PostPaymentResponse } from '@/app/lib/types'
 
+const genMessage = (arg: string) => {
+  if(arg === 'booking') return 'Your ticket purchase has been processed successfully.'
+  if(arg === 'donation') return "Thank you for your contribution. Your donation has been processed successfully."
+  if(arg === 'subcription') return "Your membership subscription has been processed successfully."
+  return "Your payment has been processed successfully"
 
+}
 
-const page = async ({searchParams}: { searchParams: {trxref: string; reference: string} }) => {
+const page = async ( {params, searchParams} : {
+     params: {slug: string}, 
+     searchParams: {trxref: string; reference: string} }
+    ) => {
+  const { slug } = params
   const { trxref, reference } = searchParams
   const paymentStatus: PostPaymentResponse = await capturePayment(trxref, reference)
-
+  const message = genMessage(slug)
 
   return (
     <>
@@ -26,15 +36,14 @@ const page = async ({searchParams}: { searchParams: {trxref: string; reference: 
             <p className="text-gray-600 mb-4">
               {
                 paymentStatus?.error 
-                  ? "Invalid or previously captured payment reference" : 
-                "Your ticket purchase has been processed successfully."
+                  ? "Invalid or previously captured payment reference" : message
               }
             </p>
 
           </CardContent>
           <CardFooter className="flex justify-center">
-            <Link href="/projects">
-              <Button>Return to Projects</Button>
+            <Link href="/">
+              <Button>Return Home</Button>
             </Link>
           </CardFooter>
         </Card>

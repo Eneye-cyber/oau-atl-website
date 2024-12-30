@@ -1,38 +1,36 @@
 import UserProfile from '@/app/ui/cards/UserProfile';
+import { fetchData } from '@/lib/utils/api';
 import { cookies } from 'next/headers';
-const baseUrl = process.env?.API_BASE ?? ''
 
 async function getData(): Promise<{ message: string; payload: any | null }> {
-  if (!baseUrl) throw new Error("API_BASE environment variable is not set.");
   const cookieStore = cookies();
-
   const id = cookieStore.get('x-custom-id')?.value ?? null
-  const incomingCookies = cookieStore.getAll().map(cookie => `${cookie.name}=${encodeURIComponent(cookie.value)}`).join('; ');
-  try {
-    const url = `${baseUrl}/users/${id}/profile`;
-    console.log('Requesting profile from ', url)
+  const url = `/users/${id}/profile`;
+  console.log('Requesting profile from ', url)
+  const result = await fetchData(url)
+  return result
 
-    const res = await fetch(url, { 
-      headers : { Cookie: incomingCookies }, method: 'GET', credentials: 'include' 
-    });
-
-    if (!res.ok) {
-      return { message: `Error ${res.status}: ${res.statusText}`, payload: null };
-    }
-
-    const result = await res.json();
-    return result;
-  } catch (error: any) {
-    console.error('Fetch Error:', error);
-    return { message: error.message || 'An unexpected error occurred.', payload: null };
-  }
 }
 
 const page = async () => {
   const data = await getData();
   return (
     <div>
-      <UserProfile user={data.payload} />
+      {!data.payload ? 
+        (
+          <div className="flex flex-col items-center justify-center text-center py-12">
+          
+          <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+            Something went wrong
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400">
+            Please log out and try again later.
+          </p>
+        </div>
+        )
+        : <UserProfile user={data.payload} />
+      }
+      
     </div>
   )
 }

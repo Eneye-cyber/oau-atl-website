@@ -6,58 +6,41 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card"
+import { fetchData } from "@/lib/utils/api"
+import { EventCollection, PaginatedResponse } from "@/app/lib/types"
 
 
-const baseUrl = process.env.API_BASE;
 
-async function getData(): Promise<any> {
-  try {
-    const url = `${baseUrl}/physical-events/latest`;
-    const res: Response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // Include cookies
-    });
-    
-    if(res.ok) {
-      const result = await res.json()
-      console.log('latest event result', result)
-      return result
-    }
-    const msg = res.statusText
-    throw new Error(msg ?? "Unknown error")
-} catch (error: any) {
-    console.log('error latest event', error)
-    return {message: error.message, payload: []}
-}
-
+async function getData(): Promise<PaginatedResponse<EventCollection[]>> {
+  
+  const data = await fetchData('/physical-events/latest')
+  return data
+  
 }
 
 const eventsFallBack = [
   {
-    image: "/img/reunion.jpg",
-    date: "18th, December 2024",
+    image_url: "/img/reunion.jpg",
+    start_date: "18th, December 2024",
     title: "Alumni End-of-Year Reunion (2024)",
-    description: "Join us for a festive gathering to reconnect with old friends, celebrate accomplishments, and create lasting memories.",
+    content: "Join us for a festive gathering to reconnect with old friends, celebrate accomplishments, and create lasting memories.",
   },
   {
-    date: "May 2023",
+    start_date: "May 2023",
     title: "Project Inception",
-    description: "The idea for our revolutionary product was born, marking the beginning of an exciting journey.",
+    content: "The idea for our revolutionary product was born, marking the beginning of an exciting journey.",
   },
   {
-    date: "July 2023",
+    start_date: "July 2023",
     title: "Team Assembly",
-    description: "We brought together a diverse group of talented individuals to turn our vision into reality.",
+    content: "We brought together a diverse group of talented individuals to turn our vision into reality.",
   }
 ]
 
 const EventSection = async () => {
-  const data = await getData()
-  console.log(data.payload.data, 'event')
-  let events: any[] = data.payload?.data?.length > 0 ? data.payload.data : [...eventsFallBack]
+  const data: PaginatedResponse<EventCollection[]> = await getData()
+  const hasError = data.error || !data.payload.data.length  
+  let events: any[] = !hasError ? data.payload.data : [...eventsFallBack]
   events = events.length > 3 ? events.slice(0, 3) : events
   const premierEvent = events.shift()
 
@@ -71,7 +54,7 @@ const EventSection = async () => {
           <CardContent className="grid gap-4">
             <figure className=" flex items-center space-x-4 border shadow-box shadow-gray-500">
               <Image
-                src={premierEvent.image}
+                src={premierEvent.image_url}
                 alt={premierEvent.title}
                 width={464}
                 height={300}
@@ -84,11 +67,11 @@ const EventSection = async () => {
                   {premierEvent.title}
                 </h5>
                 <p className="text-sm text-muted-foreground">
-                  {premierEvent.date}
+                  {new Date(premierEvent.start_date).toLocaleDateString()}
                 </p>
 
                 <div className="py-3">
-                  {premierEvent.description}
+                  {premierEvent.content}
                 </div>
               </div>
             </div>
@@ -115,9 +98,9 @@ const EventSection = async () => {
                   <h3 className="mb-3 font-bold text-gray-800 text-xl">{event.title}</h3>
                   <time className="mb-3 text-sm font-normal leading-none text-gray-600 flex items-center">
                     <CalendarIcon size={14} className="mr-1" />
-                    {event.date}
+                    {event.start_date}
                   </time>
-                  <p className="text-sm font-normal text-gray-700 leading-snug">{event.description}</p>
+                  <p className="text-sm font-normal text-gray-700 leading-snug">{event.content}</p>
                 </div>
               </div>
             ))}
