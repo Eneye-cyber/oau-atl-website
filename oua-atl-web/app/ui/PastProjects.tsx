@@ -45,14 +45,14 @@ const PastEvents = async () => {
   const data: PaginatedResponse<ProjectCollection[]> = await getData()
   const hasError = data?.error || !data.payload.data.length 
   let projects = !hasError ? data.payload.data : [...projectsFallback]
-  projects = projects.length > 3 ? projects.slice(0, 3) : projects
+  projects = projects.length > 6 ? projects.slice(0, 6) : [...projects, ...projects]
   return (
     <>
       <h2 className="text-4xl tracking-tighter font-semibold text-gray-700 text-balance text-center mb-16">Our Projects</h2>
       <Carousel opts={{ align: "start" }} className="w-full">
-        <CarouselContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <CarouselContent>
           {projects.map((project, index) => (
-            <CarouselItem key={index}>
+            <CarouselItem className="sm:basis-1/2 md:basis-1/3" key={index}>
               <Card className="overflow-hidden transition-all hover:shadow-lg h-full flex flex-col">
                 <CardContent className="p-0">
                   <div className="relative h-48">

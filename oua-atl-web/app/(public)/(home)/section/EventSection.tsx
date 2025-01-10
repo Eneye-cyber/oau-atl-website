@@ -1,22 +1,13 @@
 import Image from "next/image"
 import { CalendarIcon, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
+import { SectionDataProps } from "@/app/lib/types"
  
 import {
   Card,
   CardContent,
 } from "@/components/ui/card"
-import { fetchData } from "@/lib/utils/api"
-import { EventCollection, PaginatedResponse } from "@/app/lib/types"
 
-
-
-async function getData(): Promise<PaginatedResponse<EventCollection[]>> {
-  
-  const data = await fetchData('/physical-events/latest')
-  return data
-  
-}
 
 const eventsFallBack = [
   {
@@ -37,12 +28,10 @@ const eventsFallBack = [
   }
 ]
 
-const EventSection = async () => {
-  const data: PaginatedResponse<EventCollection[]> = await getData()
-  const hasError = data.error || !data.payload.data.length  
-  let events: any[] = !hasError ? data.payload.data : [...eventsFallBack]
-  events = events.length > 3 ? events.slice(0, 3) : events
+const EventSection: React.FC<SectionDataProps> = ({data}) => {
+  const events = [...data.content]
   const premierEvent = events.shift()
+  if(!events || !events.length) return <div></div> 
 
   return (
     <div className="grid md:grid-cols-5">
@@ -54,8 +43,8 @@ const EventSection = async () => {
           <CardContent className="grid gap-4">
             <figure className=" flex items-center space-x-4 border shadow-box shadow-gray-500">
               <Image
-                src={premierEvent.image_url}
-                alt={premierEvent.title}
+                src={premierEvent?.media ?? "/img/placeholder.svg"}
+                alt={premierEvent?.title ?? "premier data"}
                 width={464}
                 height={300}
                 className="bg-gray-200  overflow-hidden w-full object-cover object-center"
@@ -64,14 +53,15 @@ const EventSection = async () => {
             <div className="flex items-center ">
               <div className="flex-1 space-y-1">
                 <h5 className="text-3xl font-bold text-primary leading-none">
-                  {premierEvent.title}
+                  {premierEvent?.title}
                 </h5>
                 <p className="text-sm text-muted-foreground">
-                  {new Date(premierEvent.start_date).toLocaleDateString()}
+
+                  { premierEvent?.subtitle && new Date(premierEvent?.subtitle).toLocaleDateString()}
                 </p>
 
                 <div className="py-3">
-                  {premierEvent.content}
+                  {premierEvent?.text}
                 </div>
               </div>
             </div>
@@ -98,16 +88,16 @@ const EventSection = async () => {
                   <h3 className="mb-3 font-bold text-gray-800 text-xl">{event.title}</h3>
                   <time className="mb-3 text-sm font-normal leading-none text-gray-600 flex items-center">
                     <CalendarIcon size={14} className="mr-1" />
-                    {event.start_date}
+                    {event.subtitle}
                   </time>
-                  <p className="text-sm font-normal text-gray-700 leading-snug">{event.content}</p>
+                  <p className="text-sm font-normal text-gray-700 leading-snug">{event.text}</p>
                 </div>
               </div>
             ))}
           </div>
 
           <div className="text-right pt-4">
-            <Link href="events" className='font-bold text-primary'>More upcoming events &nbsp; <ArrowRight className='inline-flex' /></Link>
+            <Link href={data.action?.href ?? 'events'} className='font-bold text-primary'>{data.action?.label} &nbsp; <ArrowRight className='inline-flex' /></Link>
           </div>
         </div>
       </div>

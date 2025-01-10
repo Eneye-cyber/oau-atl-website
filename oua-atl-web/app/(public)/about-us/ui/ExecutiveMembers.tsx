@@ -17,53 +17,49 @@ export default async function ExecutiveProfiles() {
     })) || [];
 
   return (
-    <section className="w-full py-12 md:py-20 lg:py-24">
-      <div className="container px-4 md:px-6">
-        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-16 lg:mb-20">
-          Our Executives
-        </h2>
-        {members.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {members.map((member) => (
-              <Card key={member.full_name}>
-                <CardContent className="p-4 flex flex-col items-center text-center">
-                  <Image
-                    alt={member.full_name}
-                    className="rounded-full mb-4"
-                    height="100"
-                    src={member.image_url}
-                    style={{
-                      aspectRatio: "100/100",
-                      objectFit: "cover",
-                    }}
-                    width="100"
-                  />
-                  <h3 className="font-bold">{member.full_name}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {member.position_assigned}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center text-center py-12">
-            {/* <Image
+    <>
+      {members.length > 0 ? (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {members.map((member) => (
+            <Card key={member.full_name}>
+              <CardContent className="p-4 flex flex-col items-center text-center">
+                <Image
+                  alt={member.full_name}
+                  className="rounded-full mb-4"
+                  height="100"
+                  src={member.image_url}
+                  style={{
+                    aspectRatio: "100/100",
+                    objectFit: "cover",
+                  }}
+                  width="100"
+                />
+                <h3 className="font-bold">{member.full_name}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {member.position_assigned}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center text-center py-12">
+          {/* <Image
               src="/empty-state.svg"
               alt="No executives found"
               width={200}
               height={200}
               className="mb-8"
             /> */}
-            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
-              No Executives Found
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400">
-              We couldn’t find any executive profiles at the moment. Please check back later.
-            </p>
-          </div>
-        )}
-      </div>
-    </section>
+          <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+            No Executives Found
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400">
+            We couldn’t find any executive profiles at the moment. Please check
+            back later.
+          </p>
+        </div>
+      )}
+    </>
   );
 }

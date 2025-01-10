@@ -2,34 +2,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link'
+import { SectionDataProps } from "@/app/lib/types"
 
 
 
-const slides = [
-  {
-    id: 1, image: '/img/1.jpg',
-    Heading: "NOT JUST FUN AND GAMES",
-    Text: "WE ALSO MEET REGULARLY TO SUPPORT ONE ANOTHER AS WELL AS THE UNIVERSITY OH, AND THERE'S FOOD.",
-    Link: {href: 'events', label: " Find Meeting"}
-
-  },
-  {
-    id: 2, image: '/img/2.jpg',
-    Heading: "THE ART OF GIVING SOMETHING BACK",
-    Text: "FIND OUT ABOUT THE INITIATIVES AND PROJECTS WE ARE WORKING ON AS WELL AS HOW YOU CAN HELP. WE'D LOVE TO HEAR FROM YOU.",
-    Link: {href: 'projects', label: "Join Us Today"}
-
-  },
-  {
-    id: 3, image: '/img/3.jpg',
-    Heading: "NOT JUST FUN AND GAMES",
-    Text: "WE ALSO MEET REGULARLY TO SUPPORT ONE ANOTHER AS WELL AS THE UNIVERSITY OH, AND THERE'S FOOD.",
-    Link: {href: 'contact', label: "Find Meeting"}
-  },
-]
-
-const HeroSlider = () => {
+const HeroSlider: React.FC<SectionDataProps> = ({data}) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const slides = data?.content
 
   useEffect(() => {
     // Automatically switch slides every 5 seconds
@@ -37,7 +16,7 @@ const HeroSlider = () => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 8000);
     return () => clearInterval(interval);
-  }, []);
+  }, [slides]);
 
   const defaultEnter = { opacity: 0 };
   const defaultCenter = { opacity: 1, scale: 1 };
@@ -77,7 +56,7 @@ const HeroSlider = () => {
               variants={variantsArray[index]}
               transition={{ duration: 1, ease: 'easeInOut' }}
               style={{
-                backgroundImage: `url(${slide.image})`,
+                backgroundImage: `url(${slide.media})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 height: '100%',
@@ -96,10 +75,10 @@ const HeroSlider = () => {
                 <div className="absolute inset-0 bg-jet-black opacity-40 z-0"></div>
 
                 <div className="text-center max-w-screen-md relative z-10 md:py-4 md:mt-8 md:px-4">
-                  <h1 className="text-4xl font-bold mb-2">{slide.Heading}</h1>
-                  <p className="text-base font-light mb-4">{slide.Text}</p>
-                  <Link href={`/${slide.Link?.href}`} className="text-sm font-medium border-white border hover:bg-accent hover:border-accent rounded text-white px-6 py-2">
-                    {slide.Link?.label}
+                  <h1 className="text-4xl font-bold mb-2">{slide.title}</h1>
+                  <p className="text-base font-light mb-4">{slide.text}</p>
+                  <Link href={`/${slide.action?.href}`} className="text-sm font-medium border-white border hover:bg-accent hover:border-accent rounded text-white px-6 py-2">
+                    {slide.action?.label}
                   </Link>
                 </div>
 

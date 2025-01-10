@@ -64,9 +64,11 @@ module.exports = {
   			}
   		},
   		fontFamily: {
-  			roboto: ['var(--font-roboto)']
+  			roboto: [
+  				'var(--font-roboto)'
+  			]
   		},
-			utilities: {
+  		utilities: {
   			strikethrough: 'text-decoration: line-through'
   		},
   		height: {
@@ -74,7 +76,9 @@ module.exports = {
   		},
   		animation: {
   			'fade-in': 'fadeIn 1s ease-in-out forwards',
-  			'meteor-effect': 'meteor 5s linear infinite'
+  			'meteor-effect': 'meteor 5s linear infinite',
+  			'accordion-down': 'accordion-down 0.2s ease-out',
+  			'accordion-up': 'accordion-up 0.2s ease-out'
   		},
   		boxShadow: {
   			'custom-1': '0px 8px 16px rgba(160, 160, 160, 0.25)',
@@ -92,6 +96,22 @@ module.exports = {
   				'100%': {
   					transform: 'rotate(215deg) translateX(-500px)',
   					opacity: '0'
+  				}
+  			},
+  			'accordion-down': {
+  				from: {
+  					height: '0'
+  				},
+  				to: {
+  					height: 'var(--radix-accordion-content-height)'
+  				}
+  			},
+  			'accordion-up': {
+  				from: {
+  					height: 'var(--radix-accordion-content-height)'
+  				},
+  				to: {
+  					height: '0'
   				}
   			}
   		},

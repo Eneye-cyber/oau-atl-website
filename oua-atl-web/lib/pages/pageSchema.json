@@ -1,0 +1,427 @@
+{
+  "pages": {
+    "home": {
+      "id": 1,
+      "sections": [
+        {
+          "name": "Home Hero Section",
+          "slug": "home-hero-section",
+          "type": "hero",
+          "header": null,
+          "subheader": null,
+          "content": [
+            {
+              "id": 1,
+              "label": null,
+              "title": "NOT JUST FUN AND GAMES",
+              "subtitle": null,
+              "text": "WE ALSO MEET REGULARLY TO SUPPORT ONE ANOTHER AS WELL AS THE UNIVERSITY OH, AND THERE'S FOOD.",
+              "media": "/img/1.jpg",
+              "action": {
+                "href": "events",
+                "label": "Find Meeting"
+              },
+              "list": null
+            },
+            {
+              "id": 2,
+              "label": null,
+              "title": "THE ART OF GIVING SOMETHING BACK",
+              "subtitle": null,
+              "text": "FIND OUT ABOUT THE INITIATIVES AND PROJECTS WE ARE WORKING ON AS WELL AS HOW YOU CAN HELP. WE'D LOVE TO HEAR FROM YOU.",
+              "media": "/img/2.jpg",
+              "action": {
+                "href": "projects",
+                "label": "Join Us Today"
+              },
+              "list": null
+            },
+            {
+              "id": 3,
+              "label": null,
+              "title": "NOT JUST FUN AND GAMES",
+              "subtitle": null,
+              "text": "WE ALSO MEET REGULARLY TO SUPPORT ONE ANOTHER AS WELL AS THE UNIVERSITY OH, AND THERE'S FOOD.",
+              "media": "/img/3.jpg",
+              "action": {
+                "href": "contact",
+                "label": "Find Meeting"
+              },
+              "list": null
+            }
+          ],
+          "action": null
+        },
+        {
+          "name": "Strip Banner",
+          "slug": "strip-banner",
+          "type": "Banner",
+          "header": null,
+          "subheader": null,
+          "content": [
+            {
+              "id": 4,
+              "label": null,
+              "title": null,
+              "subtitle": null,
+              "text": "Learn about the activities of Great Ife Alumni Atlanta Chapter",
+              "media": "/img/19.jpg",
+              "action": null,
+              "list": null
+            }
+          ],
+          "action": null
+        },
+        {
+          "name": "Home Page Mid Section",
+          "slug": "home-page-mid-section",
+          "type": "Split Section",
+          "header": null,
+          "subheader": null,
+          "content": [
+            {
+              "id": 5,
+              "label": "Events & Reunions",
+              "title": "Learn, Engage, Celebrate",
+              "subtitle": null,
+              "text": "Connect with fellow members through events that inspire and engage, nights and social gatherings. Stay involved and explore what’s coming up!",
+              "media": "/img/reunion.jpg",
+              "action": null,
+              "list": [
+                "Faculty lectures",
+                "Networking nights",
+                "Social gatherings",
+                "Research talks"
+              ]
+            },
+            {
+              "id": 6,
+              "label": "Projects & Donations",
+              "title": "Make a difference",
+              "subtitle": null,
+              "text": "You can support Great Ife students and faculty in a variety of ways and help the University sustain and build upon it's excellence",
+              "media": "/img/scholarship1.jpg",
+              "action": null,
+              "list": [
+                "Transparent Data Access",
+                "Organization-Wide Application",
+                "Scalable Execution Models",
+                "Seamless Automation Features"
+              ]
+            }
+          ],
+          "action": null
+        },
+        {
+          "name": "Home Projects Section",
+          "slug": "projects",
+          "type": "fetch",
+          "header": null,
+          "subheader": null,
+          "content": [
+            {
+              "id": 7,
+              "label": null,
+              "title": "Strengthening Alumni Connection with the University",
+              "subtitle": null,
+              "text": "A lifetime of ac",
+              "media": "https://iwtgqsyjhughrtxcqcys.supabase.co/storage/v1/object/public/oaa_images/1734560625071-811907546.jpg",
+              "action": {
+                "href": "/projects/6602db4d-6e15-4039-b08e-e73db0b346bb",
+                "label": "View Project"
+              },
+              "list": null
+            },
+            {
+              "id": 8,
+              "label": null,
+              "title": "Tatum Ramsey",
+              "subtitle": null,
+              "text": "A lifetime of ac",
+              "media": "https://iwtgqsyjhughrtxcqcys.supabase.co/storage/v1/object/public/oaa_images/1734560541902-53392344.jpg",
+              "action": {
+                "href": "/projects/13c66657-df80-42aa-996f-39c2f1f5f6b3",
+                "label": "View Project"
+              },
+              "list": null
+            },
+            {
+              "id": 9,
+              "label": null,
+              "title": "Strengthening Alumni Connection with the University",
+              "subtitle": null,
+              "text": "A lifetime of ac",
+              "media": "https://iwtgqsyjhughrtxcqcys.supabase.co/storage/v1/object/public/oaa_images/1734560625071-811907546.jpg",
+              "action": {
+                "href": "/projects/6602db4d-6e15-4039-b08e-e73db0b346bb",
+                "label": "View Project"
+              },
+              "list": null
+            }
+          ],
+          "action": null
+        },
+        {
+          "name": "Home Events Section",
+          "slug": "physical-events",
+          "type": "fetch",
+          "header": null,
+          "subheader": null,
+          "content": [
+            {
+              "id": 10,
+              "label": null,
+              "title": "Alumni End-of-Year Reunion (2024)",
+              "subtitle": "2025-11-29T19:10:00+00:00",
+              "text": "Join us for a festive gathering to reconnect with old friends, celebrate accomplishments, and create lasting memories.",
+              "media": "/img/reunion.jpg",
+              "action": null,
+              "list": null
+            },
+            {
+              "id": 11,
+              "label": null,
+              "title": "Project Inception",
+              "subtitle": "May 2023",
+              "text": "The idea for our revolutionary product was born, marking the beginning of an exciting journey.",
+              "media": null,
+              "action": null,
+              "list": null
+            },
+            {
+              "id": 12,
+              "label": null,
+              "title": "Team Assembly",
+              "subtitle": "July 2023",
+              "text": "We brought together a diverse group of talented individuals to turn our vision into reality.",
+              "media": null,
+              "action": null,
+              "list": null
+            }
+          ],
+          "action": {
+            "href": "/events",
+            "label": "More upcoming events"
+          }
+        },
+        {
+          "name": "Ad Banner",
+          "slug": "ad-banner",
+          "type": "Banner",
+          "header": null,
+          "subheader": null,
+          "content": [
+            {
+              "id": 13,
+              "label": null,
+              "title": "Are you new to our website?",
+              "subtitle": null,
+              "text": "We'd love you to join us at an event we have coming up",
+              "media": "/img/19.jpg",
+              "action": {
+                "href": "/events",
+                "label": "Find Out More"
+              },
+              "list": null
+            }
+          ],
+          "action": null
+        },
+        {
+          "name": "Home Grid Section",
+          "slug": "home-grid-section",
+          "type": "Grid",
+          "header": "Get Involved",
+          "subheader": "Let's harness the power of our alumni network. Your involvement will foster a thriving learning environment and create lasting impact.",
+          "content": [
+            {
+              "id": 14,
+              "label": null,
+              "title": "Join An Interest Group",
+              "subtitle": null,
+              "text": "Interest groups give members the opportunity to build connections around shared interests and hobbies.",
+              "media": "/img/int_book.jpg",
+              "action": {
+                "href": "/interest-groups",
+                "label": "Learn More"
+              },
+              "list": null
+            },
+            {
+              "id": 15,
+              "label": null,
+              "title": "The Alumni Experience",
+              "subtitle": null,
+              "text": "Explore the variety of benefits and services available to members of Great Ife Atlanta Alumni community.",
+              "media": "/img/reunion.jpg",
+              "action": {
+                "href": "/members-area",
+                "label": "Learn More"
+              },
+              "list": null
+            },
+            {
+              "id": 16,
+              "label": null,
+              "title": "Membership dues",
+              "subtitle": null,
+              "text": "Join the OAU alumni network! Registration is free, however members are expected to pay membership dues.",
+              "media": "/img/mem-due.jpg",
+              "action": {
+                "href": "/members-area#subscribe",
+                "label": "Learn More"
+              },
+              "list": null
+            }
+          ],
+          "action": null
+        }
+      ],
+      "fallback" : {
+        "name": "Fall Back Section",
+        "slug": "fallback-section",
+        "type": "Misc",
+        "header": "",
+        "subheader": "",
+        "content": [
+          {
+            "id": 4,
+            "label": "",
+            "title": "This is a Fallback section",
+            "subtitle": "",
+            "text": "If you are seeing this, then there is an error with the actual section",
+            "media": "/img/19.jpg",
+            "action": {"href": "", "label": ""},
+            "list": []
+          }
+        ],
+        "action": {"href": "", "label": ""}
+      }
+    },
+    "about": {
+      "id": 1,
+      "sections": [
+        {
+          "name": "About Hero Section",
+          "slug": "about-hero-section",
+          "type": "hero",
+          "header": null,
+          "subheader": null,
+          "content": [
+            {
+              "id": 1,
+              "label": null,
+              "title": "About-us",
+              "subtitle": null,
+              "text": null,
+              "media": "/img/1_alt.jpg",
+              "action": null,
+              "list": null
+            }
+          ],
+          "action": null
+        },
+        {
+          "name": "About Page Mid Section",
+          "slug": "about-page-mid-section",
+          "type": "Split Section",
+          "header": "Our History",
+          "subheader": null,
+          "content": [
+            {
+              "id": 5,
+              "label": null,
+              "title": null,
+              "subtitle": null,
+              "text": "Great Ife Alumni – Atlanta Metro Branch is an alumni association of Obafemi Awolowo University, Ile Ife, Nigeria, formerly known as University of Ife, and fondly remembered by all alumni as ‘Great Ife!’. The branch was officially inaugurated on July 16 2011, and is open to all who attended Great Ife. The local Atlanta Metro Branch continues a strong tradition began by the USA Chapter of the Alumni Association which was inaugurated in Houston, Texas in November 1999. The Houston branch organized the first ever international reunion of Great Ife Alumni in September 2000. Since then, at subsequent international reunions, new branches were chartered.",
+              "media": "/img/placeholder.svg",
+              "action": null,
+              "list": null
+            },
+            {
+              "id": 6,
+              "label": null,
+              "title": null,
+              "subtitle": null,
+              "text": "The Atlanta Metro Branch was chartered at the 2010 international reunion event in Washington DC, where the branch was also tasked with the honor of hosting the 2012 international reunion and 50th golden jubilee anniversary celebration. The inauguration of this local body in Atlanta was an important first step towards making the 2012 event a memorable land mark occasion with dignitaries and alumni members attending from all around the globe. We cordially invite all Great Ife alumni in the Atlanta Metro area to rise to the challenge and contribute to our main objective of creating a strong and vibrant network of Great Ife alumni that will be able to help each other and also contribute to the development of our great alma mater. As aptly stated on the greatifealumni.org web site: \"The hall mark team spirit of Great Ifes (as we refer to ourselves), our idealism and sensitivity to national issues all combined to motivate this spirit of coming together to give back to the university that immensely contributed to the attainment of ourlife goals and ambitions.",
+              "media": "/img/placeholder.svg",
+              "action": null,
+              "list": null
+            }
+          ],
+          "action": null
+        },
+        {
+          "name": "Executive Section",
+          "slug": "executive-section",
+          "type": "Grid",
+          "header": "Our Executives",
+          "subheader": null,
+          "content": [
+            {
+              "id": 1,
+              "label": null,
+              "title": null,
+              "subtitle": null,
+              "text": null,
+              "media": null,
+              "action": null,
+              "list": null
+            }
+          ],
+          "action": null
+        },
+        {
+          "name": "Contact Section",
+          "slug": "contact-section",
+          "type": "form",
+          "header": "Contact Us",
+          "subheader": "Contact Information",
+          "content": [
+            {
+              "id": 1,
+              "label": "Email",
+              "title": null,
+              "subtitle": null,
+              "text": "greatifealumni@gmail.com",
+              "media": null,
+              "action": null,
+              "list": null
+            },
+            {
+              "id": 2,
+              "label": "Phone",
+              "title": null,
+              "subtitle": null,
+              "text": "",
+              "media": null,
+              "action": null,
+              "list": null
+            }
+          ],
+          "action": null
+        }
+      ],
+      "fallback" : {
+        "name": "Fall Back Section",
+        "slug": "fallback-section",
+        "type": "Misc",
+        "header": "",
+        "subheader": "",
+        "content": [
+          {
+            "id": 4,
+            "label": "",
+            "title": "This is a Fallback section",
+            "subtitle": "",
+            "text": "If you are seeing this, then there is an error with the actual section",
+            "media": "/img/19.jpg",
+            "action": {"href": "", "label": ""},
+            "list": []
+          }
+        ],
+        "action": {"href": "", "label": ""}
+      }
+    }
+  }
+}

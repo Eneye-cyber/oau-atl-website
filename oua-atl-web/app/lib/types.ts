@@ -141,3 +141,80 @@ export interface Contact {
   contact_id: string; // UUID
   created_at: string; // ISO 8601 timestamp
 }
+
+
+// Type for the action object
+export type Action = {
+  href: string;
+  label: string;
+};
+
+// Type for content items in sections
+export type ContentItem = {
+  id: number | string;
+  label: string | null;
+  title: string | null;
+  subtitle: string | null;
+  text: string | null;
+  media: string | null;
+  action: Action | null;
+  list: string[] | null;
+};
+
+// Type for a single section
+export type Section = {
+  name: string;
+  slug: string;
+  type: string;
+  header: string | null;
+  subheader: string | null;
+  content: ContentItem[];
+  action: Action | null;
+};
+
+// Type for the home page data
+export type HomeData = {
+  id: number;
+  sections: Section[];
+  fallback: Section
+};
+
+// Type for the props of a component receiving section data
+export type SectionDataProps = {
+  data: Section;
+};
+
+
+export type Content = {
+  id: number | string
+  label: string | null
+  title: string | null
+  subtitle: string | null
+  text: string | null
+  media: string | null
+  action: { href: string; label: string } | null
+  list: string[] | null
+}
+
+
+export type PageData = {
+  id: number
+  sections: Section[]
+  fallback: Section
+
+}
+
+export type JsonData = {
+  pages: {
+    [key: string]: PageData
+  }
+}
+
+export type PageSchemaResponse = {pageSchema?: JsonData; routeList: string[]; message?: string}
+
+type SchemaResponse = {
+  message: string;
+};
+
+
+type ApiResponse = SchemaResponse | ErrorResponse;

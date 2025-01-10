@@ -2,6 +2,7 @@
 import { PostPaymentResponse } from '@/app/lib/types';
 import { cookies } from 'next/headers'
 const baseUrl = process.env.API_BASE;
+const appUrl = process.env.APP_URL;
 
 export async function fetchData(path: string, cache: RequestCache = 'default' ) {
   const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
@@ -32,6 +33,73 @@ export async function fetchData(path: string, cache: RequestCache = 'default' ) 
     // Log or handle the error
     console.error("Failed to fetch stats:", error);
     return { message: error?.message ?? 'Failed to fetch data', error: true}
+  }
+}
+
+export async function fetchPageSchema(cache: RequestCache = 'default' ) {
+  const url = `${appUrl}/api/schema`;
+  console.log('utl')
+  
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Include cookies
+      cache: cache, // Force no caching for fresh data
+    });
+
+    // Check if the response is okay (status 2xx)
+    if (!res.ok) {
+      // Handle non-successful HTTP statuses
+      const errorMessage = `Error: ${res.status} ${res.statusText}`;
+      throw new Error(errorMessage);
+    }
+
+    // Attempt to parse the JSON
+    const data = await res.json();
+    if(data.message && !data.pageSchema) {
+      throw new Error(data.message);
+    }
+
+    return data;
+
+  } catch (error: any) {
+    // Log or handle the error
+    console.error("Failed to fetch stats:", error);
+    return { message: error?.message ?? 'Failed to fetch data', error: true}
+  }
+}
+
+export async function fetchRouteList(cache: RequestCache = 'default' ) {
+  const url = `${appUrl}/api/routes`;
+  
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Include cookies
+      cache: cache, // Force no caching for fresh data
+    });
+
+    // Check if the response is okay (status 2xx)
+    if (!res.ok) {
+      // Handle non-successful HTTP statuses
+      const errorMessage = `Error: ${res.status} ${res.statusText}`;
+      throw new Error(errorMessage);
+    }
+
+    // Attempt to parse the JSON
+    const data = await res.json();
+    return data;
+
+  } catch (error: any) {
+    // Log or handle the error
+    console.error("Failed to fetch stats:", error);
+    return { message: error?.message ?? 'Failed to fetch data', data: [], error: true}
   }
 }
 
