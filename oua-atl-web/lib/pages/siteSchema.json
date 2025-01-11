@@ -1,0 +1,247 @@
+{
+  "general": {
+    "social": {
+      "id": 1,
+      "sections": [
+        {
+          "name": "Social Media Links",
+          "slug": "social links",
+          "type": "Navigation",
+          "header": null,
+          "subheader": null,
+          "content": [
+            {
+              "id": 1,
+              "label": null,
+              "title": null,
+              "subtitle": null,
+              "text": null,
+              "media": null,
+              "action": null,
+              "list": [
+                {
+                  "label": "facebook",
+                  "href": "https://www.facebook.com"
+                },
+                {
+                  "label": "twitter",
+                  "href": "https://www.x.com"
+                },
+                {
+                  "label": "google",
+                  "href": "https://www.google.com"
+                },
+                {
+                  "label": "linkedIn",
+                  "href": "https://www.linkedin.com"
+                },
+                {
+                  "label": "instagram",
+                  "href": "https://www.instagram.com"
+                }
+              ]
+            }
+          ],
+          "action": null
+        }
+      ] 
+    },
+    "header": {
+      "id": 2,
+      "sections": [
+        {
+          "name": "Header Navigation",
+          "slug": "header-navigation",
+          "type": "Menu",
+          "header": null,
+          "subheader": null,
+          "content": [
+            {
+              "id": 1,
+              "label": null,
+              "title": null,
+              "subtitle": null,
+              "text": null,
+              "media": "/img/logo.png",
+              "action": null,
+              "list": [
+                {
+                  "label": "Home",
+                  "href": "/"
+                },
+                {
+                  "label": "About Us",
+                  "href": "/about-us"
+                },
+                {
+                  "label": "Events",
+                  "href": "/events"
+                },
+                {
+                  "label": "Projects",
+                  "href": "/projects"
+                },
+                {
+                  "label": "Gallery",
+                  "href": "/gallery"
+                },
+                {
+                  "label": "Members",
+                  "href": "/members-area",
+                  "children": [
+                    {
+                      "label": "Members Area",
+                      "href": "/members-area"
+                    },
+                    {
+                      "label": "Interest Groups",
+                      "href": "/interest-groups"
+                    }
+                  ]
+                },
+                {
+                  "label": "Contact",
+                  "href": "/contact"
+                }
+              ]
+            }
+          ],
+          "action": null
+        }
+      ]
+    },
+    "footer": {
+      "id": 2,
+      "sections": [
+        {
+          "name": "Footer",
+          "slug": "footer",
+          "type": "Grid",
+          "header": null,
+          "subheader": null,
+          "content": [
+            {
+              "id": "footer-1",
+              "label": null,
+              "title": "Who We Are",
+              "subtitle": null,
+              "text": "Great Ife Alumni - Atlanta Metro Branch is an alumni association of Obafemi Awolowo University, Ile Ife, Nigeria, formerly known as University of Ife, and fondly remembered by all alumni as ‘Great Ife!’. The branch was officially inaugurated on July 16 2011, and is open to all who attended GreatIfe. The local Atlanta Metro Branch continues a strong tradition began by the USA Chapter of the Alumni Association.",
+              "media": null,
+              "action": {"href": "about-us", "label": "Read More..."},
+              "list": null
+            },
+            {
+              "id": "footer-2",
+              "label": null,
+              "title": "Quick Links",
+              "subtitle": null,
+              "text": null,
+              "media": null,
+              "action": null,
+              "list": [
+                {
+                  "label": "Who We Are",
+                  "href": "/about-us"
+                },
+                {
+                  "label": "Become a Member",
+                  "href": "/members/register"
+                },
+                {
+                  "label": "Edit Profile",
+                  "href": "/members/dashboard"
+                },
+                {
+                  "label": "Pay Membership Dues",
+                  "href": "/members/dashboard"
+                },
+                {
+                  "label": "Upcoming Events",
+                  "href": "/events"
+                },
+                {
+                  "label": "Fundraising Projects",
+                  "href": "/projects"
+                }
+              ]
+            },
+            {
+              "id": "footer-3",
+              "label": null,
+              "title": "Coming Soon",
+              "subtitle": null,
+              "text": null,
+              "media": null,
+              "action": null,
+              "list": [
+                {
+                  "label": "",
+                  "href": ""
+                },
+                {
+                  "label": "",
+                  "href": ""
+                },
+                {
+                  "label": "",
+                  "href": ""
+                },
+                {
+                  "label": "",
+                  "href": ""
+                },
+                {
+                  "label": "",
+                  "href": ""
+                },
+                {
+                  "label": "",
+                  "href": ""
+                }
+                
+              ]
+            },
+            {
+              "id": "footer-4",
+              "label": null,
+              "title": "Latest Tweets",
+              "subtitle": null,
+              "text": null,
+              "media": null,
+              "action": null,
+              "list": [
+                {
+                  "label": "",
+                  "href": ""
+                },
+                {
+                  "label": "",
+                  "href": ""
+                },
+                {
+                  "label": "",
+                  "href": ""
+                },
+                {
+                  "label": "",
+                  "href": ""
+                },
+                {
+                  "label": "",
+                  "href": ""
+                },
+                {
+                  "label": "",
+                  "href": ""
+                }
+                
+              ]
+            }
+          ],
+          "action": null
+        }
+      ]
+    }
+
+  }
+}

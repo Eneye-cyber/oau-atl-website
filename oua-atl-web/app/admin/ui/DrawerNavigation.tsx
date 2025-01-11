@@ -43,6 +43,12 @@ const links = [
     icon: '/icons/admin/enquiries.svg',
     activeIcon: '/icons/admin/enquiries.svg',
   },
+  {
+    label: 'Settings',
+    href: '/admin/settings',
+    icon: '/icons/admin/enquiries.svg',
+    activeIcon: '/icons/admin/enquiries.svg',
+  },
 ];
 
 const DrawerNavigation = () => {

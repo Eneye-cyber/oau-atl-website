@@ -48,7 +48,7 @@ const LatestMembers = async () => {
 
   return (
     <>
-        <DataTable title="Latest Members" columns={columns} data={data.payload?.data ?? []}  showActions={true} />
+        <DataTable title="Latest Members" columns={columns} data={data.payload?.data ?? []}  showActions={false} />
     </>
   )
 }

@@ -41,6 +41,27 @@ export type AuthResponse = {
   };
 };
 
+export type UserProfile = {
+  graduation_year: string;
+  field_of_study: string;
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  username: string;
+  address: string;
+  address2: string | null;
+  city: string;
+  zip_code: number;
+  phone: string;
+  birth_date: string; // ISO 8601 format
+  hobbies: string[]; // Array of strings
+  is_volunteering: boolean;
+  verified: boolean;
+  membership_expired: boolean;
+  email_verified: boolean;
+};
+
 export type PaymentResponse = {
   message: string;
   payload?: {
@@ -158,7 +179,7 @@ export type ContentItem = {
   text: string | null;
   media: string | null;
   action: Action | null;
-  list: string[] | null;
+  list: string[] | ListItem[] | null;
 };
 
 // Type for a single section
@@ -193,7 +214,7 @@ export type Content = {
   text: string | null
   media: string | null
   action: { href: string; label: string } | null
-  list: string[] | null
+  list: string[] | ListItem[] | null
 }
 
 
@@ -208,6 +229,20 @@ export type JsonData = {
   pages: {
     [key: string]: PageData
   }
+}
+export interface SiteSchema {
+  general: {
+    social: PageData;
+    header: PageData;
+    footer: PageData;
+  };
+}
+
+
+export interface ListItem {
+  label: string;
+  href: string;
+  children?: ListItem[]; // Optional children for nested navigation
 }
 
 export type PageSchemaResponse = {pageSchema?: JsonData; routeList: string[]; message?: string}
