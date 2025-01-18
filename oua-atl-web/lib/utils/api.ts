@@ -36,8 +36,8 @@ export async function fetchData(path: string, cache: RequestCache = 'default' ) 
   }
 }
 
-export async function fetchPageSchema(cache: RequestCache = 'default' ) {
-  const url = `${appUrl}/api/schema`;
+export async function fetchPageSchema(slug: string, cache: RequestCache = 'default' ) {
+  const url = `${appUrl}/api/schema?slug=${slug}`;
   console.log('utl')
   
   try {

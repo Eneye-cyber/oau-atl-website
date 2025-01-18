@@ -13,11 +13,11 @@ const baseUrl = process.env?.APP_URL ?? "http://localhost:3000"
 
 // Fetch the `home` object
 const getData = async () => {
-  const response = await fetch(`${baseUrl}/api/content`,{
-    cache: "no-store"
+  const response = await fetch(`${baseUrl}/api/content?slug=home`,{
+    cache: "default"
   });
-  const data = await response.json();
-  return data.pages.home;
+  const result = await response.json();
+  return result.data.pages.home;
 };
 
 
