@@ -33,7 +33,7 @@ export async function GET(req: Request) {
       console.error(`Error from API: ${externalResponse.status} - ${errorResponse}`);
 
       return NextResponse.json(
-        { error: 'Failed to delete', details: errorResponse },
+        { error: 'Failed to fetch', details: errorResponse },
         { status: externalResponse.status }
       );
     }
@@ -138,13 +138,6 @@ const transformObject = (input: any) => {
 };
 
 export async function PUT(req: Request, { params }: {params: {id: string}}) {
-  if (req.method !== 'PUT') {
-    return NextResponse.json(
-      { error: 'Method Not Allowed' },
-      { status: 405 }
-    );
-  }
-
   try {
     console.log('Process Event form');
     const { id } = params;

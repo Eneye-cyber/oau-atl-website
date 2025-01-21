@@ -83,6 +83,15 @@ export type PostPaymentResponse = {
   error?: boolean
 };
 
+export interface EnquiryCollection {
+  email: string;
+  closed: boolean;
+  message: string;
+  subject: string;
+  full_name: string;
+  contact_id: string;
+  created_at: string; // ISO 8601 format date-time string
+}
 
 export type ProjectCollection = {
   location: Location;
