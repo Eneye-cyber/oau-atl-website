@@ -83,13 +83,13 @@ export default async function page({ params }: { params: { id: string } }) {
                   Field of Study:{" "}
                   <span className="font-medium">
                     {user?.field_of_study ??
-                      "User field of study not returned from backend"}
+                      (<span className="text-red-600">User field of study not returned from backend</span>)}
                   </span>{" "}
                   <br />
                   Graduation Year:{" "}
                   <span className="font-medium">
                     {user.graduation_year ??
-                      " User graduation year not returned from backend"}
+                      (<span className="text-red-600">User graduation year not returned from backend</span>)}
                   </span>
                 </p>
               </div>
@@ -120,6 +120,17 @@ export default async function page({ params }: { params: { id: string } }) {
                     }
                   >
                     {user.email_verified ? "Yes" : "No"}
+                  </span>
+                </li>
+
+                <li>
+                  Verified:{" "}
+                  <span
+                    className={
+                      user.verified ? "text-green-600" : "text-red-600"
+                    }
+                  >
+                    {user.verified ? "Yes" : "No"}
                   </span>
                 </li>
                 <li>

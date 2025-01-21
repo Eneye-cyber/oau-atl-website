@@ -1,94 +1,85 @@
-import { Metadata } from 'next'
-import DataTable from '@/app/ui/DataTable'
-import { Separator } from "@/components/ui/separator"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+import { Metadata } from "next";
+import DataTable from "@/app/ui/DataTable";
+import { Separator } from "@/components/ui/separator";
+import { PaginationComponent } from "@/components/ui/pagination";
+
+import { fetchData } from "@/lib/utils/api";
+import { DonationTable } from "@/lib/utils/tables";
+import { PaginatedResponse, DonationCollection } from "@/app/lib/types";
 
 export const metadata: Metadata = {
   title: "Donations | Great Ife Alumni",
 };
 
-const page = () => {
-  const columns = [
-    { key: 'index', label: 's/n' },
-    { key: 'name', label: 'Full name' },
-    { key: 'email', label: 'Email' },
-    { key: 'project', label: 'Project' },
-    { key: 'amount', label: 'Amount donated' },
-    { key: 'date', label: 'Date' },
-  ];
+async function getData(
+  pageNumber: number
+): Promise<{
+  donationsResponse: PaginatedResponse<DonationCollection[]>;
+  donationsTotal: { message: string; payload: number; error?: boolean };
+}> {
+  const donationsRequest = fetchData(`donations?page=${pageNumber}`);
+  const sumTotalRequest = fetchData("/donations/sum-total");
 
-  const data = [
-    { index: 1, name: 'Funke Ajoke', email: "samplemail@gmail.com", project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 2, name: 'Sunny Ade', email: "samplemail@gmail.com", project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 3, name: 'Bayo Bayero', email: "samplemail@gmail.com", project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 4, name: 'Sunny Ade', email: "samplemail@gmail.com", project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 5, name: 'Bayo Bayero', email: "samplemail@gmail.com", project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 6, name: 'Funke Ajoke', email: "samplemail@gmail.com", project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 7, name: 'Sunny Ade', email: "samplemail@gmail.com", project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 8, name: 'Bayo Bayero', email: "samplemail@gmail.com", project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 9, name: 'Sunny Ade', email: "samplemail@gmail.com", project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-    { index: 10, name: 'Bayo Bayero', email: "samplemail@gmail.com", project: "Restoration project", amount: "$100", date: "Aug 5, 2025" },
-  ];
+  // Wait for both promises to resolve
+  const [donations, sumTotalResponse] = await Promise.all([
+    donationsRequest,
+    sumTotalRequest,
+  ]);
+
+  return { donationsResponse: donations, donationsTotal: sumTotalResponse };
+}
+
+const page = async ({ searchParams }: { searchParams: { page: string } }) => {
+  const page = Number(searchParams.page) || 1;
+
+  const { donationsResponse, donationsTotal } = await getData(page);
+
+  const columns = DonationTable;
+  const donations = donationsResponse.payload.data;
+
   return (
     <article className="p-6 container ">
-
       <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6">
         <div className="flex items-end justify-between py-6">
-          <div>
-            <div className="flex items-center gap-2 text-gray-600 text-sm">
-              <span>Total amount donated</span>
+          {donationsTotal.error ? (
+            <div className="text-red-500 text-sm">
+              Failed to load total donations. Please try again later.
             </div>
-            <h1 className="text-2xl font-semibold">$20,000 USD</h1>
-          </div>
-
+          ) : (
+            <div>
+              <div className="flex items-center gap-2 text-gray-600 text-sm">
+                <span>Total amount donated</span>
+              </div>
+              <h1 className="text-2xl font-semibold">
+                ${donationsTotal.payload}
+              </h1>
+            </div>
+          )}
         </div>
       </section>
 
+      <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6">
+        {donationsResponse.error ? (
+          <div className="text-red-500 text-sm">
+            Failed to load donations data. Please check your connection or try
+            again later.
+          </div>
+        ) : (
+          <>
+            <DataTable title="Donations" columns={columns} data={donations} />
 
+            <Separator className="my-6 bg-gray-950/5" />
 
+            <PaginationComponent
+              path={"/admin/donations"}
+              page={page}
+              total={donationsResponse?.payload?.totalPages || 1}
+            />
+          </>
+        )}
+      </section>
+    </article>
+  );
+};
 
-    <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6">
-      <DataTable title="Donations" columns={columns} data={data} />
-
-      <Separator className="my-6 bg-gray-950/5" />
-
-      <div className="flex">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious href="#" />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" isActive>
-                2
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#">3</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext href="#" />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
-    </section>
-  </article>
-  )
-}
-
-export default page
+export default page;

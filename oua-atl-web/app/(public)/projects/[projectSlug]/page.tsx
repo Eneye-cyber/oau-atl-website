@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import ProjectCard from '@/components/ProjectCard';
 import { fetchData } from "@/lib/utils/api";
 import { ProjectCollection } from "@/app/lib/types";
+import { calculatePercentage } from "@/lib/utils";
 
 interface ProjectResource extends ProjectCollection {
   id?: string;
@@ -14,7 +15,6 @@ export const metadata: Metadata = {
   description: "Great Ife Alumni Association Inc. USA - Atlanta Branch. Donations, projects.",
 };
 
-const baseUrl = process.env.API_BASE
 
 async function getData(id: string): Promise<{ message: string; payload: any | null }> {
   const url = `/projects/${id}`;
@@ -26,7 +26,6 @@ async function getData(id: string): Promise<{ message: string; payload: any | nu
 
 const page = async ({ params }: { params: { projectSlug: string } }) => {
   const data: {message: string, payload: any | null} = await getData(params.projectSlug);
-  console.log(data);
   const project: ProjectResource | null = data.payload ?? null
   
 
@@ -37,10 +36,7 @@ const page = async ({ params }: { params: { projectSlug: string } }) => {
   if(project) {
     project['id'] = params.projectSlug
   }
-  function calculatePercentage(current: number, target: number) {
-    if (target === 0) return 0; // Avoid division by zero
-    return (current / target) * 100;
-  }
+  
   const percentage = calculatePercentage(Number(project.amount_collected), Number(project.amount_goal));
 
   return (

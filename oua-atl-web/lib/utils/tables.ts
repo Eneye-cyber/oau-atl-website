@@ -1,10 +1,11 @@
 export const DonationTable = [
-  { key: 'index', label: 's/n' },
-  { key: 'name', label: 'Full name' },
-  { key: 'project', label: 'Project' },
-  { key: 'amount', label: 'Amount donated' },
-  { key: 'date', label: 'Date' },
-]
+    // { key: 'index', label: 's/n' },
+    { key: "full_name", label: "Full name" },
+    { key: "email", label: "Email" },
+    { key: "project_title", label: "Project" },
+    { key: "amount_donating", label: "Amount donated" },
+    { key: "donated_at", label: "Date", type: "date" },
+  ];
 
 export const EventColumns = [
   { key: 'image_url', label: 'Image' },

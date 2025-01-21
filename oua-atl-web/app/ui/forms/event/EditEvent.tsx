@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { EditEventSchema } from "@/app/lib/schema"
 import { EventResponseObject } from "@/app/lib/types";
 import { formatDateForInput } from "@/lib/utils";
+import { toast } from 'sonner';
 
 type EventFormData = z.infer<typeof EditEventSchema>;
 
@@ -43,7 +44,6 @@ const EditEvent = ({event}: {event: EventResponseObject}) => {
 
     try {
       console.log('Form Errors:', errors);
-      console.log('Form Data:', data);
       // Send data to your backend
       const response: Response = await fetch(`/api/admin/events/${event.event_id}`, {
         method: 'PUT',
@@ -51,7 +51,6 @@ const EditEvent = ({event}: {event: EventResponseObject}) => {
         credentials: "include",
     });
 
-      console.log('event response', response)
 
       if(response.status === 401) {
         const result = await response.json();
@@ -64,12 +63,11 @@ const EditEvent = ({event}: {event: EventResponseObject}) => {
 
       if(response.ok) {
         const result = await response.json();
-        console.log('result', result)
         router.push("/admin/events");
-        return alert('Event Updated successfully!');
+        return toast.success('Event Updated successfully!');
       }
 
-      alert('Failed to update event.');
+      toast.error(`'Failed to update event`, { description: response.statusText });
       
     } catch (error) {
       console.error('Error submitting form:', error);

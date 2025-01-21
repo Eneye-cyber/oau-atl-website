@@ -3,6 +3,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation"; 
+import { toast } from "sonner";
 
 const accountSchema = z.object({
   email: z.string().min(3, 'Email is required').email('Invalid email address'),
@@ -48,10 +49,11 @@ const AccountForm = () => {
 
       if(response.ok) {
         const result = await response.json();
-        console.log('result', result)
+        toast.success("Administrator login successful")
         router.push("/admin");
+        return 
       }
-  
+      
     } catch (err) {
       alert('Server unavailable')
     }

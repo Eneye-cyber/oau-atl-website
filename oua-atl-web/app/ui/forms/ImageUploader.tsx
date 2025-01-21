@@ -2,6 +2,7 @@
 import { InputHTMLAttributes, useState, forwardRef, useEffect } from "react";
 import { useFormContext } from "react-hook-form"; // Import form context
 import { LucideTrash2 } from 'lucide-react'
+import { toast } from "sonner";
 
 const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>((props, ref) => {
   const [fileName, setFileName] = useState<string>(""); // Stores the file name
@@ -40,7 +41,7 @@ const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInput
       });
 
       if (!response.ok) {
-        throw new Error("File upload failed!");
+        throw new Error(response.statusText);
       }
 
       const data = await response.json();
@@ -54,7 +55,7 @@ const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInput
     } catch (error) {
       console.error(error);
         setValue(props.name || "imageUrl", ''); // Update form state
-        alert("File upload failed. Please try again.");
+        toast.error("File upload failed. Please try again.", { description: `Backend error: ${(error as Error)?.message}`})
     } finally {
       setIsUploading(false);
     }

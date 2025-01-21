@@ -156,6 +156,17 @@ export const CreateProjectSchema = z.object({
   postalCode: z.string().min(1, 'Location postal code is required'),
 });
 
+export const EditProjectSchema = z.object({
+  amountGoal: z.union([z.number().min(0, "Amount goal must be at least 0"), z.string().transform((val) => Number(val))]), // Ensure it's non-negative
+  projectText: z.string().min(1, "Project description is required"),
+  imageURL: z.string().url("Invalid image URL"),
+  projectTitle: z.string().min(1, "Project title is required"),
+  deadline: z.string().min(1, "Deadline is required"),
+  city: z.string().min(1, 'Location city is required'),
+  state: z.string().min(1, 'Location State is required'),
+  address: z.string(),
+});
+
 export const ExecutiveSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   imageUrl: z

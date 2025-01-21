@@ -5,6 +5,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function calculatePercentage(current: number, target: number) {
+  if (target === 0) return 0; // Avoid division by zero
+  return (current / target) * 100;
+}
 
 export const debounce = <T extends (...args: any[]) => void>(func: T, delay: number): ((...args: Parameters<T>) => void) => {
   let timeout: ReturnType<typeof setTimeout>;
@@ -14,6 +18,44 @@ export const debounce = <T extends (...args: any[]) => void>(func: T, delay: num
     timeout = setTimeout(() => func(...args), delay);
   };
 };
+
+export function calculateTimeDifference(dateString: string): string {
+  const inputDate = new Date(dateString);
+  const currentDate = new Date();
+
+  if (isNaN(inputDate.getTime())) {
+    throw new Error("Invalid date string");
+  }
+
+  // Calculate the difference in milliseconds
+  const diffInMilliseconds = currentDate.getTime() - inputDate.getTime();
+
+  if (diffInMilliseconds < 0) {
+    return "The date is in the future.";
+  }
+
+  // Calculate the difference in days
+  const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
+  // Calculate the difference in months
+  const diffInMonths =
+    currentDate.getFullYear() * 12 +
+    currentDate.getMonth() -
+    (inputDate.getFullYear() * 12 + inputDate.getMonth());
+
+  // If the difference is less than a month, return the difference in days
+  if (diffInMonths < 1) {
+    return `${diffInDays} days ago`;
+  }
+
+  // Otherwise, return the difference in months
+  return `${diffInMonths} months ago`;
+}
+
+// Example usage
+// const dateStr = "2025-11-27T17:56:22.092Z";
+// console.log(calculateTimeDifference(dateStr));
+
 
 export function formatDateForInput(dateString: string) {
   if (!dateString) return '';

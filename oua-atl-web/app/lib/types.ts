@@ -97,6 +97,39 @@ export type ProjectCollection = {
   amount_collected: number;
 };
 
+export interface ProjectResponseObject {
+  image_url: string;
+  project_title: string;
+  project_text: string;
+  date_created: string; // ISO 8601 date format
+  is_featured: boolean;
+  deadline: string; // ISO 8601 date format
+  donation_count: string; // Represented as a string
+  amount_collected: string; // Represented as a string
+  amount_goal: string; // Represented as a string
+  progress: string; // Represented as a string
+  location: {
+    city: string;
+    state: string;
+    address: string | null; // Can be null
+    latlong: {
+      lat: string; // Latitude as string
+      long: string; // Longitude as string
+    };
+  };
+}
+
+export interface ProjectDonationResponse {
+  full_name: string;
+  project_title: string;
+  amount_donating: string; // Using string to match the provided format for the amount
+  donated_at: string; // ISO 8601 formatted string for date and time
+}
+
+export interface DonationCollection extends ProjectDonationResponse{
+  email: string
+}
+
 
 
 export interface GalleryCollection {

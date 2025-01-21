@@ -35,8 +35,6 @@ async function getData(): Promise<any[]> {
 
 const Page = async () => {
   const [ donations, enquiries, events, projects, overdue, subscribers] = await getData();
-;
-
   return (
     <article className="p-6 container">
       <div className="flex items-end justify-between py-6">

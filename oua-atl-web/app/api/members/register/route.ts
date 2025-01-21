@@ -34,32 +34,29 @@ export async function POST(req: Request) {
     });
 
     // Handle response from the external API
-    if (!response.ok) {
-      const errorResponse = await response.json();
-      console.error('Sign up failed:', errorResponse);
-      return NextResponse.json(
-        { error: 'Sign up failed', details: errorResponse },
-        { status: response.status }
-      );
-    }
-
-    const result = await response.json();
+    if (response.ok) {
+      const result = await response.json();
 
     return NextResponse.json(
       { ...result },
       { status: 200 }
     );
+      
+    }
 
-    return NextResponse.json(
-      { error: 'Testing error' },
-      { status: 500 }
-    );
+    const errorResponse = response.statusText;
+      return NextResponse.json(
+        { error: 'Sign up failed', details: errorResponse },
+        { status: response.status, statusText: errorResponse }
+      );
+
+
   } catch (error: any) {
     console.error('Server error:', error);
 
     return NextResponse.json(
       { error: 'Internal Server Error', details: error?.message },
-      { status: 500 }
+      { status: 500, statusText: (error as Error)?.message }
     );
   }
 }

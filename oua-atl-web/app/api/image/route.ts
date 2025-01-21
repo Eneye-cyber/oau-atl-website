@@ -3,15 +3,9 @@ import { NextResponse } from 'next/server';
 const baseUrl = process.env.API_BASE
 
 export async function POST(req: Request): Promise<NextResponse> {
-  if (req.method !== 'POST') {
-    return NextResponse.json(
-      { error: 'Method Not Allowed' },
-      { status: 405 }
-    );
-  }
+
 
   try {
-    console.log('Processing Image Upload');
 
     // Check content type
     const contentType = req.headers.get('content-type');
@@ -71,7 +65,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     console.error('Server error:', error);
     return NextResponse.json(
       { error: 'Internal Server Error', details: (error as Error)?.message },
-      { status: 500 }
+      { status: 500, statusText: (error as Error)?.message }
     );
   }
 }

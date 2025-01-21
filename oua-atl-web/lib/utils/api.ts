@@ -4,7 +4,7 @@ import { cookies } from 'next/headers'
 const baseUrl = process.env.API_BASE;
 const appUrl = process.env.APP_URL;
 
-export async function fetchData(path: string, cache: RequestCache = 'default' ) {
+export async function fetchData(path: string, cache: RequestCache = 'no-store' ) {
   const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
   const url = `${baseUrl}/${normalizedPath}`;
   
@@ -38,7 +38,6 @@ export async function fetchData(path: string, cache: RequestCache = 'default' ) 
 
 export async function fetchPageSchema(slug: string, cache: RequestCache = 'default' ) {
   const url = `${appUrl}/api/schema?slug=${slug}`;
-  console.log('utl')
   
   try {
     const res = await fetch(url, {
@@ -107,7 +106,7 @@ export async function fetchRouteList(cache: RequestCache = 'default' ) {
 export const capturePayment = async ( trxref: string, reference: string): Promise<PostPaymentResponse> => {
   const cookieStore = cookies();
   const incomingCookies = cookieStore.getAll().map(cookie => `${cookie.name}=${encodeURIComponent(cookie.value)}`).join('; ');
-  console.log(incomingCookies)
+
   try {
     const url = `${baseUrl}/payments/capture?trxref=${trxref}&reference=${reference}`
     const res: Response = await fetch(url, 
@@ -122,7 +121,6 @@ export const capturePayment = async ( trxref: string, reference: string): Promis
 
     if(res.ok) {
       const result: PostPaymentResponse = await res.json()
-      console.log(result,'payment capture result')
       return result
     }
     
@@ -138,7 +136,6 @@ export const capturePayment = async ( trxref: string, reference: string): Promis
 
 export const logout = async (userId: string, baseUrl: string, cookies?: any): Promise<boolean> => {
   try {
-    console.log('Logging out...', cookies);
     const response = await fetch(`${baseUrl}/admins/${userId}/logout`, {
       method: 'POST',
       headers: {
