@@ -1,14 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
-'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { type FC } from 'react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { LuMoreHorizontal, LuEye, LuFileEdit, LuTrash2 } from 'react-icons/lu';
 import Image from 'next/image'
-import Link from 'next/link';
 import { formatDate } from '@/lib/utils'
+import ActionMenu from "@/components/actions/ActionMenu";
+
 interface TableProps {
   columns: { key: string; label: string; type?: string}[]; // Defines table columns with a key and label
   data: Record<string, any>[]; // Array of objects where each object represents a row
@@ -37,98 +32,7 @@ const TableImageCell: FC<{ src: string }> = ({ src }) => (
   </td>
 );
 
-const ActionMenu = ({ path, id }: { path?: string; id?: string }) => {
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const router = useRouter();
 
-  const handleDelete = async () => {
-    if (!id || !path) return;
-
-    setIsDeleting(true);
-
-    try {
-      const response = await fetch(`/api/admin/${path}/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete the item.");
-      }
-
-      // Refresh or redirect after deletion
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-      alert("Failed to delete. Please try again.");
-    } finally {
-      setIsDeleting(false);
-      setShowDeleteModal(false);
-    }
-  };
-
-  return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <div className="h-8 w-8 p-0 mx-auto">
-            <span className="sr-only">Open menu</span>
-            <LuMoreHorizontal />
-          </div>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-white w-40" align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuSeparator className="bg-gray-950/5" />
-          <DropdownMenuItem>
-            <Link href={`/admin/${path}/${id}`}>
-              <LuEye className="inline-block mr-1" />
-              View
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link href={`/admin/${path}/${id}/edit`}>
-              <LuFileEdit className="inline-block mr-1" />
-              Edit
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer" onClick={() => setShowDeleteModal(true)}>
-            <LuTrash2 className="inline-block" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-md shadow-lg">
-            <h2 className="text-lg font-semibold">Confirm Deletion</h2>
-            <p className="text-sm text-gray-700">
-              Are you sure you want to delete this item? This action cannot be undone.
-            </p>
-            <div className="flex justify-end mt-4 space-x-2">
-              <button
-                className="px-4 py-2 text-sm bg-gray-200 rounded-md hover:bg-gray-300"
-                onClick={() => setShowDeleteModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className={`px-4 py-2 text-sm text-white bg-red-600 rounded-md ${
-                  isDeleting ? "opacity-50 cursor-not-allowed" : "hover:bg-red-700"
-                }`}
-                onClick={handleDelete}
-                disabled={isDeleting}
-              >
-                {isDeleting ? "Deleting..." : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
 
 
 const DataTable: FC<TableProps> = ({title, columns, path, data, idKey, showActions = false, errorMessage }) => {
@@ -187,7 +91,7 @@ const DataTable: FC<TableProps> = ({title, columns, path, data, idKey, showActio
                   {columns.map((column) => (
                     <TableDataCell key={column.key}>
                       {column.label.toLowerCase() === 'image' ? (
-                        <img src={row[column.key] ?? '/img/placeholder.svg'} width={100} height={70} className="max-w-28" alt={'event name'} />
+                        <Image src={row[column.key] ?? '/img/placeholder.svg'} width={100} height={70} className="max-w-28" alt={'event name'} />
 
                       ) : (
                         column?.type === 'date' ? formatDate(row[column.key]) : row[column.key]

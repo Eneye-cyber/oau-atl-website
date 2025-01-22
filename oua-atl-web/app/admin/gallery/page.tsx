@@ -1,15 +1,11 @@
 
 import { FaChevronRight } from "react-icons/fa6";
-// import Button from '@/app/ui/shared/Button'
-import Link from 'next/link'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { LuMoreVertical, LuEye, LuFileEdit, LuTrash2 } from 'react-icons/lu';
+import { Separator } from "@/components/ui/separator"
 import Button from '@/app/ui/shared/Button'
-// import { Button } from "@/components/ui/button"
 import type { Metadata } from "next";
 import type { GalleryCollection } from "@/app/lib/types";
 import { fetchData } from "@/lib/utils/api";
-const baseUrl = process.env.API_BASE
+import ActionMenu from "@/components/actions/ActionMenu";
 
 export const metadata: Metadata = {
   title: "Gallery | Ife Alumni",
@@ -26,45 +22,19 @@ async function getData(): Promise<GalleryResponse> {
   return result;
 }
 
-const PhotoAlbum = ({name, count}: {name: string; count: number}) => {
+const PhotoAlbum = ({name, count, id, image}: {name: string; count: number, id: string, image: string}) => {
   return (
     <>
-    <Link href="/admin/gallery/album/id" className="hover:underline w-full">
+    <div className="hover:underline w-full">
       <figure>
         <div 
           role="image"
           style={{
-            backgroundImage: "url('https://picsum.photos/id/1/200/300')"
+            backgroundImage: `url(${image ? image : 'https://picsum.photos/id/1/200/300'})`
           }}
           className="group bg-slate-100 bg-cover rounded-lg bg-no-repeat overflow-hidden relative transition-all duration-150 ease-out w-full aspect-square ring-1 ring-gray-950/5">
-            <div className="absolute top-0 z-10 right-0">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <div className="h-8 w-8 p-0 flex-center">
-                    <span className="sr-only">Open menu</span>
-                    <LuMoreVertical className="text-white" />
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white w-40" align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-gray-950/5" />
-                  <DropdownMenuItem>
-                    <LuEye className="inline-block mr-1" />
-                    View Album
-                  </DropdownMenuItem>
-                  <DropdownMenuItem> 
-                    <Link href="/admin/gallery/3/edit">
-                      <LuFileEdit className="inline-block mr-1" />
-                      <span>Edit Album</span>
-                    </Link>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuItem>
-                    <LuTrash2 className="inline-block mr-1" />
-                    Delete Album
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <div className="absolute top-0 z-10 right-0 p-3 rotate-90">
+              <ActionMenu path={"gallery"} id={id} hasView={false} />
             </div>
 
             <div className="z-0 absolute inset-0 bg-black opacity-0 group-hover:opacity-70" />
@@ -74,14 +44,14 @@ const PhotoAlbum = ({name, count}: {name: string; count: number}) => {
           <div className="pt-2 text-gray-950/40 text-xs">{count} items</div>
         </figcaption>
       </figure>
-    </Link>
+    </div>
     </>
   )
 }
 
 const page = async () => {
   const data = await getData();
-  console.log(data, 'gal')
+ 
   const albums: GalleryCollection[] | [] = data?.payload ?? []
   return (
     <article className="p-6 container space-y-6 flex-1 flex flex-col">
@@ -100,13 +70,13 @@ const page = async () => {
 
 
       <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 flex-1">
-        <div className="py-3 mb-3 sm:mb-6 border-b border-black/50">
+        <div className="py-3">
           <h3 className="text-xl font-bold text-slate-900">Albums listing</h3>
         </div>
-        <DropdownMenuSeparator className="bg-gray-950/5" />
+        <Separator className="my-3 md:my-6" />
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-6 lg:gap-x-6">
-          {albums.map((item, index) =>  <PhotoAlbum key={index} name={item.gallery_title} count={item.item_count} />)}
+          {albums.map((item, index) =>  <PhotoAlbum key={index} id={item.gallery_id} name={item.gallery_title} count={item.item_count} image={item.image_url} />)}
          
           
         </div>

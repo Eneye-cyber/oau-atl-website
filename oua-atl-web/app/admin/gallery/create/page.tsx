@@ -5,6 +5,7 @@ import MultipleImageUploader from "./../ui/MultipleImageUploader"
 import ImageUploader from '@/app/ui/forms/ImageUploader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from "next/navigation"; 
+import { toast } from 'sonner';
 
 const validationSchema = z.object({
   urls: z
@@ -33,7 +34,6 @@ const Page = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
-    watch,
   } = methods;
 
   const onSubmit: SubmitHandler<GalleryFormData> = async (data) => {
@@ -46,7 +46,7 @@ const Page = () => {
 
       if (response.ok) {
         router.push("/admin/gallery");
-        alert('Gallery created successfully!');
+        toast.success('Gallery created successfully!');
       } else {
         const result = await response.json();
         setError("groupData.title", {

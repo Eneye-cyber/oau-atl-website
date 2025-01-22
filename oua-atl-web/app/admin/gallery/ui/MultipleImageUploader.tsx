@@ -1,19 +1,39 @@
 /* eslint-disable @next/next/no-img-element */
-// components/MultipleImageUploader.tsx
 'use client';
-import { InputHTMLAttributes, useState, forwardRef, DragEvent, ChangeEvent } from "react";
+import { InputHTMLAttributes, useState, forwardRef, DragEvent, ChangeEvent, useEffect, MouseEvent } from "react";
 import { useFormContext } from "react-hook-form";
+import { toast } from "sonner";
 
 interface ImagePreview {
-  file: File;
+  file?: File;
   preview: string;
   uploadedUrl?: string | null;
 }
 
 const MultipleImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>((props, ref) => {
-  const { setValue, getValues } = useFormContext(); // Access React Hook Form's context
+  const { setValue, getValues } = useFormContext();
   const [images, setImages] = useState<ImagePreview[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Cleanup object URLs to avoid memory leaks
+  useEffect(() => {
+    return () => {
+      images.forEach((image) => {
+        if (image.file) URL.revokeObjectURL(image.preview);
+      });
+    };
+  }, [images]);
+
+  // Initialize with existing URLs
+  useEffect(() => {
+    const urls = getValues(props.name || "urls") || [];
+    const mappedImages = urls.map((item: string) => ({
+      preview: item,
+      uploadedUrl: item,
+    }));
+    setImages(mappedImages);
+    setValue(props.name || "urls", urls);
+  }, [getValues, props.name, setValue]);
 
   const handleDrop = (event: DragEvent<HTMLElement>) => {
     event.preventDefault();
@@ -23,7 +43,7 @@ const MultipleImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<H
 
   const handleFiles = async (files: File[]) => {
     const validImages = files.filter((file) => file.type.startsWith("image/"));
-  
+
     // Process files asynchronously
     const imagePreviews = await Promise.all(
       validImages.map(async (file) => ({
@@ -32,10 +52,12 @@ const MultipleImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<H
         uploadedUrl: await handleUpload(file), // Upload and get the URL
       }))
     );
-    
-    await setImages((prev) => [...prev, ...imagePreviews]); // Update state with resolved data
-    setValue(props.name || "urls", [...images.map((file) => file.uploadedUrl), ...imagePreviews.map((file) => file.uploadedUrl)]) 
-    console.log(getValues(props.name || "urls"))
+
+    setImages((prev) => [...prev, ...imagePreviews]);
+    setValue(
+      props.name || "urls",
+      [...images.map((img) => img.uploadedUrl), ...imagePreviews.map((img) => img.uploadedUrl)].filter(Boolean)
+    );
   };
 
   const handleFileInput = (event: ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +67,6 @@ const MultipleImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<H
   };
 
   const uploadFile = async (file: File) => {
-    console.log('file', file)
     const url = `/api/image`; // Endpoint for uploading
     const formData = new FormData();
     formData.append("file", file);
@@ -62,43 +83,55 @@ const MultipleImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<H
       }
 
       const data = await response.json();
-      if (data.payload[0].success) {
+      if (data.payload[0]?.success) {
         return data.payload[0].url; // Return the uploaded URL
       } else {
         throw new Error("File upload unsuccessful!");
       }
     } catch (error) {
       console.error(error);
-      alert("File upload failed. Please try again.");
+      toast.error("File upload failed. Please try again.");
       return null;
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleUpload: (file: File) => Promise<string | null> = async (file) => {// Skip if already uploaded
-
+  const handleUpload = async (file: File) => {
     const uploadedUrl = await uploadFile(file);
     if (uploadedUrl) {
-      // Update the images state
-      return uploadedUrl
+      return uploadedUrl;
     }
-    return null
+    return null;
   };
 
   const removeImage = (index: number) => {
     const image = images[index];
     setImages((prev) => prev.filter((_, i) => i !== index));
 
-    // Remove the URL from the form state
     if (image.uploadedUrl) {
-      const currentUrls = getValues(props.name || "imageUrl") || [];
-      setValue(props.name || "imageUrl", currentUrls.filter((url: string) => url !== image.uploadedUrl));
+      const currentUrls = getValues(props.name || "urls") || [];
+      setValue(props.name || "urls", currentUrls.filter((url: string) => url !== image.uploadedUrl));
+    }
+  };
+
+  const retryUpload = async (event: MouseEvent<HTMLButtonElement>, img: ImagePreview, index: number) => {
+    event.preventDefault()
+    const uploadedUrl = await handleUpload(img.file as File);
+    if (uploadedUrl) {
+      const updatedImage = { ...img, uploadedUrl };
+      setImages((prev) => prev.map((image, i) => (i === index ? updatedImage : image)));
+      setValue(props.name || "urls", images.map((img) => img.uploadedUrl).filter(Boolean));
     }
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div
+      className={`flex flex-col items-center ${isUploading ? "pointer-events-none opacity-50" : ""}`}
+      role="region"
+      aria-live="polite"
+      aria-busy={isUploading}
+    >
       <label
         onDrop={handleDrop}
         onDragOver={(event) => event.preventDefault()}
@@ -135,12 +168,15 @@ const MultipleImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<H
               <button
                 onClick={() => removeImage(index)}
                 className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                aria-label="Remove image"
               >
                 ×
               </button>
               {!image.uploadedUrl && (
                 <button
+                  onClick={(e: MouseEvent<HTMLButtonElement>) => retryUpload(e, image, index)}
                   className="absolute bottom-1 left-1 bg-blue-500 text-white rounded px-2 py-1 text-xs"
+                  aria-label="Retry upload"
                 >
                   Upload
                 </button>
@@ -150,7 +186,11 @@ const MultipleImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<H
         </div>
       )}
 
-      <input type="hidden" name={props.name || "imageUrl"} value={JSON.stringify(getValues(props.name || "imageUrl") || [])} />
+      <input
+        type="hidden"
+        name={props.name || "urls"}
+        value={JSON.stringify(getValues(props.name || "urls") || [])}
+      />
     </div>
   );
 });

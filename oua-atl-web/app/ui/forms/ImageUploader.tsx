@@ -19,7 +19,7 @@ const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInput
       setFileName(value.split("/").at(-1)); // Set the file name
       setFileUrl(value);
     }
-  }, []);
+  }, [getValues, props.name]);
 
   const clear = () => {
       setFileName(""); // Set the file name

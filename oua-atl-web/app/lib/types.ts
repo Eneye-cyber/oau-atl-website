@@ -205,6 +205,17 @@ export interface Contact {
   created_at: string; // ISO 8601 timestamp
 }
 
+export interface Album {
+  gallery_name: string
+  data: Photo[]
+}
+
+export interface Photo {
+  photo_id: string;
+  photo_url: string;
+  created_at: string;
+}
+
 
 // Type for the action object
 export type Action = {
