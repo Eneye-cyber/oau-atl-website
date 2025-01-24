@@ -7,12 +7,15 @@ const appUrl = process.env.APP_URL;
 export async function fetchData(path: string, cache: RequestCache = 'no-store' ) {
   const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
   const url = `${baseUrl}/${normalizedPath}`;
+  const cookieStore = cookies();
+  const incomingCookies = cookieStore.getAll().map(cookie => `${cookie.name}=${encodeURIComponent(cookie.value)}`).join('; ');
   
   try {
     const res = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        Cookie: incomingCookies,
       },
       credentials: 'include', // Include cookies
       cache: cache, // Force no caching for fresh data
