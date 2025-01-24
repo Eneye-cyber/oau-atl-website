@@ -37,7 +37,7 @@ const fieldMeta: Record<string, { label: string; className: string; placeholder?
   firstName: { label: "First name", className: "sm:col-span-3" },
   lastName: { label: "Last name", className: "sm:col-span-3" },
   phone: { label: "Phone number", className: "sm:col-span-4" },
-  birthDate: { label: "Birthday (Month/Day)", className: "sm:col-span-2", placeholder: 'MM/DD' },
+  birthDate: { label: "Birthday (year-month-day)", className: "sm:col-span-2", placeholder: 'YYYY-MM-DD' },
   studyField: { label: "Field of Study", className: "sm:col-span-4" },
   yearGraduated: { label: "Year Graduated", className: "sm:col-span-2", placeholder: 'YYYY' },
   address: { label: "Street address", className: "col-span-full" },

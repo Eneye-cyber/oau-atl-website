@@ -19,11 +19,10 @@ export async function POST(req: Request) {
     const url = `${baseUrl}/users/auth/signup`;
     delete data['confirm_password']
     data['joinedFromMedia'] = "None"
-    data['yearGraduated'] = 2019
     const body = JSON.stringify(data)
 
-    console.log('Sending Sign up request to:', url);
-    console.log('Sending data:', body);
+    // console.log('Sending Sign up request to:', url);
+    // console.log('Sending data:', body);
     // Make the fetch call
     const response = await fetch(url, {
       method: 'POST',

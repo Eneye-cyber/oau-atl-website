@@ -1,6 +1,11 @@
 import ResetPasswordForm from "@/app/ui/forms/ResetPasswordForm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Metadata } from 'next';
 import { cookies } from 'next/headers';
+
+export const metadata: Metadata = {
+  title: 'ATL OAU | Password reset',
+}
 
 
 const page = async () => {

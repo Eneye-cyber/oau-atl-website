@@ -11,8 +11,8 @@ export const SignUpFormDataSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   phone: z.string().min(1, 'Phone is required'),
   birthDate: z.string().min(1, 'Birthday is required').refine(
-    (date) => /^\d{2}\/\d{2}$/.test(date), // Regular expression for MM/DD format
-    { message: 'Birth date must be in MM/DD format' }
+    (date) => /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(date), // Regular expression for MM/DD format
+    { message: 'Birth date must be in YYYY-MM-DD format' }
   ),
   yearGraduated: z.union([z.number().min(1966, "Graduation year is required"), z.string().transform((val) => Number(val))]),
   studyField: z.string().min(1, 'Field of study is required'),
@@ -40,6 +40,41 @@ export const SignUpFormDataSchema = z.object({
     })
   }
   })
+
+  export const EditUserProfileSchema = z.object({
+    firstName: z.string().min(1, 'First name is required'),
+    lastName: z.string().min(1, 'Last name is required'),
+    phone: z.string().min(1, 'Phone is required'),
+    birthDate: z.string().min(1, 'Birthday is required').refine(
+      (date) => /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/.test(date), // Regular expression for MM/DD format
+      { message: 'Birth date must be in YYYY-MM-DD format' }
+    ),
+    yearGraduated: z.union([z.number().min(1966, "Graduation year is required"), z.string().transform((val) => Number(val))]),
+    studyField: z.string().min(1, 'Field of study is required'),
+    address: z.string().min(1, 'Street is required'),
+    address2: z.string(),
+    city: z.string().min(1, 'City is required'),
+    zipCode: z.string().min(1, 'Zip code is required'),
+    hobbies: z.union([
+      z.string().optional().refine(
+        (hobbyString) =>
+          !hobbyString || // Allow empty or undefined
+          hobbyString.split(',').every((hobby) => hobby.trim().length > 0),
+        { message: 'Hobbies must be a comma-separated list of non-empty values' }
+      ),
+      z.array(z.string()).refine(
+        (hobbies) => hobbies.every((hobby) => hobby.trim().length > 0),
+        { message: 'Hobbies must be an array of non-empty strings' }
+      ),
+    ])
+    .transform((hobbies) => {
+      if(hobbies)
+      return Array.isArray(hobbies)
+        ? hobbies.map((hobby) => hobby.trim()) // If it's already an array, trim all values
+        : hobbies.split(',').map((hobby) => hobby.trim()) // If it's a string, split and trim
+    }),
+  })
+  
 
   export const ResetPasswordFormDataSchema = z.object({
     id: z.string().optional(),
@@ -78,7 +113,7 @@ export const CreateEventSchema = z.object({
     (tags) =>
       !tags || // Allow empty or undefined
       tags.split(',').every((tag) => tag.trim().length > 0),
-    { message: 'Hobbies must be a comma-separated list of non-empty values' }
+    { message: 'Tags must be a comma-separated list of non-empty values' }
   )
   .transform((tags) =>
     tags
@@ -113,11 +148,11 @@ export const EditEventSchema = z.object({
     z.string().min(1, 'Tags are required').refine(
       (tags) =>
         tags.split(',').every((tag) => tag.trim().length > 0),
-      { message: 'Hobbies must be a comma-separated list of non-empty values' }
+      { message: 'Tags must be a comma-separated list of non-empty values' }
     ),
     z.array(z.string()).refine(
       (tags) => tags.every((tag) => tag.trim().length > 0),
-      { message: 'Hobbies must be an array of non-empty strings' }
+      { message: 'Tags must be an array of non-empty strings' }
     ),
   ])
   .transform((tags) =>

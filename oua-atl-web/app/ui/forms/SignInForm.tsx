@@ -65,6 +65,7 @@ const SignInForm = ({noRedirect = false, onLoginSuccess}: {noRedirect?: boolean;
 
       if(response.status === 200) {
         const result: AuthResponse = await response.json();
+        toast.success("Login successful")
         if(!noRedirect) {
           router.push("/")
           return
@@ -78,7 +79,6 @@ const SignInForm = ({noRedirect = false, onLoginSuccess}: {noRedirect?: boolean;
 
       
     } catch (err: any) {
-      alert('Server unavailable')
       toast.error('Server unavailable', {
         description: err?.message ?? 'An error occurred',
       })
