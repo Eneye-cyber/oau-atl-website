@@ -120,7 +120,7 @@ const saveChanges = async () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({schema: formData, key: "social"}),
+          body: JSON.stringify({schema: formData, key: "header"}),
           credentials: 'include',
         })
         if(req.ok) {

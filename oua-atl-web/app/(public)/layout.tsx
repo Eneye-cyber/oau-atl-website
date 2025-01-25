@@ -2,14 +2,14 @@ import TopBar from '@/app/ui/shared/TopBar'
 import NavBar from '@/app/ui/shared/NavBar'
 import Footer from '@/app/ui/shared/Footer'
 import { headers } from 'next/headers'
-import { SiteSchema } from '../lib/types'
+import { SiteSchema } from '@/app/lib/types'
 
 const baseUrl = process.env?.APP_URL ?? "http://localhost:3000"
 
 const getData = async () => {
-  const response = await fetch(`${baseUrl}/api/content?schema=layout`);
-  const data = await response.json();
-  return data;
+  const response = await fetch(`${baseUrl}/api/settings`);
+  const payload = await response.json();
+  return payload.data;
 };
 
 

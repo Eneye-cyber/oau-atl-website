@@ -10,7 +10,7 @@ import Footer from "@/app/ui/shared/Footer";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
-const HeaderSettings = ({ jsonData }: { jsonData: PageData }) => {
+const FooterSettings = ({ jsonData }: { jsonData: PageData }) => {
   const [formData, setFormData] = useState<PageData>(jsonData);
   const [isUploading, setIsUploading] = useState(false); // Tracks upload state
   const sanitizeInput = (value: string) => {
@@ -103,7 +103,7 @@ const HeaderSettings = ({ jsonData }: { jsonData: PageData }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ schema: formData, key: "social" }),
+        body: JSON.stringify({ schema: formData, key: "footer" }),
         credentials: "include",
       });
       if (req.ok) {
@@ -307,4 +307,4 @@ const HeaderSettings = ({ jsonData }: { jsonData: PageData }) => {
   );
 };
 
-export default HeaderSettings;
+export default FooterSettings;

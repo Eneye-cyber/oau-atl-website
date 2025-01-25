@@ -15,16 +15,16 @@ import ApproveSettings from "./ui/ApproveSettings";
 const baseUrl = process.env?.APP_URL ?? "http://localhost:3000"
 
 const getData = async () => {
-  const response = await fetch(`${baseUrl}/api/content?schema=layout`,  {
+  const response = await fetch(`${baseUrl}/api/settings?isTemp=true`,  {
     cache: "no-cache"
   });
-  const data = await response.json();
-  return data;
+  const payload = await response.json();
+  return payload.data;
 };
 
 
 const page = async () => {
-    const data: SiteSchema = await getData()
+  const data: SiteSchema = await getData()
   
   return (
     <>

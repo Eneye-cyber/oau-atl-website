@@ -7,9 +7,9 @@ import { SiteSchema } from '../lib/types'
 const baseUrl = process.env?.APP_URL ?? "http://localhost:3000"
 
 const getData = async () => {
-  const response = await fetch(`${baseUrl}/api/content?schema=layout`);
-  const data = await response.json();
-  return data;
+  const response = await fetch(`${baseUrl}/api/settings`);
+  const payload = await response.json();
+  return payload.data;
 };
 
 
