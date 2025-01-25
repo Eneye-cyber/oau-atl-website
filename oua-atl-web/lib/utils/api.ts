@@ -22,15 +22,15 @@ export async function fetchData(path: string, cache: RequestCache = 'no-store' )
     });
 
     // Check if the response is okay (status 2xx)
-    if (!res.ok) {
-      // Handle non-successful HTTP statuses
-      const errorMessage = `Error: ${res.status} ${res.statusText}`;
-      throw new Error(errorMessage);
+    if (res.ok) {
+      // Attempt to parse the JSON
+      const data = await res.json();
+      return data;
     }
 
-    // Attempt to parse the JSON
-    const data = await res.json();
-    return data;
+    // Handle non-successful HTTP statuses
+    const errorMessage = `Error: ${res.status} ${res.statusText}`;
+    throw new Error(errorMessage);
 
   } catch (error: any) {
     // Log or handle the error
