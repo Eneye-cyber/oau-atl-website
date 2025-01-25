@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { CreateEventSchema } from "@/app/lib/schema";
 import { formatEventDates, formatEventTimes } from "@/lib/utils";
 import { ClockIcon, MapPinIcon, TicketIcon } from "@/app/ui/Icons"
+import { toast } from 'sonner';
 
 type EventFormData = z.infer<typeof CreateEventSchema>;
 
@@ -43,18 +44,20 @@ const CreateEvent = () => {
       });
 
       if (response.ok) {
+        toast.success('Event created successfully!');
         router.push("/admin/events");
-        alert('Event created successfully!');
+        
       } else {
         const result = await response.json();
         setError("title", {
           type: "server",
           message: result.message || "Invalid form field format",
         });
+        throw new Error(`${response.status} - ${result.message}`)
       }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Failed to create formData?.');
+    } catch (err) {
+      console.error('Error submitting form:', err);
+      toast.error('Backend Error', { description: (err as Error)?.message })
     }
   };
 

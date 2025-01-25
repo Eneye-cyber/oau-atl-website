@@ -31,12 +31,10 @@ export async function POST(req: Request) {
 
     // Handle errors from external API
     if (!externalResponse.ok) {
-      console.log(externalResponse)
-      const errorResponse = await externalResponse.json();
-      console.error('External login failed:', errorResponse);
+      const errorDetails = await externalResponse.json().catch(() => ({message: externalResponse.statusText}));
       return NextResponse.json(
-        { error: 'Login failed', details: errorResponse },
-        { status: externalResponse.status }
+        { error: true, message: errorDetails?.message },
+        { status: externalResponse.status, statusText: errorDetails?.message ?? 'Something went wrong' }
       );
     }
 
@@ -44,8 +42,6 @@ export async function POST(req: Request) {
     const cookies = externalResponse.headers.get('set-cookie');
     const result = await externalResponse.json();
 
-    console.log('Backend response:', result);
-    console.log('Cookies:', cookies);
 
     // Create NextResponse and set cookies
     const nextResponse = NextResponse.json(result, { status: 200 });

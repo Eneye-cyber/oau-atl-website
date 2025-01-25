@@ -6,7 +6,7 @@ const transformObject = (input: any) => {
     content: input.content, // Static value
     title: input.title, // Static value
     startDate: input.startDate, // Current date and time
-    endDate: input.endDate ?? input.startDate, // 10 seconds after startDate
+    endDate: !input?.endDate ? input.startDate : input.endDate, // 10 seconds after startDate
     entranceFee: input.entranceFee, // Static value
     isFeatured: input.isFeatured === "1", // Static value
     tags: input.tags, // Static value
@@ -60,12 +60,11 @@ export async function POST(req: Request) {
 
     // Handle errors from external API
     if (!externalResponse.ok) {
-      const errorResponse = await externalResponse.text(); // Use text() if JSON fails
-      console.error(`Error from API: ${externalResponse.status} - ${errorResponse}`);
-
+      const errorDetails = await externalResponse.json().catch(() => ({message: externalResponse.statusText}));
+      console.error(`Error from API: ${externalResponse.status} - ${errorDetails}`);
       return NextResponse.json(
-        { error: 'Failed to submit', details: errorResponse },
-        { status: externalResponse.status }
+        { error: true, message: errorDetails?.message },
+        { status: externalResponse.status, statusText: errorDetails?.message ?? 'Something went wrong' }
       );
     }
 

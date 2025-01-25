@@ -31,7 +31,6 @@ const AccountForm = () => {
         credentials: "include",
     });
 
-      console.log('response', response)
 
       if(response.status === 401) {
         const result = await response.json();
@@ -49,13 +48,15 @@ const AccountForm = () => {
 
       if(response.ok) {
         const result = await response.json();
-        toast.success("Administrator login successful")
+        toast.success("Administrator login successful", {description: result?.message})
         router.push("/admin");
         return 
       }
+
+      throw new Error(response.statusText)
       
     } catch (err) {
-      alert('Server unavailable')
+      toast.error("Login Error", { description: (err as Error)?.message ?? "Server unavailable"})
     }
   };
 
