@@ -422,6 +422,136 @@
         ],
         "action": {"href": "", "label": ""}
       }
+    },
+    "members_area": {
+      "id": 3,
+      "sections": [
+        {
+          "name": "Members Area Hero Section",
+          "slug": "members-area-hero-section",
+          "type": "hero",
+          "header": null,
+          "subheader": null,
+          "content": [
+            {
+              "id": 1,
+              "label": null,
+              "title": "Members-Area",
+              "subtitle": null,
+              "text": null,
+              "media": "/img/1_alt.jpg",
+              "action": null,
+              "list": null
+            }
+          ],
+          "action": null
+        },
+        {
+          "name": "Members Area Page Mid Section",
+          "slug": "members-area-page-mid-section",
+          "type": "Block Section",
+          "header": "Members Area",
+          "subheader": null,
+          "content": [
+            {
+              "id": 5,
+              "label": null,
+              "title": null,
+              "subtitle": null,
+              "text": "MEMBERSHIP OF THIS WEBSITE IS OPEN TO ALL THOSE WHO HAVE ATTENDED THE UNIVERSITY OF IFE/ OBAFEMI AWOLOWO UNIVERSITY, ILE IFE, NIGERIA. JOINING THE WEBSITE IS FREE, HOWEVER, ALL MEMBERS ARE EXPECTED TO PAY MEMBERSHIP DUES.",
+              "media": null,
+              "action": null,
+              "list": null
+            },
+            {
+              "id": 6,
+              "label": null,
+              "title": null,
+              "subtitle": null,
+              "text": "IF YOU WOULD LIKE TO CONTINUE AS A REGISTERED USER OF THIS WEBSITE, YOU MAY DO SO USING THE FACILITIES BELOW.",
+              "media": null,
+              "action": null,
+              "list": null
+            }
+          ],
+          "action": null
+        },
+        {
+          "name": "Subscription Section",
+          "slug": "subscription-section",
+          "type": "Grid",
+          "header": "Choose Your Membership Plan",
+          "subheader": "Select the perfect plan for your needs.",
+          "content": [
+            {
+              "id": 1,
+              "label": "monthly",
+              "title": "20",
+              "subtitle": "per month",
+              "text": null,
+              "media": null,
+              "action": {"action": null, "label": "Subscribe to monthly Plan"},
+              "list": [
+                "Budget Plan",
+                "Easy to Manage",
+                "Monthly instalments",
+                "Available All Year Round"
+              ]
+            },
+            {
+              "id": 2,
+              "label": "earlybird",
+              "title": "150",
+              "subtitle": "per annum",
+              "text": null,
+              "media": null,
+              "action": {"action": null, "label": "Subscribe to earlybird Plan"},
+              "list": [
+                "Save $90/ year",
+                "Earlybird Discount",
+                "Single Annual Payment",
+                "Valid Until March 31st"
+              ]
+            },
+            {
+              "id": 3,
+              "label": "annual",
+              "title": "180",
+              "subtitle": "per annum",
+              "text": null,
+              "media": null,
+              "action": {"action": null, "label": "Subscribe to annual Plan"},
+              "list": [
+                "Peace of Mind Plan",
+                "Single Annual Payment",
+                "Cheaper than Monthly Payment",
+                "Available All Year Round"
+              ]
+            }
+          ],
+          "action": null
+        }
+      ],
+      "fallback" : {
+        "name": "Fall Back Section",
+        "slug": "fallback-section",
+        "type": "Misc",
+        "header": "",
+        "subheader": "",
+        "content": [
+          {
+            "id": 4,
+            "label": "",
+            "title": "This is a Fallback section",
+            "subtitle": "",
+            "text": "If you are seeing this, then there is an error with the actual section",
+            "media": "/img/19.jpg",
+            "action": {"href": "", "label": ""},
+            "list": []
+          }
+        ],
+        "action": {"href": "", "label": ""}
+      }
     }
   }
 }

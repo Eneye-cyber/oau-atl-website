@@ -3,11 +3,11 @@ import { ROUTES } from './routes';
 
 export const roleAccessRules = {
   guest: {
-    restrictedPaths: ['/admin', '/members'],
+    restrictedPaths: ['/admin', '/members', '/customize'],
     redirectPath: ROUTES.MEMBERS_LOGIN,
   },
   member: {
-    restrictedPaths: ['/admin'],
+    restrictedPaths: ['/admin', '/customize'],
     redirectPath: ROUTES.ROOT,
   },
   admin: {

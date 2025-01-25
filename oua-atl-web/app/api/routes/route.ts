@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 
 import fs from 'fs';
 import path from 'path';
+import { cookies } from 'next/headers';
 
 // Define the type for route entries
 type RouteEntry = string;
@@ -51,15 +52,18 @@ function cleanRoutes(routes: RouteEntry[]): RouteEntry[] {
 
 
 
-export async function GET(req: Request): Promise<NextResponse<{data: string[]}>> {
+export async function GET(req: Request): Promise<NextResponse<{data: string[]; role: "guest" | "member" | "admin"}>> {
   // Define the app directory path
   const appDir = path.join(process.cwd(), 'app'); // Adjust this path if necessary
-
+  const cookieStore = cookies();
+  
+    const role= cookieStore.get('x-custom-role')?.value as "guest" | "member" | "admin" ?? null;
   // Get all routes
   let ROUTES_LIST = getRoutes(appDir);
   ROUTES_LIST = cleanRoutes(ROUTES_LIST)
-  console.log(ROUTES_LIST)
+  console.table({role: role})
   return NextResponse.json({
-    data: ROUTES_LIST
+    data: ROUTES_LIST,
+    role: role
   });
 }

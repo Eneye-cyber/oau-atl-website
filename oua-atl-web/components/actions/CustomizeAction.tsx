@@ -35,6 +35,8 @@ export function CustomizeAction({
 
   const [open, setOpen] = useState(true);
   const { state } = useDataContext()
+
+  
   const saveChanges = async () => {
     try {
       const req: Response = await fetch('/api/schema', {

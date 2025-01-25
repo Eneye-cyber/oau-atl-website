@@ -49,7 +49,7 @@ const TopBar = ({
 }) => {
   const [role, setRole] = useState<string>(userRole);
   const pathName = usePathname();
-  const customizablePage = ["/", "/about-us"];
+  const customizablePage = ["/", "/about-us", "/members-area"];
 
   useEffect(() => {
     async function fetchRole() {

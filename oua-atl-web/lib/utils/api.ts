@@ -41,6 +41,7 @@ export async function fetchData(path: string, cache: RequestCache = 'no-store' )
 
 export async function fetchPageSchema(slug: string, cache: RequestCache = 'default' ) {
   const url = `${appUrl}/api/schema?slug=${slug}`;
+  console.table({url: url})
   
   try {
     const res = await fetch(url, {
@@ -74,7 +75,7 @@ export async function fetchPageSchema(slug: string, cache: RequestCache = 'defau
   }
 }
 
-export async function fetchRouteList(cache: RequestCache = 'default' ) {
+export async function fetchRouteList(cache: RequestCache = 'no-cache' ) {
   const url = `${appUrl}/api/routes`;
   
   try {

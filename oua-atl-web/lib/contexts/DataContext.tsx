@@ -43,6 +43,7 @@ interface DataProviderProps {
 const slugMapping: Record<string, string> = {
   "/about-us": "about",
   "/": "home",
+  "/members-area": "members_area"
 };
 
 const transformCollection = (
@@ -109,7 +110,6 @@ export const DataProvider = ({ children }: DataProviderProps) => {
         setProjects(projects.payload.data);
         setEvents(events.payload.data);
         setState(pageData.pageSchema);
-        console.table(pageData.pageSchema)
       } catch (error) {
         console.error("Error fetching data:", error);
         setState({ pages: {} }); // Reset state if an error occurs

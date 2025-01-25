@@ -11,7 +11,7 @@ interface User extends UserRoleResponse {
   email: string | null;
 }
 
-const SubscriptionAction = ({ amountAttempted, planName }: { planName: string; amountAttempted: number; }) => {
+const SubscriptionAction = ({ amountAttempted, planName, label }: { label?: string; planName: string; amountAttempted: number; }) => {
   const [dialogState, setDialogState] = useState<"signIn" | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -100,7 +100,7 @@ const SubscriptionAction = ({ amountAttempted, planName }: { planName: string; a
         disabled={isLoading}
         onClick={verifyUser}
       >
-        {isLoading ? "Processing..." : `Subscribe to ${planName} Plan`}
+        {isLoading ? "Processing..." : `${label ?? "Subscribe"}`}
       </Button>
 
       <Dialog open={dialogState === "signIn"} onOpenChange={() => setDialogState(null)}>
