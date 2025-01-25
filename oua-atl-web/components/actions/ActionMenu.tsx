@@ -51,7 +51,7 @@ const ActionMenu = ({ path, id, hasEdit = true, hasDelete = true, hasView = true
           {
             hasView && (
               <DropdownMenuItem>
-                <Link href={`/admin/${path}/${id}`}>
+                <Link className='w-full' href={`/admin/${path}/${id}`}>
                   <LuEye className="inline-block mr-1" />
                   View
                 </Link>
@@ -61,7 +61,7 @@ const ActionMenu = ({ path, id, hasEdit = true, hasDelete = true, hasView = true
           {
             hasEdit && (
               <DropdownMenuItem>
-                <Link href={`/admin/${path}/${id}/edit`}>
+                <Link className='w-full' href={`/admin/${path}/${id}/edit`}>
                   <LuFileEdit className="inline-block mr-1" />
                   Edit
                 </Link>

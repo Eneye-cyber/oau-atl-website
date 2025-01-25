@@ -6,6 +6,7 @@ import ImageUploader from "@/app/ui/forms/ImageUploader";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Album } from "@/app/lib/types";
+import { useRouter } from "next/navigation";
 const validationSchema = z.object({
   urls: z
     .array(z.string().url()) // Ensure 'urls' is an array of valid URLs
@@ -24,11 +25,13 @@ const validationSchema = z.object({
 type GalleryFormData = z.infer<typeof validationSchema>;
 
 const EditGallery = ({ album, id }: { album: Album; id: string }) => {
+  const router = useRouter()
   const methods = useForm<GalleryFormData>({
     resolver: zodResolver(validationSchema),
     defaultValues: {
       groupData: {
         title: album.gallery_name,
+        imageUrl: album.image_url
       },
       urls: album.data.map((item) => item.photo_url),
     },
@@ -49,8 +52,8 @@ const EditGallery = ({ album, id }: { album: Album; id: string }) => {
       });
 
       if (response.ok) {
-        // router.push("/admin/gallery");
         toast.success("Album updated successfully!");
+        router.push("/admin/gallery");
       } else {
         try {
           const result = await response.json();

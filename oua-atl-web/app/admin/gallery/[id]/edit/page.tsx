@@ -24,6 +24,7 @@ async function getData(
 
 const page = async ({ params }: { params: { id: string } }) => {
   const gallery = await getData(params.id);
+  console.table(gallery?.payload)
 
   if (!gallery || gallery.error) {
     return (

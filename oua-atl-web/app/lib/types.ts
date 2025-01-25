@@ -207,6 +207,7 @@ export interface Contact {
 
 export interface Album {
   gallery_name: string
+  image_url: string;
   data: Photo[]
 }
 
