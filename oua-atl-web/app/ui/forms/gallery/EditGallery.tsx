@@ -56,7 +56,7 @@ const EditGallery = ({ album, id }: { album: Album; id: string }) => {
         router.push("/admin/gallery");
       } else {
         try {
-          const result = await response.json();
+          const result = await response.json().catch(() => ({message: response.statusText}));
           setError("groupData.title", {
             type: "server",
             message: result.message || "Something went wrong",

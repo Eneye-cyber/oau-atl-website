@@ -72,7 +72,7 @@ export async function GET(req: Request): Promise<NextResponse<PageSchemaResponse
 export async function POST(req: Request): Promise<NextResponse<{ message: string; error: boolean }>> {
   try {
     // Extract `schema` from the incoming request body
-    const body = await req.json();
+    const body = await req.json().catch(() => ({message: req.statusText}));
     const newData = body.schema.pages;
     const slug = Object.keys(newData) as Array<keyof typeof newData>;
 

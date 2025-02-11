@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     console.log('Process Event form');
 
     // Parse request body
-    let data = await req.json();
+    let data = await req.json().catch(() => ({message: req.statusText}));
     data = transformObject(data)
 
     const url = `${baseUrl}/projects`;

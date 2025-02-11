@@ -18,7 +18,7 @@ const getData = async () => {
     const response = await fetch(`${baseUrl}/api/content?slug=home`,{
       cache: "default"
     });
-    const result = await response.json();
+    const result = await response.json().catch(() => ({message: response.statusText}));
     return result.data.pages.home;
   } catch (error) {
     console.log('home_error', error)

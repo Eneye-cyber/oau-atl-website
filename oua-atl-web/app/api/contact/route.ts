@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     console.log('Proocess Contact Enquiry');
 
     // Parse request body
-    const data = await req.json();
+    const data = await req.json().catch(() => ({message: req.statusText}));
     const url = `${baseUrl}/contact`;
 
     console.log('Sending Contact Enquiry: ', url);

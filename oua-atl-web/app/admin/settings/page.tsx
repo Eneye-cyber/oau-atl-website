@@ -18,7 +18,7 @@ const getData = async () => {
   const response = await fetch(`${baseUrl}/api/settings?isTemp=true`,  {
     cache: "no-cache"
   });
-  const payload = await response.json();
+  const payload = await response.json().catch(() => ({message: response.statusText}));
   return payload.data;
 };
 

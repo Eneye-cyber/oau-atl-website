@@ -69,7 +69,7 @@ export default function SignUpForm() {
       });
 
       if (response.status === 200) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         if (result?.message) {
           sessionStorage.setItem('flashMessage', 'Account created successfully!');
           router.push('/members/login');

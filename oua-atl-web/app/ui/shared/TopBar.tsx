@@ -57,7 +57,7 @@ const TopBar = ({
     async function fetchRole() {
       setLoading(true);
       const response = await fetch("/api/user");
-      const data = await response.json();
+      const data = await response.json().catch(() => ({message: response.statusText}));
       setRole(data.role);
     }
     fetchRole().catch((e) => console.error(e)).finally(() => setLoading(false));

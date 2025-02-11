@@ -27,7 +27,7 @@ const ApproveSettings = ({data}: {data: SiteSchema}) => {
         credentials: 'include',
       })
       if(req.ok) {
-        const res = await req.json();
+        const res = await req.json().catch(() => ({message: req.statusText}));
         toast.success(res.message)
         return
       }

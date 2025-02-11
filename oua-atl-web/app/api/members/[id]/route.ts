@@ -16,7 +16,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     const cookieStore = cookies();
     const incomingCookies = cookieStore.getAll().map(cookie => `${cookie.name}=${encodeURIComponent(cookie.value)}`).join('; ');
   try {
-    const data = await req.json();
+    const data = await req.json().catch(() => ({message: req.statusText}));
     const url = `${baseUrl}/users/${id}/profile`;
     const body = JSON.stringify(data);
 
@@ -36,7 +36,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     console.log('External API response body:', await response.clone().text());
 
     if (response.ok) {
-      const result = await response.json();
+      const result = await response.json().catch(() => ({message: response.statusText}));
       return NextResponse.json(result, { status: 200 });
     }
 

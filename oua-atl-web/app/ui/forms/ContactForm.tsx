@@ -30,7 +30,7 @@ const ContactForm = () => {
 
       if (!response.ok) throw new Error(response.statusText);
 
-      const result = await response.json();
+      const result = await response.json().catch(() => ({message: response.statusText}));
 
       // Show success message and reset form
       toast.success(result.message)

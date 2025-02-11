@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     console.log('Proocess admin login');
 
     // Parse request body
-    const data = await req.json();
+    const data = await req.json().catch(() => ({message: req.statusText}));
     const url = `${baseUrl}/admins/auth/login`;
 
     console.log('Sending login request to:', url);

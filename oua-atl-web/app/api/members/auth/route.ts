@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   try {
     // Parse request body
     console.log('Proocess members login');
-    const data = await req.json();
+    const data = await req.json().catch(() => ({message: req.statusText}));
     const url = `${baseUrl}/users/auth/login`;
 
     console.log('Sending login request to:', url);

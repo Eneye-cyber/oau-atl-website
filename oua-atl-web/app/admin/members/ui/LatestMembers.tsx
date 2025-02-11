@@ -20,7 +20,7 @@ const LatestMembers = () => {
         });
 
         if (res.ok) {
-          const result = await res.json();
+          const result = await res.json().catch(() => ({message: res.statusText}));
           setData(result.payload?.data ?? []);
         } else {
           throw new Error(res.statusText);

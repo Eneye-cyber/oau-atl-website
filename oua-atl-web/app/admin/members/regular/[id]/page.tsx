@@ -26,7 +26,7 @@ const getData = async (
     });
 
     if (res.ok) {
-      const result = await res.json();
+      const result = await res.json().catch(() => ({message: res.statusText}));
       return result;
     }
     const msg = res.statusText;

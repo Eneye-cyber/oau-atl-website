@@ -143,7 +143,7 @@ export async function PUT(req: Request, { params }: {params: {id: string}}) {
     const { id } = params;
 
     // Parse request body
-    let data = await req.json();
+    let data = await req.json().catch(() => ({message: req.statusText}));
     data = transformObject(data)
 
     const url = `${baseUrl}/physical-events/${id}`;

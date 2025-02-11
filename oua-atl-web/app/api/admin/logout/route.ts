@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     // console.log('Logging out...', cookies);
 
     // Parse request body
-    const data = await req.json();
+    const data = await req.json().catch(() => ({message: req.statusText}));
     const url = `${baseUrl}/admins/${data.id}/logout`;
 
     console.log('Sending logout request to:', url);

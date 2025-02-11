@@ -12,7 +12,7 @@ async function getStats(path: string) {
     credentials: 'include', // Include cookies
     cache: 'no-store', // Force no caching for fresh data
   });
-  return res.json();
+  return res.json().catch(() => ({message: res.statusText}));
 }
 
 async function getData(): Promise<any[]> {

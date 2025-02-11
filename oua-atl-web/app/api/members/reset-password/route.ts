@@ -7,7 +7,7 @@ export async function POST(req: Request) {
 
   try {
     // Parse request body
-    const data = await req.json();
+    const data = await req.json().catch(() => ({message: req.statusText}));
     const id = data.id;
 
     delete data['id']

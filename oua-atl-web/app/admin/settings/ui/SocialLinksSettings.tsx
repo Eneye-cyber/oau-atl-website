@@ -43,7 +43,7 @@ const SocialLinksSettings = ({ jsonData }: { jsonData: PageData }) => {
           throw new Error("File upload failed!");
         }
 
-        const data = await response.json();
+        const data = await response.json().catch(() => ({message: response.statusText}));
         if (data.payload[0].success) {
           handleInputChange(
             sectionIndex,
@@ -119,7 +119,7 @@ const SocialLinksSettings = ({ jsonData }: { jsonData: PageData }) => {
           credentials: 'include',
         })
         if(req.ok) {
-          const res = await req.json();
+          const res = await req.json().catch(() => ({message: req.statusText}));
           toast.success(res.message)
           return
         }

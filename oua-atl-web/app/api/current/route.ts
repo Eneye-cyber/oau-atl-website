@@ -64,7 +64,7 @@ export async function GET(req: Request): Promise<NextResponse<User>> {
 //     clearTimeout(timeout);
 
 //     if (response.ok) {
-//       const result = await response.json();
+//       const result = await response.json().catch(() => ({message: response.statusText}));
 //       const user: User | null = result?.user || null;
 //       if (user) {
 //         const { role, id, email } = user;

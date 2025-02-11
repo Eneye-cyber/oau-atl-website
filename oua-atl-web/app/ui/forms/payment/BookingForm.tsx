@@ -68,7 +68,7 @@ const BookingForm = ({
         body: JSON.stringify(body)
       });
 
-      const result: PaymentResponse = await response.json();
+      const result: PaymentResponse = await response.json().catch(() => ({message: response.statusText}));
 
       if (result?.payload?.approvalUrl?.startsWith("http")) {
         window.location.href = result.payload.approvalUrl;

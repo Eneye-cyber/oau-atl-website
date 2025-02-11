@@ -19,7 +19,7 @@ async function getData(id: string): Promise<{message: string, payload: { data: a
       return null;
     }
 
-    const result = await res.json();
+    const result = await res.json().catch(() => ({message: res.statusText}));
     return result;
   } catch (error: any) {
     console.error('Fetch Error:', error);

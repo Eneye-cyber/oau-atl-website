@@ -8,7 +8,7 @@ const baseUrl = process.env?.APP_URL ?? "http://localhost:3000";
 
 const getData = async () => {
   const response = await fetch(`${baseUrl}/api/settings`);
-  const payload = await response.json();
+  const payload = await response.json().catch(() => ({message: response.statusText}));
   return payload.data;
 };
 

@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     console.log('Process Executive form');
 
     // Parse request body
-    let data = await req.json();
+    let data = await req.json().catch(() => ({message: req.statusText}));
 
     const url = `${baseUrl}/executives`;
 

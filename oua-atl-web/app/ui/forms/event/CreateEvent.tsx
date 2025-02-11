@@ -48,7 +48,7 @@ const CreateEvent = () => {
         router.push("/admin/events");
         
       } else {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         setError("title", {
           type: "server",
           message: result.message || "Invalid form field format",

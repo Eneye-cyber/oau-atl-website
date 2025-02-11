@@ -34,7 +34,7 @@ const ForgotPasswordForm = () => {
       console.log('response', response)
 
       if(response.status === 401) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         setError("email", {
           type: "server", // Custom type for server-side errors
           message: result.message || "Invalid credentials", 
@@ -43,7 +43,7 @@ const ForgotPasswordForm = () => {
       }
 
       if(response.status === 200) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         console.log(result, result)
         router.push("/members/login")
        return

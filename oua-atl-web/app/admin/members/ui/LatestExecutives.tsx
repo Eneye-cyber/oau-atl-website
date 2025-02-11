@@ -20,7 +20,7 @@ const LatestExecutives = () => {
         });
 
         if (res.ok) {
-          const result = await res.json();
+          const result = await res.json().catch(() => ({message: res.statusText}));
           setMembers(result.payload.slice(0, 3)); // Limit to 3 members
         } else {
           throw new Error(res.statusText);

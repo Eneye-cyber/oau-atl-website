@@ -52,7 +52,7 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
     });
 
       if(response.status === 401) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         setError("projectTitle", {
           type: "server", // Custom type for server-side errors
           message: result.message || "Invalid form field format", 
@@ -61,7 +61,7 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
       }
 
       if(response.ok) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         console.log('result', result)
         toast.success('Update successful!')
         
