@@ -30,7 +30,7 @@ export async function GET(req: Request): Promise<NextResponse<PageSchemaResponse
  
    try {
      const { db } = await connectToDatabase();
-     console.log('c1')
+     console.log('c1', slug)
      const page = await db.collection('temp_pages').findOne({ name: slug });
      console.log('c2')
  

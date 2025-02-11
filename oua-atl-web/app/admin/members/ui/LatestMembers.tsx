@@ -1,56 +1,58 @@
-import DataTable from '@/app/ui/DataTable'
-import { cookies } from 'next/headers'; 
-const baseUrl = process.env.API_BASE;
+"use client";
 
+import { useEffect, useState } from "react";
+import DataTable from "@/app/ui/DataTable";
 
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE; // Use NEXT_PUBLIC_ for client-side access
 
-async function getData(): Promise<any> {
-  
+const LatestMembers = () => {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Wait for both promises to resolve
-  try {
-    const cookieStore = cookies(); // Access cookies
-    const url = `${baseUrl}/users`;
-    const res: Response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: cookieStore as unknown as string
-      },
-      credentials: 'include', // Include cookies
-      cache: 'no-store', // Force no caching for fresh data
-    });
-    
-    if(res.ok) {
-      const result = await res.json()
-      console.log('mem result', result)
-      return result
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const url = `${baseUrl}/users`;
+        const res = await fetch(url, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          cache: "force-cache", // Allow caching for static export compatibility
+        });
+
+        if (res.ok) {
+          const result = await res.json();
+          setData(result.payload?.data ?? []);
+        } else {
+          throw new Error(res.statusText);
+        }
+      } catch (error: any) {
+        console.error("Error fetching data:", error);
+        setData([]); // Set empty array on error
+      } finally {
+        setLoading(false);
+      }
     }
-    const msg = res.statusText
-    throw new Error(msg ?? "Unknown error")
-} catch (error: any) {
-    console.log('error', error)
-    return {message: error.message, payload: {data : []}}
-}
 
-  
-}
-const LatestMembers = async () => {
-  const data = await getData()
-  console.log(data.payload.data, 'data')
+    fetchData();
+  }, []);
+
   const columns = [
-    { key: 'full_name', label: 'Full name' },
-    { key: 'email', label: 'Email' },
-    { key: 'study_field', label: 'Course of study' },
-    { key: 'year_graduated', label: 'Graduating year' },
-    { key: 'status', label: 'Status' },
+    { key: "full_name", label: "Full Name" },
+    { key: "email", label: "Email" },
+    { key: "study_field", label: "Course of Study" },
+    { key: "year_graduated", label: "Graduating Year" },
+    { key: "status", label: "Status" },
   ];
 
   return (
     <>
-        <DataTable title="Latest Members" columns={columns} data={data.payload?.data ?? []}  showActions={false} />
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <DataTable title="Latest Members" columns={columns} data={data} showActions={false} />
+      )}
     </>
-  )
-}
+  );
+};
 
-export default LatestMembers
+export default LatestMembers;
