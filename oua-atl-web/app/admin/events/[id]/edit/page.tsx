@@ -22,7 +22,7 @@ async function getData(id: string): Promise<{ message: string; payload: EventRes
       return { message: `Error ${res.status}: ${res.statusText}`, payload: null };
     }
 
-    const result = await res.json();
+    const result = await res.json().catch(() => ({message: res.statusText}));
     return result;
   } catch (error: any) {
     console.error('Fetch Error:', error);

@@ -31,7 +31,7 @@ const AccountForm = () => {
 
 
       if(response.status === 401) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         setError("email", {
           type: "server", // Custom type for server-side errors
           message: result.message || "Invalid credentials", 
@@ -45,7 +45,7 @@ const AccountForm = () => {
       }
 
       if(response.ok) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         toast.success("Administrator login successful", {description: result?.message})
         const newUrl = window.location.protocol + '//' + window.location.host + "/admin" ;
         window.location.replace(newUrl)

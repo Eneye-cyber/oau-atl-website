@@ -61,7 +61,7 @@ export default function JsonFormEditor({ page }: { page: string }) {
           throw new Error("File upload failed!");
         }
 
-        const data = await response.json();
+        const data = await response.json().catch(() => ({message: response.statusText}));
         if (data.payload[0].success) {
           handleInputChange(
             pageKey,

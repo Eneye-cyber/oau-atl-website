@@ -74,7 +74,7 @@ export default function EditProfileForm({ user }: { user: UserProfile }) {
       });
 
       if (response.status === 200) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         if (result?.message) {
           sessionStorage.setItem("flashMessage", "Update successful!");
           router.push("/members/profile");

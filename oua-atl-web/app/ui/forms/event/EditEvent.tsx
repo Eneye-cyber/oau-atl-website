@@ -53,7 +53,7 @@ const EditEvent = ({event}: {event: EventResponseObject}) => {
 
 
       if(response.status === 401) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         setError("title", {
           type: "server", // Custom type for server-side errors
           message: result.message || "Invalid form field format", 
@@ -62,7 +62,7 @@ const EditEvent = ({event}: {event: EventResponseObject}) => {
       }
 
       if(response.ok) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         router.push("/admin/events");
         return toast.success('Event Updated successfully!');
       }

@@ -7,7 +7,7 @@ export async function POST(req: Request) {
 
   try {
     // Parse request body
-    const data = await req.json();
+    const data = await req.json()
 
 
     const url = `${baseUrl}/users/request-password`;

@@ -5,17 +5,8 @@ import LatestExecutives from "./ui/LatestExecutives"
 import { Suspense } from 'react'
 import TableLoader from '@/app/ui/loaders/TableLoader'
 
-const Page = async () => {
+const page = async () => {
 
-
-  const data = [
-    { name: 'Funke Ajoke', email: "ajfunke@mail.com", course: "Dramatic arts", year: '19/20', status: 'Active' },
-    { name: 'Sunny Ade', email: "adesunny@mail.com", course: "Music", year: '98/99', status: 'Active' },
-    { name: 'Bayo Bayero', email: "bbdon@mail.com", course: "Medicine & Surgery", year: '02/03', status: 'Active' },
-    { name: 'Sunny Ade', email: "adesunny@mail.com", course: "Music", year: '98/99', status: 'Active' },
-    { name: 'Bayo Bayero', email: "bbdon@mail.com", course: "Medicine & Surgery", year: '02/03', status: 'Active' },
-  ];
-  
 
   return (
     <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-y-6 gap-3">
@@ -46,4 +37,4 @@ const Page = async () => {
   )
 }
 
-export default Page
+export default page

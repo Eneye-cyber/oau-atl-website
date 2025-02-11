@@ -88,7 +88,8 @@ export const DataProvider = ({ children }: DataProviderProps) => {
   const [loading, setLoading] = useState(true);
 
   const pathname = usePathname();
-  const slug = slugMapping[pathname.replace("/customize", "").trim()];
+  const slug = slugMapping?.[pathname.replace("/customize", "").trim()] ?? "home";
+
 
   useEffect(() => {
     const fetchRoutes = async () => {

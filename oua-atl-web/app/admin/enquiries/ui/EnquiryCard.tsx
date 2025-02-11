@@ -35,7 +35,7 @@ export default function EnquiryCard({
       setLoading(true)
       const req = await fetch(`/api/admin/enquiry/${contact_id}`, {method: 'PUT'})
       if(req.ok) {
-        const res = await req.json()
+        const res = await req.json().catch(() => ({message: req.statusText}))
         toast.success(res?.message ?? 'This issue has been marked as resolved')
         setClosed(true)
         return

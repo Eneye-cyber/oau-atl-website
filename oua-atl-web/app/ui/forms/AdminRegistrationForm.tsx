@@ -38,7 +38,7 @@ const AccountForm = () => {
     async function fetchRole() {
       setIsLoading(true);
       const response = await fetch('/api/user');
-      const data = await response.json();
+      const data = await response.json().catch(() => ({message: response.statusText}));
       setRole(data.role);
       if(data.role === 'admin') {
         setValue('s_username', 'oaa_superuser_0')
@@ -57,14 +57,14 @@ const AccountForm = () => {
     });
 
       if(response.status === 401) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         setError("email", { type: "server", message: result.message || "Invalid credentials" });
         setError("password", { type: "server", message: result.message || "Invalid credentials" });
         return;
       }
 
       if(response.ok) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         if(!role) {
           return router.push("/admin/login");
         }

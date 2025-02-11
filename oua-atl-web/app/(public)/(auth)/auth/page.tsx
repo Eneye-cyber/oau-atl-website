@@ -13,7 +13,7 @@ async function verifyUser(verificationId: string, userId: string) {
     throw new Error('Verification failed');
   }
 
-  const result = await response.json()
+  const result = await response.json().catch(() => ({message: response.statusText}))
 
   console.log('verification response ; ', result)
 

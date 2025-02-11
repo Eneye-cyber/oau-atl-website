@@ -46,7 +46,7 @@ const SignInForm = ({noRedirect = false, onLoginSuccess}: {noRedirect?: boolean;
       console.log('response', response)
 
       if(response.status === 401) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         setError("email", {
           type: "server", // Custom type for server-side errors
           message: result.message || "Invalid credentials", 
@@ -60,7 +60,7 @@ const SignInForm = ({noRedirect = false, onLoginSuccess}: {noRedirect?: boolean;
       }
 
       if(response.status === 200) {
-        const result: AuthResponse = await response.json();
+        const result: AuthResponse = await response.json().catch(() => ({message: response.statusText}));
         toast.success("Login successful")
         if(!noRedirect) {
           const newUrl = window.location.protocol + '//' + window.location.host + "/members/profile" ;

@@ -35,7 +35,7 @@ async function getProjectDetails(id: string) {
       };
     }
 
-    const result = await res.json();
+    const result = await res.json().catch(() => ({message: res.statusText}));
     return result;
   } catch (error: any) {
     console.error("Fetch Error:", error);
@@ -59,7 +59,7 @@ async function getProjectDonors(id: string) {
       };
     }
 
-    const result = await res.json();
+    const result = await res.json().catch(() => ({message: res.statusText}));
     return result;
   } catch (error: any) {
     console.error("Fetch Error:", error);

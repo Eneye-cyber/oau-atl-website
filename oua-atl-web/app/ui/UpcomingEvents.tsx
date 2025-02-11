@@ -22,7 +22,7 @@ async function getData(): Promise<any> {
     });
     
     if(res.ok) {
-      const result = await res.json()
+      const result = await res.json().catch(() => ({message: res.statusText}))
       console.log('latest event result', result)
       return result
     }

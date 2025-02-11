@@ -82,7 +82,7 @@ const MultipleImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<H
         throw new Error("File upload failed!");
       }
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({message: response.statusText}));
       if (data.payload[0]?.success) {
         return data.payload[0].url; // Return the uploaded URL
       } else {

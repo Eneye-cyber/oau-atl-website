@@ -38,7 +38,7 @@ const CreateExecutiveForm = () => {
       console.log('event response', response)
 
       if(response.status === 401) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         setError("fullName", {
           type: "server", // Custom type for server-side errors
           message: result.message || "Invalid form field format", 
@@ -47,7 +47,7 @@ const CreateExecutiveForm = () => {
       }
 
       if(response.ok) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         console.log('result', result)
         router.push("/admin/members");
         return alert('Executive created successfully!');

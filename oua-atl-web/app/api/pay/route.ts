@@ -41,7 +41,7 @@ export async function POST(req: Request): Promise<NextResponse<PaymentResponse>>
     clearTimeout(timeout);
 
     if (response.ok) {
-      const result = await response.json();
+      const result = await response.json().catch(() => ({message: response.statusText}));
       console.log(result)
       return NextResponse.json(
         {...result},
@@ -50,7 +50,7 @@ export async function POST(req: Request): Promise<NextResponse<PaymentResponse>>
     }
     console.log(response.statusText)
     if(response.status === 400) {
-      const result = await response.json();
+      const result = await response.json().catch(() => ({message: response.statusText}));
       return NextResponse.json (
         {message: `Backend error: ${result.message}`},
         { status: response.status }

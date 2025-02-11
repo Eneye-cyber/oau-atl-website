@@ -23,7 +23,7 @@ export default function Layout({
   //       if (!response.ok) {
   //         throw new Error('Failed to fetch user data');
   //       }
-  //       const data = await response.json();
+  //       const data = await response.json().catch(() => ({message: response.statusText}));
   //       setRole(data.role);
   //       setId(data.id);
   //     } catch (error) {

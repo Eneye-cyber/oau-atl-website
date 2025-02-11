@@ -44,7 +44,7 @@ const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInput
         throw new Error(response.statusText);
       }
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({message: response.statusText}));
       if (data.payload[0].success) {
         setFileName(data.payload[0].fileName); // Set the file name
         setFileUrl(data.payload[0].url); // Set the file URL

@@ -9,7 +9,7 @@ export async function PUT(req: Request, { params }: {params: {id: string}}) {
     console.log('Process Gallery form');
 
     // Parse request body
-    let data = await req.json();
+    let data = await req.json()
     const { id } = params;
     
     const url = `${baseUrl}/gallery/${id}`;

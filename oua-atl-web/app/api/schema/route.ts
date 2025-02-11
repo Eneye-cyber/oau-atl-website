@@ -30,7 +30,7 @@ export async function GET(req: Request): Promise<NextResponse<PageSchemaResponse
  
    try {
      const { db } = await connectToDatabase();
-     console.log('c1')
+     console.log('c1', slug)
      const page = await db.collection('temp_pages').findOne({ name: slug });
      console.log('c2')
  
@@ -72,7 +72,7 @@ export async function GET(req: Request): Promise<NextResponse<PageSchemaResponse
 export async function POST(req: Request): Promise<NextResponse<{ message: string; error: boolean }>> {
   try {
     // Extract `schema` from the incoming request body
-    const body = await req.json();
+    const body = await req.json()
     const newData = body.schema.pages;
     const slug = Object.keys(newData) as Array<keyof typeof newData>;
 

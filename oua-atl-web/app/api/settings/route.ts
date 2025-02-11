@@ -20,7 +20,7 @@ export async function GET(req: Request): Promise<NextResponse> {
 
     // Transform data into the expected structure
     const jsonData: SiteSchema = {
-      general: sections.reduce((acc: any, page) => {
+      general: sections.reduce((acc: any, page: any) => {
         acc[page.name] = page;
         return acc;
       }, {}),

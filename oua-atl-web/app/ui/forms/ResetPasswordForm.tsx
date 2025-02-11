@@ -36,7 +36,7 @@ const ResetPasswordForm = ({userId}: {userId: string}) => {
       console.log('response', response)
 
       if(response.status === 401) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         setError("email", {
           type: "server", // Custom type for server-side errors
           message: result.message || "Invalid credentials", 
@@ -45,7 +45,7 @@ const ResetPasswordForm = ({userId}: {userId: string}) => {
       }
 
       if(response.status === 200) {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         console.log(result, result)
         reset()
 

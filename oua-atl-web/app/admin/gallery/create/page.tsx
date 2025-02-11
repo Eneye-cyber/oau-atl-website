@@ -48,7 +48,7 @@ const Page = () => {
         router.push("/admin/gallery");
         toast.success('Gallery created successfully!');
       } else {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({message: response.statusText}));
         setError("groupData.title", {
           type: "server",
           message: result.message || "Invalid form field format",
