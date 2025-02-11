@@ -30,9 +30,13 @@ export async function GET(req: Request): Promise<NextResponse<PageSchemaResponse
  
    try {
      const { db } = await connectToDatabase();
+     console.log('c1')
      const page = await db.collection('temp_pages').findOne({ name: slug });
+     console.log('c2')
  
      if (!page) {
+     console.log('c3')
+
        return NextResponse.json(
          {
            routeList: [],
@@ -42,6 +46,8 @@ export async function GET(req: Request): Promise<NextResponse<PageSchemaResponse
        );
      }
  
+     console.table(page)
+
      const jsonData: JsonData = { pages: {} };
      jsonData.pages[slug] = page as unknown as PageData;
  

@@ -2,7 +2,6 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation"; 
 import { toast } from "sonner";
 
 const accountSchema = z.object({
@@ -13,7 +12,6 @@ const accountSchema = z.object({
 type AccountFormValues = z.infer<typeof accountSchema>;
 
 const AccountForm = () => {
-  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -49,7 +47,8 @@ const AccountForm = () => {
       if(response.ok) {
         const result = await response.json();
         toast.success("Administrator login successful", {description: result?.message})
-        router.push("/admin");
+        const newUrl = window.location.protocol + '//' + window.location.host + "/admin" ;
+        window.location.replace(newUrl)
         return 
       }
 

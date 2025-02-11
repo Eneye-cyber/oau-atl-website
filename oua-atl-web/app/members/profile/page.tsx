@@ -1,5 +1,5 @@
 import UserProfile from '@/app/ui/cards/UserProfile';
-import { fetchData } from '@/lib/utils/api';
+import { currentUserId, fetchData } from '@/lib/utils/api';
 import { Metadata } from 'next';
 import { cookies } from 'next/headers';
 
@@ -9,8 +9,7 @@ export const metadata: Metadata = {
 }
 
 async function getData(): Promise<{ message: string; payload: any | null }> {
-  const cookieStore = cookies();
-  const id = cookieStore.get('x-custom-id')?.value ?? null
+  const {id} = await currentUserId()
   const url = `/users/${id}/profile`;
   // console.log('Requesting profile from ', url)
   const result = await fetchData(url)

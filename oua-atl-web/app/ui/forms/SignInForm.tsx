@@ -5,11 +5,8 @@ import { z } from 'zod'
 import { SignInFormDataSchema } from '@/app/lib/schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { useRouter } from "next/navigation"; 
 import { toast } from "sonner"
 import { AuthResponse, UserRoleResponse } from "@/app/lib/types";
-// import { Input } from "../ui/input";
-// import { Button } from "../ui/button";
 interface User extends UserRoleResponse {
   email: string | null;
 }
@@ -18,7 +15,6 @@ interface User extends UserRoleResponse {
 type Inputs = z.infer<typeof SignInFormDataSchema>
 
 const SignInForm = ({noRedirect = false, onLoginSuccess}: {noRedirect?: boolean; onLoginSuccess?: (arg: User) => void}) => {
-  const router = useRouter();
   
   useEffect(() => {
     const message = sessionStorage.getItem("flashMessage");
@@ -67,7 +63,8 @@ const SignInForm = ({noRedirect = false, onLoginSuccess}: {noRedirect?: boolean;
         const result: AuthResponse = await response.json();
         toast.success("Login successful")
         if(!noRedirect) {
-          router.push("/")
+          const newUrl = window.location.protocol + '//' + window.location.host + "/members/profile" ;
+          window.location.replace(newUrl)
           return
         }
         onLoginSuccess && onLoginSuccess(result.user)

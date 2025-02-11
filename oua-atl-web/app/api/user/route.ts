@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { UserRoleResponse } from '@/app/lib/types';
+import { getAuthSession, decrypt } from '@/lib/session';
 
 export async function GET(req: Request): Promise<NextResponse<UserRoleResponse>> {
   try {
-    const cookieStore = cookies();
+    const authSession = getAuthSession()
+    const user = await decrypt(authSession)
 
-    const role= cookieStore.get('x-custom-role')?.value as "guest" | "member" | "admin" ?? null;
-    const id = cookieStore.get('x-custom-id')?.value ?? null;
+    const role= user?.userRole as "guest" | "member" | "admin" | undefined ?? null;
+    const id = user?.userId ?? null;
 
     if (!role || !id) {
       return NextResponse.json(

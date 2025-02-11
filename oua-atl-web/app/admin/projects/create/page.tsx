@@ -7,8 +7,6 @@ export const metadata: Metadata = {
 };
 
 const page = () => {
-  // const headersList = headers();
-  // const id = headersList.get('x-custom-id') ?? '';
 
   return (
     <section className="p-3 md:p-6">

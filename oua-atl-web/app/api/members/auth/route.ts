@@ -1,6 +1,16 @@
+import { createSession, getSessionExpiry } from '@/lib/session';
 import { NextResponse } from 'next/server';
 
 const baseUrl = process.env.API_BASE
+
+interface loginResult {
+  message: string;
+  user: {
+    email: string;
+    id: string;
+    role: 'member' | 'admin'
+  }
+}
 
 export async function POST(req: Request) {
   if (req.method !== 'POST') {
@@ -40,73 +50,27 @@ export async function POST(req: Request) {
 
     // Extract cookies from external response
     const cookies = externalResponse.headers.get('set-cookie');
-    const result = await externalResponse.json();
+    const result: loginResult = await externalResponse.json();
 
-    console.log('Backend response:', result);
-    console.log('Cookies:', cookies);
-
-    // Create NextResponse and set cookies
-    const nextResponse = NextResponse.json(result, { status: 200 });
-    if (cookies) {
-      nextResponse.headers.set('Set-Cookie', cookies); // Pass cookies to the client
-    }
-    console.log('login result', result)
-
-    if (result.data?.user) {
-
-      const user = result.data?.user;
-      nextResponse.cookies.set('x-custom-id', user?.id || '');
-      nextResponse.cookies.set('x-custom-role', user?.role || '');
-    }
-
-    return nextResponse;
-  } catch (error: any) {
-    console.error('Server error:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error', details: error?.message },
-      { status: 500 }
-    );
-  }
-}
-
-
-export async function GET(req: Request) {
-  try {
-    // Construct the target URL
-    const url = `${baseUrl}/users/auth/test`;
-    console.log('Requesting login status from:', url);
-
-    // Make the fetch call to the external API
-    const incomingCookies = req.headers.get('cookie') || ''; 
-    console.log('bkCookie', incomingCookies)
-    const externalResponse = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: incomingCookies,
-      },
-      credentials: 'include', // Ensure cookies are sent with the request
-    });
-
-    // Check for errors in the external response
-    if (!externalResponse.ok) {
-      const errorResponse = await externalResponse.json();
-      console.error('External API error:', errorResponse);
+    if(!cookies || !result || !result?.user) {
       return NextResponse.json(
-        { error: 'Failed to fetch login status', details: errorResponse },
-        { status: externalResponse.status }
+        { error: 'Login failed', details: 'No cookies or result received' },
+        { status: 500 }
       );
     }
 
-    // Parse and return the successful response
-    const result = await externalResponse.json();
-    return NextResponse.json(
-      { message: 'Login status retrieved successfully', data: result },
-      { status: 200 }
-    );
+    // Create NextResponse and set cookies
+    const nextResponse = NextResponse.json(result, { status: 200 });
+    nextResponse.headers.set('Set-Cookie', cookies); // Pass cookies to the client
+
+    // connect.sid=s%3Akj0W8CZKFVKxNgegX9hZetEN3I1HXYlR.Mm01aEJ9tXzBpmKXxRf7UI66E0I0vZ2xWTNnKALaY7E; Path=/; Expires=Fri, 14 Feb 2025 14:51:38 GMT; HttpOnly
+    const user = result?.user;
+    const expiresAt = getSessionExpiry(cookies)
+    await createSession(user.id, user.role, user.email, expiresAt);
+    return nextResponse;
+
   } catch (error: any) {
     console.error('Server error:', error);
-
     return NextResponse.json(
       { error: 'Internal Server Error', details: error?.message },
       { status: 500 }

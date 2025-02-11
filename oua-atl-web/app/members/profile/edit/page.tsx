@@ -1,9 +1,8 @@
 import { UserProfile } from "@/app/lib/types";
 import EditProfileForm from "@/app/ui/forms/members/EditProfileForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { fetchData } from "@/lib/utils/api";
+import { currentUserId, fetchData } from "@/lib/utils/api";
 import { Metadata } from 'next';
-import { cookies } from 'next/headers';
 
 export const metadata: Metadata = {
   title: 'ATL OAU | Edit Profile',
@@ -12,8 +11,9 @@ export const metadata: Metadata = {
 
 
 async function getData(): Promise<{ message: string; payload: UserProfile }> {
-  const cookieStore = cookies();
-  const id = cookieStore.get('x-custom-id')?.value ?? null
+
+    const {id} = await currentUserId()
+  
   const url = `/users/${id}/profile`;
   // console.log('Requesting profile from ', url)
   const result = await fetchData(url)

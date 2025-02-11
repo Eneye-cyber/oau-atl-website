@@ -1,3 +1,12 @@
+import { type JWTPayload } from 'jose'
+
+export interface SessionPayload extends JWTPayload {
+  userId: string
+  userRole: string
+  userEmail: string
+  expiresAt: string // Store as ISO string
+}
+
 export interface ErrorResponse {
   message: string;
   error: boolean;

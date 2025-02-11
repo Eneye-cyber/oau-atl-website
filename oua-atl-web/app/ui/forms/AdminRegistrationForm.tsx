@@ -20,6 +20,7 @@ type AccountFormValues = z.infer<typeof accountSchema>;
 const AccountForm = () => {
   const router = useRouter();
   const [role, setRole] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
 
 
@@ -35,6 +36,7 @@ const AccountForm = () => {
 
   useEffect(() => {
     async function fetchRole() {
+      setIsLoading(true);
       const response = await fetch('/api/user');
       const data = await response.json();
       setRole(data.role);
@@ -43,7 +45,7 @@ const AccountForm = () => {
         setValue('s_password', 'isnaklpsjiofjaksfaiofoijasofsakofhioshojsafnasfklshfsjiofh')
       }
     }
-    fetchRole().catch(e => console.error(e));
+    fetchRole().catch(e => console.error(e)).finally(() => setIsLoading(false));
   }, [setValue]);
 
   const processForm: SubmitHandler<AccountFormValues> = async (data) => {
@@ -101,8 +103,10 @@ const AccountForm = () => {
             <input
               type={field === 'password' || field === 's_password' ? 'password' : 'text'}
               {...register(field as keyof AccountFormValues)}
-              className="flex h-10 w-full rounded-md border px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className="flex h-10 w-full rounded-md border px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
               id={field}
+              disabled={isLoading || isSubmitting}
+              aria-disabled={isLoading || isSubmitting}
             />
             {errors[field as keyof AccountFormValues] && (
               <p className="text-sm text-red-500 mt-1">{errors[field as keyof AccountFormValues]?.message}</p>
@@ -114,7 +118,7 @@ const AccountForm = () => {
       <div className="flex items-center">
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isLoading}
           className="inline-flex items-center w-full justify-center rounded-md bg-primary text-primary-foreground h-10 px-4 py-2 text-sm font-medium hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-40 disabled:pointer-events-none"
         >
           {isSubmitting ? 'Loading...' : "Register"}

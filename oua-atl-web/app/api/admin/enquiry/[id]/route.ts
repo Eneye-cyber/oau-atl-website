@@ -1,3 +1,4 @@
+import { getAuthCookieString } from '@/lib/session';
 import { NextResponse } from 'next/server';
 
 const baseUrl = process.env.API_BASE
@@ -9,13 +10,13 @@ export async function PUT(req: Request, { params }: {params: {id: string}}) {
 
     const url = `${baseUrl}/contact/${id}/close`;
     // Make the fetch call to external API
-    const incomingCookies = req.headers.get('cookie') || ''; 
+     const authCookies = getAuthCookieString(); 
 
     const externalResponse = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: incomingCookies,
+        Cookie: authCookies,
       },
       credentials: 'include', // Ensure cookies are included in the request
     });

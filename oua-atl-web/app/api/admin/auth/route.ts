@@ -1,3 +1,4 @@
+import { createSession, getAuthCookieString, getSessionExpiry } from '@/lib/session';
 import { NextResponse } from 'next/server';
 
 const baseUrl = process.env.API_BASE
@@ -42,21 +43,23 @@ export async function POST(req: Request) {
     const cookies = externalResponse.headers.get('set-cookie');
     const result = await externalResponse.json();
 
+    if(!cookies || !result || !result?.user) {
+      return NextResponse.json(
+        { error: 'Login failed', details: 'No cookies or result received' },
+        { status: 500 }
+      );
+    }
+
 
     // Create NextResponse and set cookies
     const nextResponse = NextResponse.json(result, { status: 200 });
-    if (cookies) {
-      nextResponse.headers.set('Set-Cookie', cookies); // Pass cookies to the client
-    }
+    nextResponse.headers.set('Set-Cookie', cookies); // Pass cookies to the client
 
     console.log('login result', result)
 
-    if (result.data?.user) {
-
-      const user = result.data?.user;
-      nextResponse.cookies.set('x-custom-id', user?.id || '');
-      nextResponse.cookies.set('x-custom-role', user?.role || '');
-    }
+     const user = result?.user;
+        const expiresAt = getSessionExpiry(cookies)
+        await createSession(user.id, user.role, user.email, expiresAt);
     
     return nextResponse;
   } catch (error: any) {
@@ -76,13 +79,13 @@ export async function GET(req: Request) {
     console.log('Requesting admin status from:', url);
 
     // Make the fetch call to the external API
-    const incomingCookies = req.headers.get('cookie') || ''; 
-    console.log('bkCookie', incomingCookies)
+    const authCookies = getAuthCookieString();
+    
     const externalResponse = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: incomingCookies,
+        Cookie: authCookies,
       },
       credentials: 'include', // Ensure cookies are sent with the request
     });

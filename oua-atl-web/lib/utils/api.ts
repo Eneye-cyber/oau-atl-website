@@ -1,21 +1,20 @@
 'use server'
 import { PostPaymentResponse } from '@/app/lib/types';
 import { cookies } from 'next/headers'
+import { decrypt, getAuthCookieString, getAuthSession } from '../session';
 const baseUrl = process.env.API_BASE;
 const appUrl = process.env.APP_URL;
 
 export async function fetchData(path: string, cache: RequestCache = 'no-store' ) {
   const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
   const url = `${baseUrl}/${normalizedPath}`;
-  const cookieStore = cookies();
-  const incomingCookies = cookieStore.getAll().map(cookie => `${cookie.name}=${encodeURIComponent(cookie.value)}`).join('; ');
-  
+  const authCookies = getAuthCookieString();
   try {
     const res = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: incomingCookies,
+        Cookie: authCookies,
       },
       credentials: 'include', // Include cookies
       cache: cache, // Force no caching for fresh data
@@ -135,6 +134,17 @@ export const capturePayment = async ( trxref: string, reference: string): Promis
     }
     return { message: 'Something went wrong', payload: { reference: reference }, error: true}
   }
+}
+
+export const currentUserId = async (): Promise<{role: "guest" | "member" | "admin", id: string | null, email: string | null}> => {
+   const authSession = getAuthSession()
+      const user = await decrypt(authSession)
+  
+      const role= user?.userRole as "member" | "admin" | undefined ?? "guest";
+      const id = user?.userId ?? null;
+      const email = user?.userEmail ?? null
+
+      return { role, id, email }
 }
 
 

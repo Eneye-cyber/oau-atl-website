@@ -1,7 +1,7 @@
 
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { PaymentResponse } from '@/app/lib/types';
+import { getAuthCookieString } from '@/lib/session';
 
 const baseUrl = process.env.API_BASE;
 if (!baseUrl) {
@@ -17,8 +17,7 @@ const paymentUrl: Record<string, string> = {
 }
 
 export async function POST(req: Request): Promise<NextResponse<PaymentResponse>> {
-  const cookieStore = cookies();
-  const incomingCookies = cookieStore.getAll().map(cookie => `${cookie.name}=${encodeURIComponent(cookie.value)}`).join('; ');
+  const authCookies = getAuthCookieString(); 
 
   const data = await req.json()
   const paymentType: keyof typeof paymentUrl = data.paymentType
@@ -28,13 +27,12 @@ export async function POST(req: Request): Promise<NextResponse<PaymentResponse>>
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
-  console.log('trial run', data, url);
   try {
     const response: Response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Cookie: incomingCookies,
+        Cookie: authCookies,
       },
       credentials: 'include',
       body: JSON.stringify(data),
