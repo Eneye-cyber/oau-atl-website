@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     console.log('Process Gallery form');
 
     // Parse request body
-    let data = await req.json().catch(() => ({message: req.statusText}));
+    let data = await req.json()
     const url = `${baseUrl}/gallery`;
 
     console.log('Sending form request to:', url);

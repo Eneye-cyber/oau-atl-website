@@ -119,7 +119,7 @@ const SocialLinksSettings = ({ jsonData }: { jsonData: PageData }) => {
           credentials: 'include',
         })
         if(req.ok) {
-          const res = await req.json().catch(() => ({message: req.statusText}));
+          const res = await req.json()
           toast.success(res.message)
           return
         }

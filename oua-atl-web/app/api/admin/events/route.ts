@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     console.log('Process Event form');
 
     // Parse request body
-    let data = await req.json().catch(() => ({message: req.statusText}));
+    let data = await req.json()
     data = transformObject(data)
 
     const url = `${baseUrl}/physical-events`;

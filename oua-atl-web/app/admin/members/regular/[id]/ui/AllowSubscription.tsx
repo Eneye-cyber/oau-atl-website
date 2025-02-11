@@ -31,7 +31,7 @@ const AllowSubscription = ({
       });
 
       if (req.ok) {
-        const res = await req.json().catch(() => ({message: req.statusText}));
+        const res = await req.json()
         toast.success("Operation Successful", {
           description: res.data?.message ?? "Approval Successfull",
         });

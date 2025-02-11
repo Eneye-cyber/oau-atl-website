@@ -7,7 +7,7 @@ export async function POST(req: Request) {
 
   try {
     // Parse request body
-    const data = await req.json().catch(() => ({message: req.statusText}));
+    const data = await req.json()
     if(data.password !== data.confirm_password) {
       console.log('password verification failed')
       return NextResponse.json(

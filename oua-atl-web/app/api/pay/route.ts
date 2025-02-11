@@ -19,7 +19,7 @@ const paymentUrl: Record<string, string> = {
 export async function POST(req: Request): Promise<NextResponse<PaymentResponse>> {
   const authCookies = getAuthCookieString(); 
 
-  const data = await req.json().catch(() => ({message: req.statusText}))
+  const data = await req.json()
   const paymentType: keyof typeof paymentUrl = data.paymentType
   const url = paymentUrl[paymentType]
   delete data['paymentType']

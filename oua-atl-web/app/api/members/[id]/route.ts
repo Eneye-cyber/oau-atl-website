@@ -16,7 +16,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     const cookieStore = cookies();
     const incomingCookies = cookieStore.getAll().map(cookie => `${cookie.name}=${encodeURIComponent(cookie.value)}`).join('; ');
   try {
-    const data = await req.json().catch(() => ({message: req.statusText}));
+    const data = await req.json()
     const url = `${baseUrl}/users/${id}/profile`;
     const body = JSON.stringify(data);
 
