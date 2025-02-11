@@ -8,16 +8,22 @@ import ExtraSection from "@/app/(public)/(home)/section/ExtraSection";
 import BannerSection from "@/app/(public)/(home)/section/BannerSection";
 import { Section } from "@/app/lib/types";
 import AdBannerSection from "@/app/(public)/(home)/section/AdBannerSection";
+import json from "@/lib/pages/pageSchema.json";
 
 const baseUrl = process.env?.APP_URL ?? "http://localhost:3000"
 
 // Fetch the `home` object
 const getData = async () => {
-  const response = await fetch(`${baseUrl}/api/content?slug=home`,{
-    cache: "default"
-  });
-  const result = await response.json();
-  return result.data.pages.home;
+  try {
+    const response = await fetch(`${baseUrl}/api/content?slug=home`,{
+      cache: "default"
+    });
+    const result = await response.json();
+    return result.data.pages.home;
+  } catch (error) {
+    console.log('home_error', error)
+    return json.pages.home
+  }
 };
 
 
