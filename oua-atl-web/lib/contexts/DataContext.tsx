@@ -95,19 +95,19 @@ export const DataProvider = ({ children }: DataProviderProps) => {
     const fetchRoutes = async () => {
       setLoading(true);
       try {
-        const responseReq = fetchRouteList();
+        // const responseReq = fetchRouteList();
         const projectsReq = fetchData("projects");
         const eventsReq = fetchData("physical-events");
         const pageReq = fetchPageSchema(slug);
 
-        const [response, projects, events, pageData] = await Promise.all([
-          responseReq,
+        const [ projects, events, pageData] = await Promise.all([
+          // responseReq,
           projectsReq,
           eventsReq,
           pageReq,
         ]);
 
-        setRoutes(response.data);
+        setRoutes(pageData.routeList);
         setProjects(projects.payload.data);
         setEvents(events.payload.data);
         setState(pageData.pageSchema);

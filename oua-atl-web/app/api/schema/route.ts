@@ -3,7 +3,12 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { JsonData, PageData, PageSchemaResponse } from '@/app/lib/types';
-import { connectToDatabase } from "@/lib/mongodb";
+// import { connectToDatabase } from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/db"; // Use MySQL connection
+import { queryPageData, updatePageData } from '@/lib/mysql';
+import { RowDataPacket } from 'mysql2';
+import { revalidatePath } from 'next/cache';
+
 
 
 export async function GET(req: Request): Promise<NextResponse<PageSchemaResponse>> {
@@ -29,14 +34,11 @@ export async function GET(req: Request): Promise<NextResponse<PageSchemaResponse
    }
  
    try {
-     const { db } = await connectToDatabase();
      console.log('c1', slug)
-     const page = await db.collection('temp_pages').findOne({ name: slug });
-     console.log('c2')
+    const page: any | null = await queryPageData(slug, true)
  
      if (!page) {
      console.log('c3')
-
        return NextResponse.json(
          {
            routeList: [],
@@ -45,7 +47,7 @@ export async function GET(req: Request): Promise<NextResponse<PageSchemaResponse
          { status: 404 }
        );
      }
- 
+     // Parse sections JSON field
      console.table(page)
 
      const jsonData: JsonData = { pages: {} };
@@ -76,6 +78,7 @@ export async function POST(req: Request): Promise<NextResponse<{ message: string
     const newData = body.schema.pages;
     const slug = Object.keys(newData) as Array<keyof typeof newData>;
 
+
     // If `schema` is not provided, return an error response
     if (!newData || !slug[0]) {
       return NextResponse.json(
@@ -84,11 +87,9 @@ export async function POST(req: Request): Promise<NextResponse<{ message: string
       );
     }
 
-    const { db } = await connectToDatabase();
-    const collection = db.collection("temp_pages");
 
-    // Find the existing page
-    const existingPage = await collection.findOne({ name: slug[0] });
+    // // Find the existing page
+    const existingPage: any | null = await queryPageData(slug[0] as string, true)
 
     // Check if the current JSON data and incoming data are equal
     if (existingPage && JSON.stringify(existingPage) === JSON.stringify(newData[slug[0]])) {
@@ -98,28 +99,20 @@ export async function POST(req: Request): Promise<NextResponse<{ message: string
       );
     }
 
-    // Prepare the update data, excluding the `_id` field
-    const updateData = { ...newData[slug[0]] };
-    delete updateData._id; // Remove `_id` if it exists in the incoming data
-
-    // Update or insert the document in the collection
-    const updatedResult = await collection.updateOne(
-      { name: slug[0] }, // Match the document by the name (slug)
-      { $set: updateData }, // Update the document with the sanitized data
-      { upsert: true } // Create the document if it does not exist
-    );
+    // // Update or insert the document in the collection
+    const updatedResult = await updatePageData(slug[0] as string, newData[slug[0]].sections, true)
 
     // Check if the update was acknowledged
-    if (updatedResult.modifiedCount > 0 || updatedResult.upsertedCount > 0) {
+    if (updatedResult.success) {
       return NextResponse.json(
-        { message: "Data updated successfully", error: false },
+        { message: updatedResult?.message ?? "Data updated successfully", error: false },
         { status: 200 }
       );
     }
 
     // If no modifications were made, return a response
     return NextResponse.json(
-      { message: "No changes were made to the document", error: false },
+      { message: updatedResult?.message ?? "No changes were made to the document", error: false },
       { status: 200 }
     );
   } catch (error) {
@@ -133,29 +126,30 @@ export async function POST(req: Request): Promise<NextResponse<{ message: string
   }
 }
 
-export async function PUT(req: Request): Promise<NextResponse<{message: string; error: boolean}>> {
-  // Define the path to the JSON file
-  const timestamp = new Date().getTime();
 
-
+export async function PUT(req: Request): Promise<NextResponse<{ message: string; error: boolean }>> {
   try {
-    
-    // Read the current JSON file
-    const { db } = await connectToDatabase();
-    const collection = db.collection("pages");
-    const temp_collection = db.collection("temp_pages");
+    const db = await connectToDatabase();
 
-    // Get all documents with only fields name and sections
-    const existingPages = collection.find({}, { projection: { _id: 0, name: 1, sections: 1 } });
-    const modifiedPages = temp_collection.find({}, { projection: { _id: 0, name: 1, sections: 1 } });
+    // Fetch current data from `pages` table
+    const [currentData] = await db.execute<RowDataPacket[]>(
+      `SELECT name, sections FROM pages`
+    );
 
-    const currentData = await existingPages.toArray()
-    const newData = await modifiedPages.toArray()
-    console.log(currentData)
-    console.log(newData)
+    // Fetch new data from `temp_pages` table
+    const [newData] = await db.execute<RowDataPacket[]>(
+      `SELECT name, sections FROM temp_pages`
+    );
 
+    // Ensure data is an array of objects
+    if (!Array.isArray(currentData) || !Array.isArray(newData)) {
+      throw new Error('Invalid data format from database');
+    }
 
-    // Check if the current JSON data and incoming data are equal
+    // console.log(currentData);
+    // console.log(newData);
+
+    // Compare data (normalize JSON strings for comparison)
     if (JSON.stringify(currentData) === JSON.stringify(newData)) {
       return NextResponse.json(
         { message: 'Data is already up-to-date', error: false },
@@ -163,75 +157,32 @@ export async function PUT(req: Request): Promise<NextResponse<{message: string; 
       );
     }
 
-    // Save the new data from temp_collection into collection
+    // Update `pages` table with new data from `temp_pages`
     for (const page of newData) {
-      const { name, sections } = page; // Destructure the fields
-      await collection.updateOne(
-        { name }, // Match by `name`
-        { $set: { name, sections } }, // Update `name` and `sections`
-        { upsert: true } // Insert if the document doesn't exist
+      const { name, sections } = page as { name: string; sections: any }; // Explicitly define structure
+      await db.execute(
+        `INSERT INTO pages (name, sections) VALUES (?, ?)
+         ON DUPLICATE KEY UPDATE sections = VALUES(sections)`,
+        [name, JSON.stringify(sections)]
       );
     }
+    revalidatePath('/api/schema');
 
-    // Return a success response
     return NextResponse.json(
       { message: 'Data updated successfully', error: false },
       { status: 200 }
     );
+
   } catch (error) {
     console.error('Error processing request:', error);
-
-    // Return an error response in case of any issue
     return NextResponse.json(
       { message: 'An error occurred while processing the request', error: true },
-      { status: 500, statusText: 'An error occurred while processing the request' }
+      { status: 500 }
     );
   }
 }
 
 
-// export async function PUT(req: Request): Promise<NextResponse<{message: string; error: boolean}>> {
-//   // Define the path to the JSON file
-//   const timestamp = new Date().getTime();
-//   const tempFilePath = path.join(process.cwd(), 'lib', 'pages', 'tempSchema.json');
-//   const filePath = path.join(process.cwd(), 'lib', 'pages', 'pageSchema.json');
-//   const recordPath = path.join(process.cwd(), 'lib', 'pages', `pageSchema_${timestamp}.json`);
-
-//   try {
-    
-//     // Read the current JSON file
-//     const fileData = await fs.promises.readFile(filePath, 'utf8');
-//     const tempData = await fs.promises.readFile(tempFilePath, 'utf8');
-//     const currentData = JSON.parse(fileData);
-//     const newData = JSON.parse(tempData);
-
-//     // Check if the current JSON data and incoming data are equal
-//     if (JSON.stringify(currentData) === JSON.stringify(newData)) {
-//       return NextResponse.json(
-//         { message: 'Data is already up-to-date', error: false },
-//         { status: 200 }
-//       );
-//     }
-
-//     // Save the new data to the file if it is different
-//     await fs.promises.writeFile(recordPath, JSON.stringify(currentData, null, 2), 'utf8');
-//     await fs.promises.writeFile(filePath, JSON.stringify(newData, null, 2), 'utf8');
-
-//     // Return a success response
-//     return NextResponse.json(
-//       { message: 'Data updated successfully', error: false },
-//       { status: 200 }
-//     );
-//   } catch (error) {
-//     console.error('Error processing request:', error);
-
-//     // Return an error response in case of any issue
-//     return NextResponse.json(
-//       { message: 'An error occurred while processing the request', error: true },
-//       { status: 500, statusText: 'An error occurred while processing the request' }
-//     );
-//   }
-// }
 
 
 // Define the type for route entries

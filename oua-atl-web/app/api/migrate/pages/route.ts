@@ -1,129 +1,45 @@
-import { NextResponse } from 'next/server';
-import { connectToDatabase } from "@/lib/mongodb";
+import { NextResponse } from "next/server";
+import { connectToDatabase } from "@/lib/db";
 import defaultJson from "@/lib/pages/pageSchema.json";
-import { MongoError } from 'mongodb';
-
-const jsonSchema = {
-  bsonType: "object",
-  required: ["_id", "name", "sections"],
-  properties: {
-    name: { bsonType: "string", minLength: 1 },
-    sections: { bsonType: "array", items: { bsonType: "object" } },
-  },
-};
-
-// export async function GET(req: Request) {
-//   const data = defaultJson.pages;
-//   const keys = Object.keys(data) as Array<keyof typeof data>;
-
-//   try {
-//     const { db } = await connectToDatabase();
-//     const collectionName = "temp_pages";
-
-//     try {
-//       // Ensure the collection has the correct schema
-//       await db.command({
-//         collMod: collectionName,
-//         validator: { $jsonSchema: jsonSchema },
-//         validationLevel: "strict",
-//       });
-//     } catch (err: any) {
-//       if (err.codeName === "NamespaceNotFound") {
-//         await db.createCollection(collectionName, {
-//           validator: { $jsonSchema: jsonSchema },
-//         });
-//       } else {
-//         throw err;
-//       }
-//     }
-
-//     const collection = db.collection(collectionName);
-
-//     await collection.createIndex({ name: 1 }, { unique: true });
-
-//     const results = await Promise.all(
-//       keys.map(async (key) => {
-//         const item = data[key];
-//         try {
-//           const result = await collection.insertOne({
-//             name: key,
-//             sections: item.sections,
-//           });
-//           return { page: key, isStored: result.acknowledged };
-//         } catch (insertError) {
-//           if (insertError instanceof MongoError && insertError.code === 11000) {
-//             return { page: key, isStored: false, error: "Duplicate key" };
-//           }
-//           throw insertError;
-//         }
-//       })
-//     );
-
-//     return NextResponse.json({
-//       message: "Migration successful",
-//       payload: results,
-//     });
-//   } catch (error: unknown) {
-//     console.error(error);
-//     if (error instanceof Error) {
-//       return NextResponse.json({ message: error.message }, { status: 500 });
-//     }
-//     return NextResponse.json({ message: "Migration error" }, { status: 500 });
-//   }
-// }
 
 export async function GET(req: Request) {
   const data = defaultJson.pages;
   const keys = Object.keys(data) as Array<keyof typeof data>;
-  let allResults: any[] = []; // Store results across all collections
+  let allResults: any[] = [];
 
   try {
-    const { db } = await connectToDatabase();
-    const collectionNames = ["pages", "temp_pages"];
+    const db = await connectToDatabase();
+    const tableNames = ["pages", "temp_pages"];
 
-    await Promise.all(
-      collectionNames.map(async (collectionName) => {
+    for (const tableName of tableNames) {
+      // Ensure table exists
+      await db.execute(`
+        CREATE TABLE IF NOT EXISTS ${tableName} (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          name VARCHAR(255) UNIQUE NOT NULL,
+          sections JSON NOT NULL
+        )
+      `);
+
+      for (const key of keys) {
+        const item = data[key];
+
         try {
-          // Ensure collection schema
-          await db.command({
-            collMod: collectionName,
-            validator: { $jsonSchema: jsonSchema },
-            validationLevel: "strict",
-          });
-        } catch (err: any) {
-          if (err.codeName === "NamespaceNotFound") {
-            await db.createCollection(collectionName, {
-              validator: { $jsonSchema: jsonSchema },
-            });
+          await db.execute(
+            `INSERT INTO ${tableName} (name, sections) VALUES (?, ?)`,
+            [key, JSON.stringify(item.sections)]
+          );
+
+          allResults.push({ page: key, isStored: true });
+        } catch (error: any) {
+          if (error.code === "ER_DUP_ENTRY") {
+            allResults.push({ page: key, isStored: false, error: "Duplicate entry" });
           } else {
-            throw err;
+            throw error;
           }
         }
-
-        const collection = db.collection(collectionName);
-        await collection.createIndex({ name: 1 }, { unique: true });
-
-        const results = await Promise.all(
-          keys.map(async (key) => {
-            const item = data[key];
-            try {
-              const result = await collection.insertOne({
-                name: key,
-                sections: item.sections,
-              });
-              return { page: key, isStored: result.acknowledged };
-            } catch (insertError) {
-              if (insertError instanceof MongoError && insertError.code === 11000) {
-                return { page: key, isStored: false, error: "Duplicate key" };
-              }
-              throw insertError;
-            }
-          })
-        );
-
-        allResults = [...allResults, ...results];
-      })
-    );
+      }
+    }
 
     return NextResponse.json({
       message: "Migration successful",
