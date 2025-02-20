@@ -295,9 +295,7 @@ export type JsonData = {
 }
 export interface SiteSchema {
   general: {
-    social: PageData;
-    header: PageData;
-    footer: PageData;
+    [key: string]: PageData
   };
 }
 

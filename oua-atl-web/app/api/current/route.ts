@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic"; // Add this at the top
+
+
 import { NextResponse } from 'next/server';
 // import { cookies } from 'next/headers';
 import { UserRoleResponse } from '@/app/lib/types';

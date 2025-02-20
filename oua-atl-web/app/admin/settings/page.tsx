@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 // import TopBar from "@/app/ui/shared/TopBar";
 import {
   Accordion,

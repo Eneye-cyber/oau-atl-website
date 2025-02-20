@@ -5,6 +5,25 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// Define the type for route entries
+type RouteEntry = string;
+export function cleanRoutes(routes: RouteEntry[]): RouteEntry[] {
+  return routes
+      .filter(route => {
+          // Exclude routes starting with "/admin", "/customize", or "/members/"
+          return !/^\/(admin|customize|members)\//.test(route);
+      })
+      .filter(route => {
+          // Exclude routes containing dynamic routes ([*])
+          return !/\[\w+\]/.test(route);
+      })
+      .map(route => {
+          // Remove strings inside parentheses
+          return route.replace(/\(.*?\)\//g, '');
+      });
+}
+
+
 export function calculatePercentage(current: number, target: number) {
   if (target === 0) return 0; // Avoid division by zero
   return (current / target) * 100;

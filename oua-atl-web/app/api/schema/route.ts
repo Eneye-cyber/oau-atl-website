@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 
-import fs from 'fs';
 import path from 'path';
 import { JsonData, PageData, PageSchemaResponse } from '@/app/lib/types';
-// import { connectToDatabase } from "@/lib/mongodb";
 import { connectToDatabase } from "@/lib/db"; // Use MySQL connection
 import { queryPageData, updatePageData } from '@/lib/mysql';
 import { RowDataPacket } from 'mysql2';
 import { revalidatePath } from 'next/cache';
+import { getRoutes } from '@/router/routes';
+import { cleanRoutes } from '@/lib/utils';
 
 
 
@@ -15,7 +15,7 @@ export async function GET(req: Request): Promise<NextResponse<PageSchemaResponse
   // Define the app directory path
   const appDir = path.join(process.cwd(), 'app'); 
   // Get all routes
-  let ROUTES_LIST = getRoutes(appDir);
+  let ROUTES_LIST = await getRoutes(appDir);
   ROUTES_LIST = cleanRoutes(ROUTES_LIST)
 
 
@@ -180,55 +180,6 @@ export async function PUT(req: Request): Promise<NextResponse<{ message: string;
       { status: 500 }
     );
   }
-}
-
-
-
-
-// Define the type for route entries
-type RouteEntry = string;
-
-/**
- * Recursively gets all routes from the given directory.
- * @param dir - The current directory to scan for routes.
- * @param basePath - The base path to construct route URLs.
- * @returns An array of route entries.
- */
-function getRoutes(dir: string, basePath: string = '/'): RouteEntry[] {
-  const entries = fs.readdirSync(dir, { withFileTypes: true });
-  const routes: RouteEntry[] = [];
-
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      const nestedRoutes = getRoutes(fullPath, `${basePath}${entry.name}/`);
-      routes.push(...nestedRoutes);
-    } else if (
-      entry.isFile() &&
-      (entry.name === 'page.js' || entry.name === 'page.tsx')
-    ) {
-      // Add the route if it's a valid page file
-      routes.push(basePath.endsWith('/') ? basePath.slice(0, -1) : basePath); // Remove trailing slash
-    }
-  }
-
-  return routes;
-}
-
-function cleanRoutes(routes: RouteEntry[]): RouteEntry[] {
-  return routes
-      .filter(route => {
-          // Exclude routes starting with "/admin", "/customize", or "/members/"
-          return !/^\/(admin|customize|members)\//.test(route);
-      })
-      .filter(route => {
-          // Exclude routes containing dynamic routes ([*])
-          return !/\[\w+\]/.test(route);
-      })
-      .map(route => {
-          // Remove strings inside parentheses
-          return route.replace(/\(.*?\)\//g, '');
-      });
 }
 
 

@@ -18,6 +18,23 @@ export async function queryPageData(pageName: string, isTemp: boolean = false) {
   }
 }
 
+export async function querySettingsData(pageName: string, isTemp: boolean = false) {
+  try {
+    const db = await connectToDatabase();
+    const [rows] = await db.execute(
+      `SELECT * FROM ${isTemp ? "temp_site_settings" : "site_settings"} WHERE name = ? LIMIT 1`,
+      [pageName]
+    );
+    if (!Array.isArray(rows) || rows.length === 0) {
+      throw new Error("Site settings not found");
+    }
+    return rows[0];
+  } catch (error) {
+    console.error("Error fetching site settings data:", error);
+    return null
+  }
+}
+
 export async function updatePageData(
   pageName: string,
   newSections: object,
@@ -41,5 +58,31 @@ export async function updatePageData(
   } catch (error) {
     console.error("Error updating page data:", error);
     return { success: false, message: "Failed to update page data" };
+  }
+}
+
+export async function updateSettingsData(
+  pageName: string,
+  newSections: object,
+  isTemp: boolean = false
+) {
+  try {
+    const db = await connectToDatabase();
+    const tableName = isTemp ? "temp_site_settings" : "site_settings";
+
+    const [result] = await db.execute<ResultSetHeader>(
+      `UPDATE ${tableName} SET sections = ? WHERE name = ?`,
+      [JSON.stringify(newSections), pageName]
+    );
+    
+
+    if (result.affectedRows === 0) {
+      return { success: false, message: "Settings not found or no changes made" };
+    }
+
+    return { success: true, message: "Settings updated successfully" };
+  } catch (error) {
+    console.error("Error updating setting data:", error);
+    return { success: false, message: "Failed to update setting data" };
   }
 }

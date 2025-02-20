@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic"; // Add this at the top
+
+
 import { NextResponse } from "next/server";
 import layout from "@/lib/pages/siteSchema.json";
 import { connectToDatabase } from "@/lib/db"; // Use MySQL connection
