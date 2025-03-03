@@ -3,21 +3,15 @@ import NavBar from "@/app/ui/shared/NavBar";
 import Footer from "@/app/ui/shared/Footer";
 import { getAuthSession, decrypt } from "@/lib/session";
 import { SiteSchema } from "@/app/lib/types";
-
-const baseUrl = process.env?.APP_URL ?? "http://localhost:3000";
-
-const getData = async () => {
-  const response = await fetch(`${baseUrl}/api/settings`);
-  const payload = await response.json().catch(() => ({message: response.statusText}));
-  return payload.data;
-};
+import SettingsProvider from "@/lib/contexts/SettingsProvider";
+import { Suspense } from "react";
+import { FooterSkeleton, NavBarSkeleton, TopBarSkeleton } from "@/app/ui/loaders/LayoutElementLoaders";
 
 export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const data: SiteSchema = await getData();
   type Role = "member" | "admin" | "guest";
   const authSession = getAuthSession();
   const user = await decrypt(authSession);
@@ -28,13 +22,30 @@ export default async function PublicLayout({
     <>
       <div className="flex-column h-full min-h-screen">
         <header aria-label="page-header" className="mb-uto">
-          <TopBar data={data?.general?.social} userRole={role} />
-          <NavBar data={data?.general?.header} />
+          <Suspense fallback={
+            <>
+              <TopBarSkeleton />
+              <NavBarSkeleton />
+            </>
+            }>
+            <SettingsProvider>
+              {(data: SiteSchema) => (
+                <>
+                  <TopBar data={data?.general?.social ?? {}} userRole={role} />
+                  <NavBar data={data?.general?.header ?? {}} />
+                </>
+              )}
+            </SettingsProvider>
+          </Suspense>
         </header>
 
         <main className="min-h-96 flex-1">{children}</main>
 
-        <Footer data={data?.general?.footer} />
+        <Suspense fallback={<FooterSkeleton />}>
+          <SettingsProvider>
+            {(data) => <Footer data={data?.general?.footer ?? {}} />}
+          </SettingsProvider>
+        </Suspense>
       </div>
     </>
   );

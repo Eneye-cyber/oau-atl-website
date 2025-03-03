@@ -1,43 +1,58 @@
-import TopBar from '@/app/ui/shared/TopBar'
-import NavBar from '@/app/ui/shared/NavBar'
-import Footer from '@/app/ui/shared/Footer'
-import { headers } from 'next/headers'
-import { SiteSchema } from '../lib/types'
+import TopBar from "@/app/ui/shared/TopBar";
+import NavBar from "@/app/ui/shared/NavBar";
+import Footer from "@/app/ui/shared/Footer";
+import { SiteSchema } from "../lib/types";
+import SettingsProvider from "@/lib/contexts/SettingsProvider";
+import { Suspense } from "react";
+import { getAuthSession, decrypt } from "@/lib/session";
+import {
+  FooterSkeleton,
+  NavBarSkeleton,
+  TopBarSkeleton,
+} from "@/app/ui/loaders/LayoutElementLoaders";
 
-const baseUrl = process.env?.APP_URL ?? "http://localhost:3000"
-
-const getData = async () => {
-  const response = await fetch(`${baseUrl}/api/settings`);
-  const payload = await response.json().catch(() => ({message: response.statusText}));
-  return payload.data;
-};
-
-
-export default async function MembersLayout({ children }: {
-  children: React.ReactNode
+export default async function MembersLayout({
+  children,
+}: {
+  children: React.ReactNode;
 }) {
-  const data: SiteSchema = await getData()
-  type Role = "member" | "admin" | "guest"
-  const header = headers()
-  const role: Role  = header.get('x-custom-role') as Role ?? "guest"
+  type Role = "member" | "admin" | "guest";
+  const authSession = getAuthSession();
+  const user = await decrypt(authSession);
+
+  const role = (user?.userRole as Role) ?? "guest";
 
   return (
     <>
-    <div className='flex-column h-full min-h-screen'>
-      <header aria-label="page-header" className='mb-uto'>
-        <TopBar data={data?.general?.social} userRole={role} />
-        <NavBar data={data?.general?.header} />
-      </header>
+      <div className="flex-column h-full min-h-screen">
+        <header aria-label="page-header" className="mb-auto">
+          <Suspense
+            fallback={
+              <>
+                <TopBarSkeleton />
+                <NavBarSkeleton />
+              </>
+            }
+          >
+            <SettingsProvider>
+              {(data: SiteSchema) => (
+                <>
+                  <TopBar data={data?.general?.social ?? {}} userRole={role} />
+                  <NavBar data={data?.general?.header ?? {}} />
+                </>
+              )}
+            </SettingsProvider>
+          </Suspense>
+        </header>
 
-      <main className='min-h-96 flex-1'>
+        <main className="min-h-96 flex-1">{children}</main>
 
-        {children}
-      </main>
-      
-      <Footer data={data?.general?.footer} />
-    </div>
-
-
+        <Suspense fallback={<FooterSkeleton />}>
+          <SettingsProvider>
+            {(data) => <Footer data={data?.general?.footer ?? {}} />}
+          </SettingsProvider>
+        </Suspense>
+      </div>
     </>
-  )
+  );
 }

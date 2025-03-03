@@ -41,7 +41,8 @@ export async function GET(req: Request): Promise<NextResponse> {
         return acc;
       }, {}),
     };
-
+    // console.log('site settings')
+    // console.table(jsonData)
     return NextResponse.json({ data: jsonData, message: "" });
   } catch (error) {
     console.error("Error fetching site settings:", error);
