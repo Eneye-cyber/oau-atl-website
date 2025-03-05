@@ -490,7 +490,7 @@
               "subtitle": "per month",
               "text": null,
               "media": null,
-              "action": {"action": null, "label": "Subscribe to monthly Plan"},
+              "action": {"href": "#", "label": "Subscribe to monthly Plan"},
               "list": [
                 "Budget Plan",
                 "Easy to Manage",
@@ -505,7 +505,7 @@
               "subtitle": "per annum",
               "text": null,
               "media": null,
-              "action": {"action": null, "label": "Subscribe to earlybird Plan"},
+              "action": {"href": "#", "label": "Subscribe to earlybird Plan"},
               "list": [
                 "Save $90/ year",
                 "Earlybird Discount",
@@ -520,7 +520,7 @@
               "subtitle": "per annum",
               "text": null,
               "media": null,
-              "action": {"action": null, "label": "Subscribe to annual Plan"},
+              "action": {"href": "#", "label": "Subscribe to annual Plan"},
               "list": [
                 "Peace of Mind Plan",
                 "Single Annual Payment",

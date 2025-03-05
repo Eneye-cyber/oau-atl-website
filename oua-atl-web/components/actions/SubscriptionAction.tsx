@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogDescription, DialogTitle } f
 import SignInForm from "@/app/ui/forms/SignInForm";
 import { Button } from "@/components/ui/button"
 import { UserRoleResponse, PaymentResponse } from "@/app/lib/types";
+import { useAuth } from "@/lib/contexts/AuthProvider";
 
 interface User extends UserRoleResponse {
   email: string | null;
@@ -14,6 +15,7 @@ interface User extends UserRoleResponse {
 const SubscriptionAction = ({ amountAttempted, planName, label }: { label?: string; planName: string; amountAttempted: number; }) => {
   const [dialogState, setDialogState] = useState<"signIn" | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth()
 
   const processPaymentUrl = async (data: User) => {
     setIsLoading(true);
@@ -60,8 +62,7 @@ const SubscriptionAction = ({ amountAttempted, planName, label }: { label?: stri
   const verifyUser = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/current");
-      const data: User = await response.json();
+      const data: User = user;
 
       if (!data.role || !data.id || !data.email) {
         setDialogState("signIn");

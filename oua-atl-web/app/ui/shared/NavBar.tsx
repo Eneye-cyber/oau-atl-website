@@ -23,7 +23,7 @@ const NavBar = ({data}: {data?: PageData;}) => {
     <div className="w-full bg-white pad py-2 md:py-3 shadow-md relative">
       <div className="container flex-between">
         <Link href={'/'}>
-          <Image alt={'ATL Alumini'} src={logo} className='w-20 md:w-36 lg:w-48 xl:w-[240px] h-auto ' width={270} height={67.5} />
+          <Image alt={'ATL Alumini'} src={logo} className='w-20 md:w-36 lg:w-48 xl:w-[240px] h-auto ' priority width={270} height={67.5} />
         </Link>
 
         <NavLinks links={navLinks} />

@@ -1,15 +1,13 @@
 import ResetPasswordForm from "@/app/ui/forms/ResetPasswordForm"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { currentUserId } from "@/lib/utils/api";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'ATL OAU | Password reset',
+  title: 'Password reset | ATL OAU ',
 }
 
 
-const page = async () => {
-  const {id} = await currentUserId()
+const page =  () => {
     
   return (
     <div className="bg-gray-100 flex-1">
@@ -21,7 +19,7 @@ const page = async () => {
         <CardContent className="grid gap-6">
           <section className="space-y-2">
             <h2 className="text-xl font-semibold opacity-60">Password reset form</h2>
-            {id &&  <ResetPasswordForm userId={id} />}
+            <ResetPasswordForm />
           </section>
 
         </CardContent>

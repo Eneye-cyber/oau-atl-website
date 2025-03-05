@@ -1,52 +1,42 @@
+"use client"
 import TopBar from "@/app/ui/shared/TopBar";
 import NavBar from "@/app/ui/shared/NavBar";
 import Footer from "@/app/ui/shared/Footer";
-import { getAuthSession, decrypt } from "@/lib/session";
 import { SiteSchema } from "@/app/lib/types";
 import SettingsProvider from "@/lib/contexts/SettingsProvider";
-import { Suspense } from "react";
 import { FooterSkeleton, NavBarSkeleton, TopBarSkeleton } from "@/app/ui/loaders/LayoutElementLoaders";
+import { useAuth } from "@/lib/contexts/AuthProvider";
 
-export default async function PublicLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function PublicLayout({ children }: { children: React.ReactNode }) {
   type Role = "member" | "admin" | "guest";
-  const authSession = getAuthSession();
-  const user = await decrypt(authSession);
-
-  const role = (user?.userRole as Role) ?? "guest";
+  const { user } = useAuth();
+  const role = (user?.role as Role) ?? "guest";
 
   return (
-    <>
-      <div className="flex-column h-full min-h-screen">
-        <header aria-label="page-header" className="mb-uto">
-          <Suspense fallback={
-            <>
-              <TopBarSkeleton />
-              <NavBarSkeleton />
-            </>
-            }>
-            <SettingsProvider>
-              {(data: SiteSchema) => (
-                <>
-                  <TopBar data={data?.general?.social ?? {}} userRole={role} />
-                  <NavBar data={data?.general?.header ?? {}} />
-                </>
-              )}
-            </SettingsProvider>
-          </Suspense>
-        </header>
+    <SettingsProvider>
+      {(data: SiteSchema, loading: boolean) => (
+        <div className="flex-column h-full min-h-screen">
+          <header aria-label="page-header" className="mb-uto">
+            {loading ? (
+              <>
+                <TopBarSkeleton />
+                <NavBarSkeleton />
+              </>
+            ) : (
+              <>
+                <TopBar data={data?.general?.social ?? {}} userRole={role} />
+                <NavBar data={data?.general?.header ?? {}} />
+              </>
+            )}
+          </header>
 
-        <main className="min-h-96 flex-1">{children}</main>
+          <main className="min-h-96 flex-1">{children}</main>
 
-        <Suspense fallback={<FooterSkeleton />}>
-          <SettingsProvider>
-            {(data) => <Footer data={data?.general?.footer ?? {}} />}
-          </SettingsProvider>
-        </Suspense>
-      </div>
-    </>
+          <footer>
+            {loading ? <FooterSkeleton /> : <Footer data={data?.general?.footer ?? {}} />}
+          </footer>
+        </div>
+      )}
+    </SettingsProvider>
   );
 }

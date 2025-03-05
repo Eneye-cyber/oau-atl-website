@@ -1,7 +1,8 @@
-// app/ui/shared/SettingsProvider.tsx
-import { ReactNode } from "react";
+"use client";
 
-const baseUrl = process.env?.APP_URL ?? "http://localhost:3000";
+import { useEffect, useState } from "react";
+
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 const getData = async () => {
   try {
@@ -15,8 +16,16 @@ const getData = async () => {
   }
 };
 
-// Wrapper that fetches settings
-export default async function SettingsProvider({ children }: { children: (data: any) => ReactNode }) {
-  const data = await getData();
-  return <>{children(data)}</>;
+export default function SettingsProvider({ children }: { children: (data: any, loading: boolean) => React.ReactNode }) {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    getData().then((settings) => {
+      setData(settings);
+      setLoading(false);
+    });
+  }, []);
+
+  return <>{children(data, loading)}</>;
 }

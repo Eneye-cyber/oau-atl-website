@@ -1,11 +1,10 @@
-'use client'
 import Link from 'next/link'
-// import type { Metadata } from 'next'
+import type { Metadata } from 'next'
 import ForgotPasswordForm from '@/app/ui/forms/ForgotPasswordForm'
  
-// export const metadata: Metadata = {
-//   title: 'Password reset',
-// }
+export const metadata: Metadata = {
+  title: 'Password reset',
+}
 
 const page = () => {
   return (

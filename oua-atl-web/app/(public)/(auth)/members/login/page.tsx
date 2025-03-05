@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import SignInForm from '@/app/ui/forms/SignInForm'
  
 export const metadata: Metadata = {
-  title: 'ATL Login',
+  title: 'ATL Members Login',
 }
 
 const page = () => {

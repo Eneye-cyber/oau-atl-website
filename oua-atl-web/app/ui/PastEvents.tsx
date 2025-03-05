@@ -1,29 +1,41 @@
 /* eslint-disable @next/next/no-img-element */
+"use client"
 import Link from 'next/link'
 // import Image from 'next/image'
-import { cookies } from 'next/headers'; 
+import { useEffect, useState } from "react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import { Badge } from "@/components/ui/badge"
 import { formatEventDates } from "@/lib/utils";
-import { fetchData } from "@/lib/utils/api"
+import { fetchData } from "@/lib/utils/client/api"
 import { EventCollection, PaginatedResponse } from "@/app/lib/types"
+import TableLoader from '@/app/ui/loaders/TableLoader'
 
 
-async function getData(): Promise<PaginatedResponse<EventCollection[]>> {
+const PastEvents = () => {
+
+    const [events, setEvents] = useState<EventCollection[] | []>([]);
+    const [loading, setLoading] = useState(true);
   
-  const data = await fetchData('/physical-events/history')
-  return data
+    useEffect(() => {
+      async function getData() {
+        try {
+          const data: PaginatedResponse<EventCollection[]> = await fetchData(
+            "/physical-events/history"
+          );
+          let eventsArr: EventCollection[] | [] = data.payload?.data ?? []
+
+          setEvents(eventsArr.length > 3 ? eventsArr.slice(0, 3) : eventsArr);
+        } catch (error) {
+          console.error("Error fetching events:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
   
-}
+      getData();
+    }, []);
 
-
-
-
-
-const PastEvents = async () => {
-  const data: PaginatedResponse<EventCollection[]> = await getData();
-  let events: EventCollection[] | [] = data.payload?.data ?? []
-  events = events.length > 3 ? events.slice(0, 3) : events
+  if(loading) return <div className=""><TableLoader /></div>
   return (
     <>
       <h2 className="text-2xl font-bold mb-6">Past Events</h2>

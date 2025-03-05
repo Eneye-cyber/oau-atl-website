@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogDescription, DialogTitle } f
 import SignInForm from "@/app/ui/forms/SignInForm";
 import DonationForm from "@/app/ui/forms/payment/DonationForm";
 import { UserRoleResponse } from "@/app/lib/types";
+import { useAuth } from "@/lib/contexts/AuthProvider";
 
 interface User extends UserRoleResponse {
   email: string | null;
@@ -13,14 +14,13 @@ interface User extends UserRoleResponse {
 
 const DonationAction = ({ projectID, maxAmount }: { projectID: string; maxAmount: number; }) => {
   const [dialogState, setDialogState] = useState<"signIn" | "donation" | null>(null);
-  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth()
 
   const verifyUser = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/current");
-      const data: User = await response.json();
+      const data: User = user;
 
       if (!data.role || !data.id || !data.email) {
         setDialogState("signIn");
@@ -33,7 +33,6 @@ const DonationAction = ({ projectID, maxAmount }: { projectID: string; maxAmount
             : "This feature is reserved for alumni members only";
         throw new Error(errMessage);
       }
-      setUser(data);
       setDialogState("donation");
     } catch (error: any) {
       toast.error("Something went wrong", {
@@ -48,7 +47,6 @@ const DonationAction = ({ projectID, maxAmount }: { projectID: string; maxAmount
     if(!arg) {
       return
     }
-    setUser(arg)
     setDialogState("donation")
   }
 

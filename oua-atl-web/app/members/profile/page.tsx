@@ -1,43 +1,59 @@
-import UserProfile from '@/app/ui/cards/UserProfile';
-import { currentUserId, fetchData } from '@/lib/utils/api';
-import { Metadata } from 'next';
-import { cookies } from 'next/headers';
+"use client"; // Ensures this component runs on the client side
 
-export const metadata: Metadata = {
-  title: 'ATL OAU | User Profile',
-  description: "Manage user profile and data"
-}
+import { useEffect, useState } from "react";
+import UserProfile from "@/app/ui/cards/UserProfile";
+import { fetchData } from "@/lib/utils/client/api";
+import { useAuth } from '@/lib/contexts/AuthProvider';
+import LoadingSpinner from "@/components/LoadingSpinner";
 
-async function getData(): Promise<{ message: string; payload: any | null }> {
-  const {id} = await currentUserId()
-  const url = `/users/${id}/profile`;
-  // console.log('Requesting profile from ', url)
-  const result = await fetchData(url)
-  return result
+const UserProfilePage = () => {
+  const [userData, setUserData] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth()
 
-}
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const id = user.id; // Get the current user's ID
+        if (!id) throw new Error("User ID not found");
 
-const page = async () => {
-  const data = await getData();
-  return (
-    <div>
-      {!data.payload ? 
-        (
-          <div className="flex flex-col items-center justify-center text-center py-12">
-          
-          <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
-            Something went wrong
-          </h3>
-          <p className="text-gray-500 dark:text-gray-400">
-            Please log out and try again later.
-          </p>
-        </div>
-        )
-        : <UserProfile user={data.payload} />
+        const url = `/users/${id}/profile`;
+        const result = await fetchData(url);
+
+        if (!result.payload) {
+          throw new Error(result.message || "Failed to fetch user profile");
+        }
+
+        setUserData(result.payload);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setLoading(false);
       }
-      
-    </div>
-  )
-}
+    };
 
-export default page
+    fetchUserProfile();
+  }, []);
+
+  if (loading) {
+    return <LoadingSpinner />
+  }
+
+  if (error || !userData) {
+    return (
+      <div className="flex flex-col items-center justify-center text-center py-12">
+        <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+          Something went wrong
+        </h3>
+        <p className="text-gray-500 dark:text-gray-400">
+          Please log out and try again later.
+        </p>
+      </div>
+    );
+  }
+
+  return <UserProfile user={userData} />;
+};
+
+export default UserProfilePage;

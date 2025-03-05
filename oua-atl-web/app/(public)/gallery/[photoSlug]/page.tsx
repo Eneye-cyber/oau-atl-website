@@ -1,44 +1,77 @@
-/* eslint-disable @next/next/no-img-element */
-import type { Metadata } from "next";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image'
+import { fetchData } from '@/lib/utils/client/api';
 
-const baseUrl = process.env.API_BASE
 
-export const metadata: Metadata = {
-  title: "Gallery Images | Ife Alumni",
-  description: "Great Ife Alumni Association Inc. USA - Atlanta Branch. Events and Hangount.",
-};
 
-async function getData(id: string): Promise<{message: string, payload: { data: any[] , gallery_name: string}} | null> {
-  if (!baseUrl) throw new Error("API_BASE environment variable is not set.");
-  try {
-    const url = `${baseUrl}/gallery/${id}`;
-    const res = await fetch(url, { method: 'GET', credentials: 'include',  });
+const Page = () => {
+  const { photoSlug } = useParams();
+    const router = useRouter();
+    const [gallery, setGallery] = useState<{data: any[]; gallery_name: string} | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState('');
+  
+  // const data: {message: string, payload: { data: any[], gallery_name: string}} | null = await getData(params.photoSlug);
 
-    if (!res.ok) {
-      return null;
-    }
+  useEffect(() => {
+      if (!photoSlug) {
+        router.replace('/gallery');
+        return;
+      }
+  
+      const getData = async () => {
+        try {
+          const data = await fetchData(`/gallery/${photoSlug}`);
+          if (data.error || !data.payload) {
+            setErrorMessage(data.message || 'Album not found');
+          } else {
+            setGallery(data.payload);
+          }
+        } catch (error) {
+          setErrorMessage('An error occurred while fetching event data.');
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      getData();
+    }, [photoSlug, router]);
 
-    const result = await res.json().catch(() => ({message: res.statusText}));
-    return result;
-  } catch (error: any) {
-    console.error('Fetch Error:', error);
-    return null;
+
+    if (loading) return (<div className="flex flex-col items-center justify-center h-96 gap-4">
+      {/* Spinner */}
+      <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500 border-opacity-75 border-l-transparent"></div>
+  
+      {/* Loading Text */}
+      <p className="text-lg font-semibold text-gray-600">Loading photo album...</p>
+    </div>)
+  
+
+
+
+  if (!gallery?.data) {
+    return (
+      <div className="flex flex-col items-center justify-center text-center py-12 h-96">
+        <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+        Album empty
+        </h3>
+        <p className="text-gray-500 dark:text-gray-400">
+          We couldn’t find any image at the moment. Please check back later.
+        </p>
+        {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
+      </div>
+    );
   }
-}
-const page = async ({ params }: { params: { photoSlug: string } }) => {
-  const data: {message: string, payload: { data: any[], gallery_name: string}} | null = await getData(params.photoSlug);
-  console.log();
-
-  if(!data) return <h3>Album empty</h3>
 
   const images: {
     photo_id: string;
     photo_url: string;
     created_at: string
-  }[] = data?.payload.data
+  }[] = gallery.data
 
-  // const photos: GalleryResponseObjects | null = data.payload ?? null
   return (
     <section>
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -65,4 +98,4 @@ const page = async ({ params }: { params: { photoSlug: string } }) => {
   )
 }
 
-export default page
+export default Page

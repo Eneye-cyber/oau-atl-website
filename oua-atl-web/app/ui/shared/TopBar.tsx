@@ -11,6 +11,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ListItem, PageData } from "@/app/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/lib/contexts/AuthProvider";
 
 interface IconData {
   component: JSX.Element;
@@ -48,20 +49,11 @@ const TopBar = ({
   data?: PageData;
   userRole: "guest" | "member" | "admin";
 }) => {
-  const [role, setRole] = useState<string>(userRole);
-  const [loading, setLoading] = useState<boolean>(true);
   const pathName = usePathname();
   const customizablePage = ["/", "/about-us", "/members-area"];
+  const { loading } = useAuth()
 
-  useEffect(() => {
-    async function fetchRole() {
-      setLoading(true);
-      const response = await fetch("/api/user");
-      const data = await response.json().catch(() => ({message: response.statusText}));
-      setRole(data.role);
-    }
-    fetchRole().catch((e) => console.error(e)).finally(() => setLoading(false));
-  }, [pathName]);
+
 
   const siteData = data?.sections[0]?.content[0] ?? { list: [] };
   const socialLinks = siteData?.list as ListItem[];
@@ -86,7 +78,7 @@ const TopBar = ({
       component: <FaSquareInstagram />,
     },
   };
-  const isAdmin = role === "admin";
+  const isAdmin = userRole === "admin";
   const linkClass =
     "text-white hover:text-accent text-xs inline-flex py-1 px-2";
   return (
@@ -106,7 +98,7 @@ const TopBar = ({
           </div>
         ) : (
           <div className="flex items-center md:mx-4">
-            {!role || role === "guest" ? (
+            {!userRole || userRole === "guest" ? (
               <>
                 <Link className={`${linkClass}`} href="/members/login">
                   Login

@@ -1,58 +1,55 @@
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/contexts/AuthProvider";
+import SettingsProvider from "@/lib/contexts/SettingsProvider";
 import TopBar from "@/app/ui/shared/TopBar";
 import NavBar from "@/app/ui/shared/NavBar";
 import Footer from "@/app/ui/shared/Footer";
-import { SiteSchema } from "../lib/types";
-import SettingsProvider from "@/lib/contexts/SettingsProvider";
-import { Suspense } from "react";
-import { getAuthSession, decrypt } from "@/lib/session";
-import {
-  FooterSkeleton,
-  NavBarSkeleton,
-  TopBarSkeleton,
-} from "@/app/ui/loaders/LayoutElementLoaders";
+import { FooterSkeleton, NavBarSkeleton, TopBarSkeleton } from "@/app/ui/loaders/LayoutElementLoaders";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
-export default async function MembersLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function MembersLayout({ children }: { children: React.ReactNode }) {
   type Role = "member" | "admin" | "guest";
-  const authSession = getAuthSession();
-  const user = await decrypt(authSession);
+  const { user, loading: authLoading } = useAuth();
+  const role = (user?.role as Role) ?? "guest";
+  const router = useRouter();
 
-  const role = (user?.userRole as Role) ?? "guest";
+  useEffect(() => {
+    if ((!role || role === "guest") && !authLoading) {
+      router.replace('/members/login');
+    }
+  }, [role, authLoading, router]);
+
+  if (authLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
-    <>
-      <div className="flex-column h-full min-h-screen">
-        <header aria-label="page-header" className="mb-auto">
-          <Suspense
-            fallback={
+    <SettingsProvider>
+      {({ data, loading }: { data: any; loading: boolean }) => (
+        <div className="flex-column h-full min-h-screen">
+          <header aria-label="page-header" className="mb-auto">
+            {loading ? (
               <>
                 <TopBarSkeleton />
                 <NavBarSkeleton />
               </>
-            }
-          >
-            <SettingsProvider>
-              {(data: SiteSchema) => (
-                <>
-                  <TopBar data={data?.general?.social ?? {}} userRole={role} />
-                  <NavBar data={data?.general?.header ?? {}} />
-                </>
-              )}
-            </SettingsProvider>
-          </Suspense>
-        </header>
+            ) : (
+              <>
+                <TopBar data={data?.general?.social ?? {}} userRole={role} />
+                <NavBar data={data?.general?.header ?? {}} />
+              </>
+            )}
+          </header>
 
-        <main className="min-h-96 flex-1">{children}</main>
+          <main className="min-h-96 flex-1">{children}</main>
 
-        <Suspense fallback={<FooterSkeleton />}>
-          <SettingsProvider>
-            {(data) => <Footer data={data?.general?.footer ?? {}} />}
-          </SettingsProvider>
-        </Suspense>
-      </div>
-    </>
+          <footer>
+            {loading ? <FooterSkeleton /> : <Footer data={data?.general?.footer ?? {}} />}
+          </footer>
+        </div>
+      )}
+    </SettingsProvider>
   );
 }

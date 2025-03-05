@@ -1,9 +1,11 @@
 'use client';
-import Link from 'next/link'
+// import Link from 'next/link'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useRouter } from "next/navigation"; 
+import { requestPasswordReset } from "@/lib/utils/api/auth"
+import { toast } from 'sonner';
  
 const FogotPasswordFormDataSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
@@ -23,39 +25,26 @@ const ForgotPasswordForm = () => {
     resolver: zodResolver(FogotPasswordFormDataSchema)
   })
 
-  const processForm: SubmitHandler<Inputs> =async (data) => {
+  const processForm: SubmitHandler<Inputs> =async (formData) => {
     try {
-      const response: Response = await fetch('/api/members/forgot-password', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        credentials: "include",
-    });
-
-      console.log('response', response)
-
-      if(response.status === 401) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
-        setError("email", {
-          type: "server", // Custom type for server-side errors
-          message: result.message || "Invalid credentials", 
-        });
-       return
+      const {result, error, message, code} = await requestPasswordReset(formData);
+      if(error) {
+        if(code === 401) {
+          setError("email", {
+            type: "server", // Custom type for server-side errors
+            message: result?.message ?? message ?? "Email not recognized", 
+          });
+        }
+        return toast.error('Failed to reset password', { description: message })
       }
+      toast.success(result?.message ?? message, { description: 'Check your email for a password reset link' })
+      router.push("/members/login")
 
-      if(response.status === 200) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
-        console.log(result, result)
-        router.push("/members/login")
-       return
+    } catch (error: unknown) {
+      if(error instanceof Error) {
+        toast.error('Error', { description: error?.message ?? 'Something went wrong'})
       }
-
-  
-      // console.log('result', result);
-      // reset()
-      
-    } catch (err) {
-      alert('Server unavailable')
-    }
+    } 
   }
 
 

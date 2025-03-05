@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { ContactFormDataSchema } from '@/app/lib/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { sendContactRequest } from "@/lib/utils/client/api"
 import { toast } from 'sonner';
 
 type Inputs = z.infer<typeof ContactFormDataSchema>;
@@ -18,28 +19,19 @@ const ContactForm = () => {
     resolver: zodResolver(ContactFormDataSchema),
   });
 
-  const processForm: SubmitHandler<Inputs> = async (data) => {
+  const processForm: SubmitHandler<Inputs> = async (formData) => {
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      const {result, error, message} = await sendContactRequest(formData);
+      if(error) {
+        return toast.error('Failed to send enquiry', { description: message })
+      }
+      toast.success(result?.message ?? message)
 
-      if (!response.ok) throw new Error(response.statusText);
-
-      const result = await response.json().catch(() => ({message: response.statusText}));
-
-      // Show success message and reset form
-      toast.success(result.message)
-      reset();
     } catch (error: unknown) {
       if(error instanceof Error) {
-        toast.error('Backend error', { description: error?.message ?? 'Something went wrong'})
+        toast.error('Error', { description: error?.message ?? 'Something went wrong'})
       }
-    }
+    } 
   };
 
   return (

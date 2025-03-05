@@ -4,12 +4,16 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useRouter } from "next/navigation"; 
 import { ResetPasswordFormDataSchema } from '@/app/lib/schema'
+import { useAuth } from '@/lib/contexts/AuthProvider';
  
 
 type Inputs = z.infer<typeof ResetPasswordFormDataSchema>
 
-const ResetPasswordForm = ({userId}: {userId: string}) => {
+const ResetPasswordForm = () => {
   const router = useRouter();
+  const {user} = useAuth()
+
+  const userId = user?.id
 
   const {
     register,

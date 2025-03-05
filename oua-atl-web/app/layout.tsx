@@ -3,6 +3,7 @@ import "./globals.css";
 import TopLoader from "@/components/TopLoader";
 import { Toaster } from "@/components/ui/sonner";
 import localFont from "next/font/local";
+import { AuthProvider } from "@/lib/contexts/AuthProvider";
 
 const roboto = localFont({
   src: [
@@ -27,9 +28,8 @@ const roboto = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Home | Ife Alumni",
-  description: "Great Ife Alumni Association Inc. USA - Atlanta Branch",
-  // viewport: "width=device-width, initial-scale=1",
+  title: "ATL OAU | Official Alumni Website",
+  description: "Great Ife Alumni Association Inc. USA - Atlanta Branch Official Website.",
 };
 
 export default function RootLayout({
@@ -41,7 +41,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${roboto.className} ${roboto.variable}`}>
         <TopLoader />
-        <main>{children}</main>
+        <AuthProvider>
+          <main>{children}</main>
+        </AuthProvider>
         <Toaster position="top-right" richColors expand={true} />
       </body>
     </html>

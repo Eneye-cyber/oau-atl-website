@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogDescription, DialogTitle } f
 import SignInForm from "@/app/ui/forms/SignInForm";
 import { UserRoleResponse } from "@/app/lib/types";
 import BookingForm from "@/app/ui/forms/payment/BookingForm";
+import { useAuth } from "@/lib/contexts/AuthProvider";
 
 interface User extends UserRoleResponse {
   email: string | null;
@@ -13,14 +14,14 @@ interface User extends UserRoleResponse {
 
 const BookingAction = ({ eventID, ticketPrice }: { eventID: string; ticketPrice: number; }) => {
   const [dialogState, setDialogState] = useState<"signIn" | "donation" | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  // const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
 
-  const verifyUser = async () => {
+  const verifyUser = () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/current");
-      const data: User = await response.json();
+      const data: User = user;
 
       if (!data.role || !data.id || !data.email) {
         setDialogState("signIn");
@@ -33,7 +34,6 @@ const BookingAction = ({ eventID, ticketPrice }: { eventID: string; ticketPrice:
             : "This feature is reserved for alumni members only";
         throw new Error(errMessage);
       }
-      setUser(data);
       setDialogState("donation");
     } catch (error: any) {
       toast.error("Something went wrong", {
@@ -48,7 +48,6 @@ const BookingAction = ({ eventID, ticketPrice }: { eventID: string; ticketPrice:
     if(!arg) {
       return
     }
-    setUser(arg)
     setDialogState("donation")
   }
 

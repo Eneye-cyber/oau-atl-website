@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler, FieldErrors } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { signupUser } from "@/lib/utils/api/auth"
 
 type Inputs = z.infer<typeof SignUpFormDataSchema>;
 
@@ -49,7 +50,6 @@ const fieldMeta: Record<string, { label: string; className: string; placeholder?
 
 export default function SignUpForm() {
   const [currentStep, setCurrentStep] = useState(0);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
 
   const {
@@ -61,15 +61,11 @@ export default function SignUpForm() {
     resolver: zodResolver(SignUpFormDataSchema),
   });
 
-  const processForm: SubmitHandler<Inputs> = async (data) => {
+  const processForm: SubmitHandler<Inputs> = async (formData) => {
     try {
-      const response: Response = await fetch('/api/members/register', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      });
+      const {result, error, message, code} = await signupUser(formData)
 
-      if (response.status === 200) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
+      if (code === 200) {
         if (result?.message) {
           sessionStorage.setItem('flashMessage', 'Account created successfully!');
           router.push('/members/login');
@@ -77,7 +73,12 @@ export default function SignUpForm() {
         return;
       }
 
-      throw new Error(response.statusText ?? 'Something went wrong');
+      if(error) {
+        toast.error('Registration failed', {
+          description: result?.message ?? message ?? 'Backend error',
+        });
+      }
+
     } catch (error: unknown) {
       toast.error('Server unavailable', {
         description: error instanceof Error ? error.message : 'An error occurred',

@@ -3,6 +3,7 @@ import { InputHTMLAttributes, useState, forwardRef, useEffect } from "react";
 import { useFormContext } from "react-hook-form"; // Import form context
 import { LucideTrash2 } from 'lucide-react'
 import { toast } from "sonner";
+import { uploadImage } from "@/lib/utils/client/api";
 
 const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>((props, ref) => {
   const [fileName, setFileName] = useState<string>(""); // Stores the file name
@@ -28,23 +29,11 @@ const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInput
   }
 
   const uploadFile = async (file: File) => {
-    const url = `/api/image`; // 
-    const formData = new FormData();
-    formData.append("file", file);
-
+   
     setIsUploading(true);
 
     try {
-      const response = await fetch(url, {
-        method: "POST",
-        body: formData, // No need for 'Content-Type', FormData sets it automatically
-      });
-
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-
-      const data = await response.json().catch(() => ({message: response.statusText}));
+      const data = await uploadImage(file);
       if (data.payload[0].success) {
         setFileName(data.payload[0].fileName); // Set the file name
         setFileUrl(data.payload[0].url); // Set the file URL
