@@ -1,4 +1,66 @@
+import { toast } from "sonner"; // For notifications
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE; // Use NEXT_PUBLIC_ for client-side env vars
+
+
+export const signupAdmin = async (data: any): Promise<{ success: boolean; message?: string }> => {
+  try {
+    console.log("Processing admin signup...");
+
+    const response = await fetch(`${baseUrl}/admins/auth/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(data),
+      credentials: "include",
+    });
+
+    const result = await response.json().catch(() => ({ message: response.statusText }));
+
+    if (!response.ok) {
+      console.error("Signup failed:", result);
+      toast.error(result?.message || "Signup failed");
+      return { success: false, message: result?.message || "Signup failed" };
+    }
+
+    toast.success("Admin user created successfully");
+    return { success: true };
+  } catch (error) {
+    console.error("Signup error:", error);
+    toast.error("Backend error", { description: (error as Error)?.message ?? "An error occurred" });
+    return { success: false, message: (error as Error)?.message };
+  }
+};
+
+
+export const resetUserPassword = async (id: string, data: Record<string, any>) => {
+  if (!baseUrl) {
+    throw new Error("baseUrl environment variable is not set");
+  }
+
+  try {
+    const url = `${baseUrl}/users/${id}/reset-password`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Ensure cookies are included
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorDetails = await response.json().catch(() => ({
+        message: response.statusText,
+      }));
+      throw new Error(errorDetails?.message ?? "Password reset failed");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : "An error occurred");
+  }
+};
+
 
 export const signupUser = async (data: {
   firstName: string;
@@ -75,5 +137,37 @@ export const requestPasswordReset = async ({email}: {email: string}) => {
   } catch (error) {
     console.error("Error in password request:", error);
     return {result: null, error: true, message: (error as Error)?.message ?? "Internal Server Error", code: 500};
+  }
+};
+
+
+
+export const logoutUser = async (adminId: string): Promise<boolean> => {
+  if (!adminId) {
+    toast.error("Admin ID is missing.");
+    return false;
+  }
+
+  try {
+    console.log("Logging out admin with ID:", adminId);
+
+    const response = await fetch(`${baseUrl}/admins/${adminId}/logout`, {
+      method: "POST",
+      credentials: "include", // Ensure authentication cookies are included
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text().catch(() => "Logout failed");
+      console.error(`Error logging out: ${response.status} - ${errorMessage}`);
+      toast.error("Logout failed", { description: errorMessage });
+      return false;
+    }
+
+    toast.success("Logged out successfully!");
+    return true;
+  } catch (error) {
+    console.error("Error logging out:", error);
+    toast.error("Backend Error", { description: (error as Error)?.message || "Something went wrong" });
+    return false;
   }
 };

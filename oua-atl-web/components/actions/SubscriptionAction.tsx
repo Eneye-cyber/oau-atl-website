@@ -7,6 +7,7 @@ import SignInForm from "@/app/ui/forms/SignInForm";
 import { Button } from "@/components/ui/button"
 import { UserRoleResponse, PaymentResponse } from "@/app/lib/types";
 import { useAuth } from "@/lib/contexts/AuthProvider";
+import { processPayment } from "@/lib/utils/api/payment";
 
 interface User extends UserRoleResponse {
   email: string | null;
@@ -19,43 +20,21 @@ const SubscriptionAction = ({ amountAttempted, planName, label }: { label?: stri
 
   const processPaymentUrl = async (data: User) => {
     setIsLoading(true);
-    let body = { 
+  
+    const body = { 
       amountAttempted, 
       planName,
       userID: data.id,
       userEmail: data.email,
-      paymentType: 'subscription'
-
-    }
-
-
-    try {
-      const response: Response = await fetch("/api/pay", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(body)
-      });
-
-      const result: PaymentResponse = await response.json();
-
-      if (result?.payload?.approvalUrl?.startsWith("http")) {
-        window.location.href = result.payload.approvalUrl;
-      } else {
-        toast.error(result.message ?? "Invalid approval URL returned from the server");
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error("Payment gateway error", {
-          description: error.message,
-        });
-      } else {
-        toast.error("Payment gateway error", {
-          description: "Something went wrong",
-        });
-      }
+      paymentType: "subscription",
+    };
+  
+    const { success, message, payload } = await processPayment(body);
+  
+    if (success && payload?.approvalUrl?.startsWith("http")) {
+      window.location.href = payload.approvalUrl;
+    } else {
+      toast.error(message ?? "Invalid approval URL returned from the server");
     }
   };
 

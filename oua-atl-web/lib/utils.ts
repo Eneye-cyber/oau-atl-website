@@ -203,3 +203,26 @@ export const transformProjectFormObject = (input: any) => ({
     },
   },
 });
+
+export const transformEventObject = (input: any) => {
+  return {
+    content: input.content, // Static value
+    title: input.title, // Static value
+    startDate: input.startDate, // Current date and time
+    endDate: !input?.endDate ? input.startDate : input.endDate, // 10 seconds after startDate
+    entranceFee: input.entranceFee, // Static value
+    isFeatured: input.isFeatured === "1", // Static value
+    tags: input.tags, // Static value
+    imageUrl: input.imageUrl, // Static value
+    locationData: {
+      address: input.address,
+      city: input.city, // Use locationAddress as city
+      state: input.state, // Use locationState as state
+      postalCode: input.locationName, // Use locationName as postalCode
+      latLong: {
+        lat: 0, // Static value
+        long: 0, // Static value
+      },
+    },
+  };
+};

@@ -5,6 +5,8 @@ import { useForm, SubmitHandler } from 'react-hook-form'
 import { useRouter } from "next/navigation"; 
 import { ResetPasswordFormDataSchema } from '@/app/lib/schema'
 import { useAuth } from '@/lib/contexts/AuthProvider';
+import { resetUserPassword } from '@/lib/utils/api/auth';
+import { toast } from 'sonner';
  
 
 type Inputs = z.infer<typeof ResetPasswordFormDataSchema>
@@ -28,41 +30,23 @@ const ResetPasswordForm = () => {
     },
   })
 
-  const processForm: SubmitHandler<Inputs> =async (data) => {
-    console.log(errors)
+  const processForm: SubmitHandler<Inputs> = async (data) => {
     try {
-      const response: Response = await fetch('/api/members/reset-password', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        credentials: "include",
-    });
-
-      console.log('response', response)
-
-      if(response.status === 401) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
-        setError("email", {
-          type: "server", // Custom type for server-side errors
-          message: result.message || "Invalid credentials", 
-        });
-       return
-      }
-
-      if(response.status === 200) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
-        console.log(result, result)
-        reset()
-
-       return
-      }
-
+      const { id, ...restData } = data; // Extract ID and the rest of the data
   
-      // console.log('result', result);
-      
-    } catch (err) {
-      alert('Server unavailable')
+      const result = await resetUserPassword(id, restData);
+  
+      toast.success("Password changed successfully!");
+      reset(); // Reset form on success
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error("Password reset failed", { description: error.message });
+        setError("email", { type: "server", message: error.message });
+      } else {
+        toast.error("Something went wrong");
+      }
     }
-  }
+  };
 
 
 
@@ -74,6 +58,7 @@ const ResetPasswordForm = () => {
       {Object.keys(errors).length > 0 && (
         <div className="text-red-500 mb-4">
           <p>There are errors in your form. Please correct them below:</p>
+          <p className="text-sm">{errors?.id?.message}</p>
         </div>
       )}
       <input type="text" {...register('id')} hidden />

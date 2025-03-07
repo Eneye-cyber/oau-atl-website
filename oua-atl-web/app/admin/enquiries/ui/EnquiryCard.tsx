@@ -7,6 +7,8 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
+
 interface EnquiryCardProps {
   email: string
   closed: boolean
@@ -30,23 +32,33 @@ export default function EnquiryCard({
   const [isLoading, setLoading] = useState<boolean>(false)
   const [isClosed, setClosed] = useState<boolean>(closed)
 
-  const closeticket = async () => {
+  const closeticket =async () => {
+    setLoading(true);
+
     try {
-      setLoading(true)
-      const req = await fetch(`/api/admin/enquiry/${contact_id}`, {method: 'PUT'})
-      if(req.ok) {
-        const res = await req.json().catch(() => ({message: req.statusText}))
-        toast.success(res?.message ?? 'This issue has been marked as resolved')
-        setClosed(true)
-        return
+      const response = await fetch(`${baseUrl}/contact/${contact_id}/close`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include cookies if authentication is needed
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result?.message || 'Failed to close issue');
       }
-      throw new Error(req.statusText)
-    } catch (error) {
+
+      toast.success(result?.message ?? 'This issue has been marked as resolved')
+      setClosed(true)
+      return result;
+    } catch (error: any) {
       toast.error('Something went wrong', {description: (error as Error)?.message})
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Card className={`w-full max-w-2xl ${isClosed && "opacity-50"}`}>

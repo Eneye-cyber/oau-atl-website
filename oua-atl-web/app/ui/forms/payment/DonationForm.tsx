@@ -4,7 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { PaymentResponse, UserRoleResponse } from "@/app/lib/types";
+import { UserRoleResponse } from "@/app/lib/types";
+import { processPayment } from "@/lib/utils/api/payment";
 
 interface User extends UserRoleResponse {
   email: string | null;
@@ -52,35 +53,12 @@ const DonationForm = ({
   });
 
   const processPaymentUrl = async (data: DonationFormSchema) => {
-    const body = JSON.stringify(data);
-
-    try {
-      const response: Response = await fetch("/api/pay", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body,
-      });
-
-      const result: PaymentResponse = await response.json().catch(() => ({message: response.statusText}));
-
-      if (result?.payload?.approvalUrl?.startsWith("http")) {
-        window.location.href = result.payload.approvalUrl;
-      } else {
-        toast.error(result.message ?? "Invalid approval URL returned from the server");
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error("Payment gateway error", {
-          description: error.message,
-        });
-      } else {
-        toast.error("Payment gateway error", {
-          description: "Something went wrong",
-        });
-      }
+    const { success, message, payload } = await processPayment(data);
+  
+    if (success && payload?.approvalUrl?.startsWith("http")) {
+      window.location.href = payload.approvalUrl;
+    } else {
+      toast.error(message ?? "Invalid approval URL returned from the server");
     }
   };
 

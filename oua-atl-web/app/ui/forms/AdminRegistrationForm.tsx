@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/contexts/AuthProvider";
 import { toast } from 'sonner';
+import { signupAdmin } from '@/lib/utils/api/auth';
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
 
@@ -50,26 +51,18 @@ const AccountForm = () => {
 
   const processForm: SubmitHandler<AccountFormValues> = async (data) => {
     try {
-      const response: Response = await fetch(`${baseUrl}/admins/auth/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
-
-      const result = await response.json().catch(() => ({message: response.statusText}));
-      if (!response.ok) {
-        setError("email", { type: "server", message: result?.message || "Server error" });
-        setError("password", { type: "server", message: result?.message || "Server error" });
-        toast.error(result?.message || "Server error")
+      const { success, message } = await signupAdmin(data);
+  
+      if (!success) {
+        setError("email", { type: "server", message: message || "Server error" });
+        setError("password", { type: "server", message: message || "Server error" });
         return;
       }
-
-      toast.success('Admin user created successfully');
+  
       router.push(user?.role ? "/admin" : "/admin/login");
-      
-    } catch (err) {
-      toast.error("Backend error", { description: (err as Error)?.message ?? "An error occurred" });
+    } catch (error) {
+      console.error("Signup error:", error);
+      toast.error("An unexpected error occurred");
     }
   };
 

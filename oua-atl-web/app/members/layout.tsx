@@ -16,7 +16,7 @@ export default function MembersLayout({ children }: { children: React.ReactNode 
   const router = useRouter();
 
   useEffect(() => {
-    if ((!role || role === "guest") && !authLoading) {
+    if ((!role || role !== "member") && !authLoading) {
       router.replace('/members/login');
     }
   }, [role, authLoading, router]);

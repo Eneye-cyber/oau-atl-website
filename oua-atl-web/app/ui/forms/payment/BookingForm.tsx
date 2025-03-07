@@ -4,7 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { PaymentResponse, UserRoleResponse } from "@/app/lib/types";
+import {  UserRoleResponse } from "@/app/lib/types";
+import { processPayment } from "@/lib/utils/api/payment";
 
 interface User extends UserRoleResponse {
   email: string | null;
@@ -52,41 +53,22 @@ const BookingForm = ({
   });
 
   const processPaymentUrl = async (data: BookingFormSchema) => {
-    const totalPrice = data.quantityBooked * data.amountAttempted
+    const totalPrice = data.quantityBooked * data.amountAttempted;
     const body = {
-      ...data, 
+      ...data,
       amountAttempted: totalPrice,
-      ticketID: "1" // Change to this when the backend fixes the booking input
-    }
-    try {
-      const response: Response = await fetch("/api/pay", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(body)
-      });
-
-      const result: PaymentResponse = await response.json().catch(() => ({message: response.statusText}));
-
-      if (result?.payload?.approvalUrl?.startsWith("http")) {
-        window.location.href = result.payload.approvalUrl;
-      } else {
-        toast.error(result.message ?? "Invalid approval URL returned from the server");
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error("Payment gateway error", {
-          description: error.message,
-        });
-      } else {
-        toast.error("Payment gateway error", {
-          description: "Something went wrong",
-        });
-      }
+      ticketID: "1", // Temporary fix until backend updates, Change this when the backend fixes the booking input
+    };
+  
+    const { success, message, payload } = await processPayment(body);
+  
+    if (success && payload?.approvalUrl?.startsWith("http")) {
+      window.location.href = payload.approvalUrl;
+    } else {
+      toast.error(message ?? "Invalid approval URL returned from the server");
     }
   };
+  
 
   const onSubmit = async (data: BookingFormSchema) => {
     await processPaymentUrl(data);

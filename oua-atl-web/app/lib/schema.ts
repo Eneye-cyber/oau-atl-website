@@ -77,7 +77,7 @@ export const SignUpFormDataSchema = z.object({
   
 
   export const ResetPasswordFormDataSchema = z.object({
-    id: z.string().optional(),
+    id: z.string(),
     email: z.string().min(1, 'Email is required').email('Invalid email address'),
     oldPassword: passwordSchema,
     newPassword: passwordSchema

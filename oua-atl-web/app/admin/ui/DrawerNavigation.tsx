@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import DrawerLink from './DrawerLink';
+import { useAuth } from '@/lib/contexts/AuthProvider';
 
 const links = [
   {
@@ -55,6 +56,7 @@ const DrawerNavigation = () => {
   const [destinationEl, setDestinationEl] = useState<HTMLElement | null>(null);
   const [documentNode, setDocumentNode] = useState<HTMLElement | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const { logout } = useAuth()
 
 
   // Ensure `destinationEl` is set only on the client
@@ -126,7 +128,7 @@ const DrawerNavigation = () => {
           </div>
 
           <div className="pl-7 pr-3 sm:py-3">
-            <DrawerLink label="Log Out" href="/api/logout" icon="icons/logout.svg" activeIcon="icons/logout.svg" />
+            <DrawerLink label="Log Out" href="#" onClick={() => logout()} icon="icons/logout.svg" activeIcon="icons/logout.svg" />
           </div>
         </div>
       </aside>

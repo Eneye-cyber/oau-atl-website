@@ -1,12 +1,23 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { logoutUser } from "../utils/api/auth";
 
 interface AuthContextType {
   user: any;
   loading: boolean;
   login: (endpoint: string, credentials: any) => Promise<{data: any | null; error: any | null}>;
   logout: () => void;
+  
+}
+
+interface loginResult {
+  message: string;
+  user: {
+    email: string;
+    id: string;
+    role: 'member' | 'admin'
+  }
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -71,10 +82,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    fetch("/api/auth/logout", { method: "POST" }).catch(console.error);
+  const logout = async () => {
+    setLoading(true)
+    if (!user || !user.userId) {
+      console.error("No user found for logout.");
+      setLoading(false)
+      return;
+    }
+
+    const success = await logoutUser(user.userId);
+    if (success) {
+      setUser(null);
+    }
+    setLoading(false)
   };
+
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>

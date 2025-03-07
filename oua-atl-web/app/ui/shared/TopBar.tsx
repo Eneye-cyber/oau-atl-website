@@ -51,7 +51,7 @@ const TopBar = ({
 }) => {
   const pathName = usePathname();
   const customizablePage = ["/", "/about-us", "/members-area"];
-  const { loading } = useAuth()
+  const { loading, logout } = useAuth()
 
 
 
@@ -117,17 +117,11 @@ const TopBar = ({
                   {isAdmin ? "Dashboard" : "Account"}
                 </Link>
                 {!isAdmin ? (
-                  <form
-                    className="inline-block border-l border-muted-foreground h-fit"
-                    action="/api/logout"
-                    method="POST"
+                  <div
+                    className="inline-block border-l border-muted-foreground h-fit w-fit"
                   >
-                    <input
-                      type="submit"
-                      className={`${linkClass}`}
-                      value="Sign Out"
-                    />
-                  </form>
+                    <button onClick={logout} className={`${linkClass}`}>Sign Out</button>
+                  </div>
                 ) : (
                   <div className="inline-block border-l border-muted-foreground h-fit">
                     <Link

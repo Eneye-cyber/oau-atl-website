@@ -1,51 +1,31 @@
-// 'use client';
-// import { useEffect, useState } from 'react';
-// import { useRouter } from 'next/navigation';
+'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import DrawerNavigation from './ui/DrawerNavigation';
 import TopBar from './ui/TopBar';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { useAuth } from "@/lib/contexts/AuthProvider";
 
 
-export default function Layout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // const router = useRouter();
-  // const [role, setRole] = useState<string | null>(null);
-  // const [id, setId] = useState<string | null>(null);
-  // const [isLoading, setIsLoading] = useState(true); // New loading state
+  type Role = "member" | "admin" | "guest";
+  const { user, loading: authLoading } = useAuth();
+  const role = (user?.role as Role) ?? "guest";
+  const router = useRouter();
 
-  // useEffect(() => {
-  //   async function fetchRole() {
-  //     try {
-  //       const response = await fetch('/api/user', { credentials: 'include' });
-  //       if (!response.ok) {
-  //         throw new Error('Failed to fetch user data');
-  //       }
-  //       const data = await response.json().catch(() => ({message: response.statusText}));
-  //       setRole(data.role);
-  //       setId(data.id);
-  //     } catch (error) {
-  //       console.error('Error fetching user data:', error);
-  //       router.replace('/admin/login');
-  //     } finally {
-  //       setIsLoading(false); // Stop loading regardless of success or failure
-  //     }
-  //   }
-  //   fetchRole();
-  // }, [router]);
-
-  // // Show a loading state while fetching user data
-  // if (isLoading) {
-  //   return <LoadingSpinner></LoadingSpinner>;
-  // }
-
-  // // Redirect if the user is not an admin or is unauthenticated
-  // if (!id || role !== 'admin') {
-  //   router.replace(role !== 'admin' ? '/' : '/admin/login');
-  //   return null; // Prevent rendering until navigation completes
-  // }
+  useEffect(() => {
+      if ((!role || role !== "admin") && !authLoading) {
+        router.replace('/admin/login');
+      }
+    }, [role, authLoading, router]);
+  
+    if (authLoading) {
+      return <LoadingSpinner />;
+    }
 
   return (
     <div

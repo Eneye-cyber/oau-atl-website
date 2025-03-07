@@ -7,10 +7,11 @@ import ImageUploader from '@/app/ui/forms/ImageUploader';
 import { useRouter } from "next/navigation"; 
 import { EditEventSchema } from "@/app/lib/schema"
 import { EventResponseObject } from "@/app/lib/types";
-import { formatDateForInput } from "@/lib/utils";
+import { formatDateForInput, transformEventObject } from "@/lib/utils";
 import { toast } from 'sonner';
 
 type EventFormData = z.infer<typeof EditEventSchema>;
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE; 
 
 const EditEvent = ({event}: {event: EventResponseObject}) => {
   const router = useRouter();
@@ -41,38 +42,47 @@ const EditEvent = ({event}: {event: EventResponseObject}) => {
   } = methods
 
   const onSubmit: SubmitHandler<EventFormData> = async (data) => {
-
+    
     try {
-      console.log('Form Errors:', errors);
-      // Send data to your backend
-      const response: Response = await fetch(`/api/admin/events/${event.event_id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data),
-        credentials: "include",
-    });
-
-
-      if(response.status === 401) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
+      const transformedData = transformEventObject(data);
+      const eventId = event.event_id; // Ensure `event_id` is available in the form data
+  
+      if (!eventId) {
+        toast.error("Event ID is missing.");
+        return;
+      }
+  
+      const response: Response = await fetch(`${baseUrl}/physical-events/${eventId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Include authentication cookies
+        body: JSON.stringify(transformedData),
+      });
+  
+      if (response.status === 401) {
+        const result = await response.json().catch(() => ({ message: response.statusText }));
         setError("title", {
           type: "server", // Custom type for server-side errors
           message: result.message || "Invalid form field format", 
         });
-       return
+        throw new Error(`${response.status} - ${result.message}`);
+        // toast.error("Unauthorized", { description: result.message || "Invalid session" });
+        return;
       }
-
-      if(response.ok) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
+  
+      if (response.ok) {
+        toast.success("Event updated successfully!");
         router.push("/admin/events");
-        return toast.success('Event Updated successfully!');
+      } else {
+        const result = await response.json().catch(() => ({ message: response.statusText }));
+        toast.error("Failed to update event", { description: result.message || "Unexpected error occurred" });
       }
-
-      toast.error(`'Failed to update event`, { description: response.statusText });
-      
     } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Failed to update event.');
-    } 
+      console.error("Error submitting form:", error);
+      toast.error("Backend Error", { description: (error as Error)?.message || "Something went wrong" });
+    }
   };
 
 

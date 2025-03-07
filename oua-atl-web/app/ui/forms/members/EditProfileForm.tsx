@@ -7,6 +7,7 @@ import { useForm, SubmitHandler, FieldErrors } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { UserProfile } from "@/app/lib/types";
+import { updateUserProfile } from "@/lib/utils/api/member";
 
 type Inputs = z.infer<typeof EditUserProfileSchema>;
 
@@ -68,25 +69,15 @@ export default function EditProfileForm({ user }: { user: UserProfile }) {
 
   const processForm: SubmitHandler<Inputs> = async (data) => {
     try {
-      const response: Response = await fetch(`/api/members/${user.user_id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
-
-      if (response.status === 200) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
-        if (result?.message) {
-          sessionStorage.setItem("flashMessage", "Update successful!");
-          router.push("/members/profile");
-        }
-        return;
+      const result = await updateUserProfile(user.user_id, data);
+  
+      if (result?.message) {
+        sessionStorage.setItem("flashMessage", "Update successful!");
+        router.push("/members/profile");
       }
-
-      throw new Error(response.statusText ?? "Something went wrong");
-    } catch (error: unknown) {
-      toast.error("Server unavailable", {
-        description:
-          error instanceof Error ? error.message : "An error occurred",
+    } catch (error) {
+      toast.error("Backend error", {
+        description: error instanceof Error ? error.message : "An error occurred",
       });
     }
   };
