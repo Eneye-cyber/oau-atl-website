@@ -23,3 +23,19 @@ export const ProjectColumns = [
   { key: 'date_created', label: 'Project Opened', type: 'date' },
   { key: 'location', label: 'Location' },
 ];
+
+export const RegularMembersColumn = [
+  { key: "full_name", label: "Full name" },
+  { key: "email", label: "Email" },
+  { key: "study_field", label: "Course of study" },
+  { key: "year_graduated", label: "Graduating year" },
+  { key: "status", label: "Status" },
+];
+
+export const ExecutiveMembersColumns = [
+  { key: 'image_url', label: 'Image' },
+  { key: 'full_name', label: 'Full name' },
+  { key: 'position_assigned', label: 'Position assigned' },
+  { key: 'year_graduated:', label: 'Graduating year' },
+  { key: 'is_active', label: 'Status' },
+];

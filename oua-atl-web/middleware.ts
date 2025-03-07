@@ -23,11 +23,11 @@ export async function middleware(request: NextRequest) {
   
   // Check access using externalized logic
   const redirectPath = checkAccess(role, currentPath);
-  if (redirectPath) {
-    console.log(`Access restricted for role ${role}. Redirecting to ${redirectPath}`);
-    const response = NextResponse.redirect(new URL(redirectPath, request.url));
-    return response;
-  }
+  // if (redirectPath) {
+  //   console.log(`Access restricted for role ${role}. Redirecting to ${redirectPath}`);
+  //   const response = NextResponse.redirect(new URL(redirectPath, request.url));
+  //   return response;
+  // }
   // console.log('public access', currentPath, user)
 
   const response = NextResponse.next();
@@ -36,6 +36,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api/|_next/|favicon.ico|public/|icons/|img/|members/|admin/login|members-area).*)',
+    '/((?!api/|_next/|favicon.ico|public/|icons/|img/|members/|admin/|members-area).*)',
   ],
 };

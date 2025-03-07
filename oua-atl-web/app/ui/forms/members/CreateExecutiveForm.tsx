@@ -6,6 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ExecutiveSchema } from "@/app/lib/schema"; 
 import ImageUploader from '@/app/ui/forms/ImageUploader';
 import { useRouter } from "next/navigation"; 
+import { toast } from "sonner"
+
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE; // Ensure this is available on the client side
+
 
 type ExecutiveFormValues = z.infer<typeof ExecutiveSchema>;
 const CreateExecutiveForm = () => {
@@ -23,43 +27,49 @@ const CreateExecutiveForm = () => {
     setError,
   } = methods
 
+
+  
   const onSubmit = async (data: ExecutiveFormValues) => {
     console.log("Submitted data:", data);
     try {
-      console.log('Form Errors:', errors);
-      console.log('Form Data:', data);
-      // Send data to your backend
-      const response: Response = await fetch('/api/admin/members/executive', {
-        method: 'POST',
+      const url = `${baseUrl}/executives`;
+      console.log("Sending request to:", url);
+  
+      const response: Response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
-        credentials: "include",
-    });
-
-      console.log('event response', response)
-
-      if(response.status === 401) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
+        credentials: "include", // Ensures cookies are sent
+      });
+  
+      console.log("Event response", response);
+  
+      if (response.status === 401) {
+        const result = await response.json().catch(() => ({ message: response.statusText }));
         setError("fullName", {
-          type: "server", // Custom type for server-side errors
-          message: result.message || "Invalid form field format", 
+          type: "server",
+          message: result.message || "Invalid form field format",
         });
-       return
+        return;
       }
-
-      if(response.ok) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
-        console.log('result', result)
+  
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Result:", result);
+        toast.success("Executive created successfully!");
         router.push("/admin/members");
-        return alert('Executive created successfully!');
+        return;
       }
-
-      alert('Failed to create project.');
-      
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Failed to create executive.');
-    } 
+  
+      toast.error("Failed to create executive.");
+    } catch (error: unknown) {
+      console.error("Error submitting form:", error);
+      toast.error("Failed to create executive.", {description: (error as Error)?.message ?? 'Something went wrong'});
+    }
   };
+  
 
   return (
     <FormProvider {...methods}>

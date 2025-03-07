@@ -26,7 +26,7 @@ const FooterLinks = ({ links }: { links: ListItem[] }) => {
 };
 
 const Footer = ({ data }: { data?: PageData }) => {
-  let arr = data?.sections[0]?.content;
+  let arr = data?.sections?.[0]?.content;
   const premier = arr?.[0];
   const remainder = arr?.slice(1)
 

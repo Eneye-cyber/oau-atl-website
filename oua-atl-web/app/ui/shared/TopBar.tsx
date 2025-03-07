@@ -55,7 +55,7 @@ const TopBar = ({
 
 
 
-  const siteData = data?.sections[0]?.content[0] ?? { list: [] };
+  const siteData = data?.sections?.[0]?.content?.[0] ?? { list: [] };
   const socialLinks = siteData?.list as ListItem[];
 
   const icons = {

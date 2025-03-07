@@ -185,3 +185,21 @@ export function formatEventTimes(startDate: string, endDate: string): string {
 // console.log(formatEventTimes('2024-08-05T09:00:00+00:00', '2024-08-05T17:00:00+00:00')); // "9:00 AM - 5:00 PM"
 // console.log(formatEventTimes('2024-08-05T09:00:00+00:00', '2024-08-05T09:00:00+00:00')); // "9:00 AM"
 // console.log(formatEventTimes('2024-04-05T21:12:00+00:00', '2024-08-05T15:28:00+00:00')); // "9:12 PM"
+
+export const transformProjectFormObject = (input: any) => ({
+  amountGoal: input.amountGoal,
+  projectText: input.projectText,
+  projectTitle: input.projectTitle,
+  deadline: input.deadline,
+  isFeatured: false,
+  imageURL: input.imageURL,
+  locationData: {
+    city: input.city,
+    state: input.state,
+    postalCode: input.postalCode,
+    latLong: {
+      lat: 0,
+      long: 0,
+    },
+  },
+});

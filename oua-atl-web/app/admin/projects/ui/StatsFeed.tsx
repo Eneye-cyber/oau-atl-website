@@ -1,50 +1,71 @@
+"use client";
 
-import StatsOverview from '@/app/ui/StatsOverview';
-const baseUrl = process.env.API_BASE;
+import { useEffect, useState } from "react";
+import StatsOverview from "@/app/ui/StatsOverview";
+import StatLoader from '@/app/ui/loaders/StatLoader';
 
-async function getStats(path: string) {
-  const url = `${baseUrl}/${path}`;
-  const res = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // Include cookies
-    cache: 'no-store', // Force no caching for fresh data
-  });
-  return res.json().catch(() => ({message: res.statusText}));
-}
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
 
-async function getData(): Promise<any[]> {
-  
-  const fetchactive = getStats('projects/active/count');
-  const fetchcomplete = getStats('projects/completed/count');
-  const fetchoverdue = getStats('projects/overdue/count');
-
-  // Wait for both promises to resolve
+const fetchStats = async (path: string) => {
   try {
-    const [active, complete, overdue] = await Promise.all([fetchactive, fetchcomplete, fetchoverdue ]);
-    return [active, complete, overdue];
-} catch (error) {
-      console.log(error)
-      const result = {message: "", payload: 0};
-      const [active, complete, overdue] = [result, result, result]
-      return [active, complete, overdue];
-}
+    const url = `${baseUrl}/${path}`;
+    const res = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      cache: "no-store",
+    });
 
-  
-}
+    const data = await res.json();
+    return data.payload ?? 0; // Ensure we return a valid number
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    return 0; // Default to 0 in case of an error
+  }
+};
 
-const StatsFeed = async () => {
-  const [active, complete, overdue] = await getData();
-  // console.log([events, projects, overdue, subscribers])
+const StatsFeed = () => {
+  const [stats, setStats] = useState({ active: 0, complete: 0, overdue: 0 });
+  const [loading, setLoading] = useState(true); // 🔹 Loading state
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true); // Start loading
+
+      const [active, complete, overdue] = await Promise.all([
+        fetchStats("projects/active/count"),
+        fetchStats("projects/completed/count"),
+        fetchStats("projects/overdue/count"),
+      ]);
+
+      setStats({ active, complete, overdue });
+      setLoading(false); // Stop loading
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="grid md:grid-cols-3 gap-6">
-        <StatsOverview label="Active Projects" value={active.payload} />
-        <StatsOverview label="Completed Projects" value={complete.payload} />
-        <StatsOverview label="Overdue Projects" value={overdue.payload} />
-      </div>
-  )
-}
+      {loading ? (
+        // 🔹 Show loading placeholders while data is being fetched
+        <div className="grid md:grid-cols-3 gap-6">
+          <StatLoader />
+          <StatLoader />
+          <StatLoader />
+        </div>
+      ) : (
+        // 🔹 Show actual data once it's loaded
+        <>
+          <StatsOverview label="Active Projects" value={stats.active} />
+          <StatsOverview label="Completed Projects" value={stats.complete} />
+          <StatsOverview label="Overdue Projects" value={stats.overdue} />
+        </>
+      )}
+    </div>
+  );
+};
 
-export default StatsFeed
+export default StatsFeed;

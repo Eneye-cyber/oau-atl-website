@@ -4,9 +4,14 @@ import LatestMembers from "./ui/LatestMembers"
 import LatestExecutives from "./ui/LatestExecutives"
 import { Suspense } from 'react'
 import TableLoader from '@/app/ui/loaders/TableLoader'
+import { Metadata } from 'next'
 
-const page = async () => {
+export const metadata: Metadata = {
+  title: "Members | Dashboard",
+  description: "Great Ife Alumni Association Inc. USA - Atlanta Branch. Donations, projects.",
+};
 
+const page = () => {
 
   return (
     <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-y-6 gap-3">

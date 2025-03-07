@@ -14,7 +14,7 @@ const links = [
 ]
 
 const NavBar = ({data}: {data?: PageData;}) => {
-  const siteData = data?.sections[0]?.content[0] ?? { list: [], media: '/img/logo.png'};
+  const siteData = data?.sections?.[0]?.content?.[0] ?? { list: [], media: '/img/logo.png'};
   const navLinks = siteData?.list as ListItem[] ?? links;
   const logo = siteData?.media ??  '/img/logo.png'
  

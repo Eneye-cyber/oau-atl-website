@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Album } from "@/app/lib/types";
 import { useRouter } from "next/navigation";
+import { updateGalleryItem } from "@/lib/utils/api/gallery";
 const validationSchema = z.object({
   urls: z
     .array(z.string().url()) // Ensure 'urls' is an array of valid URLs
@@ -45,37 +46,25 @@ const EditGallery = ({ album, id }: { album: Album; id: string }) => {
 
   const onSubmit: SubmitHandler<GalleryFormData> = async (data) => {
     try {
-      const response: Response = await fetch(`/api/admin/gallery/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-        credentials: "include",
+      await updateGalleryItem(id, data); // Use the new PUT function
+      toast.success("Album updated successfully!");
+      router.push("/admin/gallery");
+    } catch (error: any) {
+      console.error("Error updating album:", error);
+
+      const errorMessage = error?.message || "Something went wrong";
+
+      setError("groupData.title", {
+        type: "server",
+        message: errorMessage,
       });
 
-      if (response.ok) {
-        toast.success("Album updated successfully!");
-        router.push("/admin/gallery");
-      } else {
-        try {
-          const result = await response.json().catch(() => ({message: response.statusText}));
-          setError("groupData.title", {
-            type: "server",
-            message: result.message || "Something went wrong",
-          });
-          toast.error("Unable to update album", {
-            description: result?.message ?? "Something went wrong",
-          });
-        } catch (error) {
-          const message = response.statusText;
-          toast.error("Backend error", { description: message });
-        }
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      toast.error("Server error", {
-        description: (error as Error)?.message ?? "Please try again later",
+      toast.error("Unable to update album", {
+        description: errorMessage,
       });
     }
   };
+
 
   return (
     <FormProvider {...methods}>

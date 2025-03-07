@@ -7,13 +7,16 @@ import ImageUploader from '@/app/ui/forms/ImageUploader';
 import { useRouter } from "next/navigation"; 
 import { CreateProjectSchema } from "@/app/lib/schema"
 import ProjectCard from '@/components/ProjectCard';
+import { transformProjectFormObject } from "@/lib/utils"
+
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE; // Ensure it's accessible on client-side
 
 type ProjectFormData = z.infer<typeof CreateProjectSchema>;
 const CreateProject = () => {
   const router = useRouter();
   const [isPreview, setIsPreview] = useState(false); // State to toggle preview mode
   const [formData, setFormData] = useState<ProjectFormData | null>(null); // State to hold form data for preview
-
+  const [loading, setLoading] = useState(false); // Loading state
   const methods = useForm<ProjectFormData>({
     resolver: zodResolver(CreateProjectSchema),
   });
@@ -27,38 +30,43 @@ const CreateProject = () => {
   } = methods
   
   const onSubmit: SubmitHandler<ProjectFormData> = async (data) => {
-
+    setLoading(true);
     try {
+      const transformedData = transformProjectFormObject(data);
+      console.log("Submitting project:", transformedData);
 
-      // Send data to your backend
-      const response: Response = await fetch('/api/admin/projects', {
-        method: 'POST',
-        body: JSON.stringify(data),
+      const response = await fetch(`${baseUrl}/projects`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         credentials: "include",
-    });
+        body: JSON.stringify(transformedData),
+      });
 
-      if(response.status === 401) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
+      if (response.status === 401) {
+        const result = await response.json().catch(() => ({ message: response.statusText }));
         setError("projectTitle", {
-          type: "server", // Custom type for server-side errors
-          message: result.message || "Invalid form field format", 
+          type: "server",
+          message: result.message || "Invalid form field format",
         });
-       return
+        return;
       }
 
-      if(response.ok) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
-        console.log('result', result)
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Project created:", result);
         router.push("/admin/projects");
-        return alert('Project created successfully!');
+        alert("Project created successfully!");
+      } else {
+        alert("Failed to create project.");
       }
-
-      alert('Failed to create project.');
-      
     } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Failed to create project.');
-    } 
+      console.error("Error submitting form:", error);
+      alert("Failed to create project.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePreview = async () => {
@@ -202,8 +210,8 @@ const CreateProject = () => {
             </button>
             <input
               type="submit"
-              disabled={isSubmitting}
-              value={isSubmitting ? 'Loading...' : "Submit"}
+              disabled={(isSubmitting || loading)}
+              value={(isSubmitting || loading) ? 'Loading...' : "Submit"}
               className="inline-flex w-72 py-3 text-white bg-primary text-base hover:bg-jet-black cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
             />
           </div>

@@ -3,12 +3,10 @@
 import ProjectsTable from './ui/ProjectsTable'
 import Button from '@/app/ui/shared/Button'
 import StatsFeed from './ui/StatsFeed';
-import StatLoader from '@/app/ui/loaders/StatLoader';
-import { Suspense } from 'react'
 
 import Tabs from '@/app/ui/Tabs'
 import { FaChevronRight } from "react-icons/fa6";
-import TableLoader from '@/app/ui/loaders/TableLoader';
+import {useSearchParams} from "next/navigation"
 
 import type { Metadata } from "next";
 
@@ -18,10 +16,10 @@ export const metadata: Metadata = {
 };
 
 
-const Page = async ({ searchParams }: { searchParams: { status: string; page: string } }) => {
-
-  const status = searchParams.status || "";
-  const page = Number(searchParams.page) || 1;
+const Page = () => {
+  const searchParams = useSearchParams();
+  const status = searchParams?.get('status') || '';
+  const page = Number(searchParams?.get('page')) || 1;
 
 
   return (
@@ -40,16 +38,9 @@ const Page = async ({ searchParams }: { searchParams: { status: string; page: st
         <Button href="/admin/projects/create">Create Project</Button>
       </div>
 
-      <Suspense fallback={(
-          <div className="grid md:grid-cols-3 gap-6">
-            <StatLoader />
-            <StatLoader />
-            <StatLoader />
-          </div>
-        )}
-      >
-        <StatsFeed />
-      </Suspense>
+
+      <StatsFeed />
+
 
 
       <section className="flex flex-col gap-10 py-14">
@@ -62,9 +53,7 @@ const Page = async ({ searchParams }: { searchParams: { status: string; page: st
         />
         
         <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 space-y-4">
-          <Suspense fallback={(<TableLoader />)} >
-            <ProjectsTable status={status} page={page} />
-          </Suspense>
+          <ProjectsTable status={status} page={page} />
         </section>
 
 

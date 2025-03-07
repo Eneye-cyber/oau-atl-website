@@ -6,6 +6,7 @@ import ImageUploader from '@/app/ui/forms/ImageUploader';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from "next/navigation"; 
 import { toast } from 'sonner';
+import { submitGalleryForm } from "@/lib/utils/api/gallery";
 
 const validationSchema = z.object({
   urls: z
@@ -36,30 +37,21 @@ const Page = () => {
     setError,
   } = methods;
 
-  const onSubmit: SubmitHandler<GalleryFormData> = async (data) => {
+  const onSubmit: SubmitHandler<GalleryFormData> = async (formData) => {
     try {
-      const response: Response = await fetch('/api/admin/gallery', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
-
-      if (response.ok) {
+        await submitGalleryForm(formData);
         router.push("/admin/gallery");
         toast.success('Gallery created successfully!');
-      } else {
-        const result = await response.json().catch(() => ({message: response.statusText}));
-        setError("groupData.title", {
-          type: "server",
-          message: result.message || "Invalid form field format",
-        });
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Failed to create formData?.');
-    }
+    } catch (err: any) {
+      console.error("Error updating album:", err);
 
-    
+      setError("groupData.title", {
+        type: "server",
+        message: err?.message || "Invalid form field format",
+      });
+      toast.error('Failed to create phot album?.');
+
+    } 
   };
   return (
     <article className="p-6 container space-y-6 flex-1 flex flex-col">

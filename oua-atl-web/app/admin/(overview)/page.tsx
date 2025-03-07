@@ -1,40 +1,83 @@
-import { Metadata } from 'next';
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import DataTable from '@/app/ui/DataTable';
 import { Separator } from "@/components/ui/separator";
 import { FaChevronRight } from "react-icons/fa6";
 import StatsOverview from '@/app/ui/StatsOverview';
-import { fetchData } from '@/lib/utils/api';
+import { fetchData } from '@/lib/utils/client/api';
 import { DonationTable } from '@/lib/utils/tables';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { toast } from 'sonner';
 
-export const metadata: Metadata = {
-  title: "Dashboard | Great Ife Alumni",
-  description: 'Admin dashboard overview of the Great Ife Alumni platform.',
-};
+const Page = () => {
+  const [data, setData] = useState({
+    donations: { data: [], error: false },
+    enquiries: { data: [], error: false },
+    events: { data: 0, error: false },
+    projects: { data: 0, error: false },
+    overdue: { data: 0, error: false },
+    subscribers: { data: 0, error: false },
+  });
+  const [loading, setLoading] = useState(true);
 
-async function getData(): Promise<any[]> {
-  const latestDonations = fetchData('donations/latest');
-  const latestEnquiries = fetchData('/contact/latest');
-  const eventStats = fetchData('physical-events/latest/count');
-  const projectsStats = fetchData('projects/active/count');
-  const overdueStats = fetchData('projects/overdue/count');
-  const subscribersStats = fetchData('physical-events/latest/count');
-
-  // Wait for both promises to resolve
-  const results = await Promise.all([
-    latestDonations, 
-    latestEnquiries, 
-    eventStats, 
-    projectsStats, 
-    overdueStats, 
-    subscribersStats, 
-  ]);
+  useEffect(() => {
+    const getData = async () => {
+      setLoading(true);
+      const results = await Promise.all([
+        fetchData('donations/latest'),
+        fetchData('/contact/latest'),
+        fetchData('physical-events/latest/count'),
+        fetchData('projects/active/count'),
+        fetchData('projects/overdue/count'),
+        fetchData('physical-events/latest/count'),
+      ]);
   
-  return results;
-}
+      setData({
+        donations: {
+          data: results[0].payload ?? [] ,
+          error: results[0].error || false,
+        },
+        enquiries: {
+          data: results[1].payload ?? [] ,
+          error: results[1].error || false,
+        },
+        events: {
+          data: results[2].payload ?? 0,
+          error: results[2].error || false,
+        },
+        projects: {
+          data: results[3].payload ?? 0,
+          error: results[3].error || false,
+        },
+        overdue: {
+          data: results[4].payload ?? 0,
+          error: results[4].error || false,
+        },
+        subscribers: {
+          data: results[5].payload ?? 0,
+          error: results[5].error || false,
+        },
+      });
+      results.forEach((result, i) => {
+        if (result.error) {
+          console.error('Error fetching data:', result.message);
+          toast.error('Error fetching data', {description: result.message})
+        }
+        console.log(i, result)
+  
+      })
+      setLoading(false);
+    };
+  
+    getData();
+  }, []);
 
-const Page = async () => {
-  const [ donations, enquiries, events, projects, overdue, subscribers] = await getData();
+  if (loading) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <article className="p-6 container">
       <div className="flex items-end justify-between py-6">
@@ -49,16 +92,19 @@ const Page = async () => {
       </div>
 
       <div className="grid md:grid-cols-4 gap-4">
-        <StatsOverview label="Active alumni" value={subscribers.payload ?? 0} />
-        <StatsOverview label="Ongoing Projects" value={projects.payload ?? 0} />
-        <StatsOverview label="Upcoming Events" value={events?.payload ?? 0} />
-        <StatsOverview label="Overdue Projects" value={overdue?.payload ?? 0} />
+        <StatsOverview label="Active alumni" value={data.subscribers.data} />
+        <StatsOverview label="Ongoing Projects" value={data.projects.data} />
+        <StatsOverview label="Upcoming Events" value={data.events.data} />
+        <StatsOverview label="Overdue Projects" value={data.overdue.data} />
       </div>
       
-
       <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-y-6 gap-3 mt-12">
         <div className="overflow-auto lg:col-span-8">
-          <DataTable title="Latest Donations" columns={DonationTable} data={donations.payload} />
+          {data.donations.error ? (
+            <p className="text-red-500">Failed to load donations.</p>
+          ) : (
+            <DataTable title="Latest Donations" columns={DonationTable} data={data.donations.data} />
+          )}
 
           <Separator className="my-4" />
 
@@ -83,19 +129,23 @@ const Page = async () => {
               <div className="h-1 bg-indigo-700 rounded-full w-full"></div>
             </div>
 
-            <ul className="text-sm text-gray-600 space-y-4 my-6 min-h-24">
-              {enquiries.payload.map((enquiry: any, index: number) => (
-                <li className="flex gap-2" key={index}>
-                  <div>
-                    <h4 className="font-semibold leading-tight">{enquiry.full_name}</h4>
-                    <div className="flex items-center">
-                      <div className="flex h-1 w-1 rounded-full bg-nero-black mr-1.5" />
-                      <p className="font-medium">{enquiry.message}</p>
+            {data.enquiries.error ? (
+              <p className="text-red-500">Failed to load enquiries.</p>
+            ) : (
+              <ul className="text-sm text-gray-600 space-y-4 my-6 min-h-24">
+                {data.enquiries.data.map((enquiry: any, index) => (
+                  <li className="flex gap-2" key={index}>
+                    <div>
+                      <h4 className="font-semibold leading-tight">{enquiry.full_name}</h4>
+                      <div className="flex items-center">
+                        <div className="flex h-1 w-1 rounded-full bg-nero-black mr-1.5" />
+                        <p className="font-medium">{enquiry.message}</p>
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+            )}
 
             <div className="mt-4">
               <Link

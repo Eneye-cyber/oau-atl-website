@@ -1,26 +1,31 @@
-'use client';
-import { useState } from 'react';
-import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import ImageUploader from '@/app/ui/forms/ImageUploader';
-import { useRouter } from "next/navigation"; 
-import { EditProjectSchema } from "@/app/lib/schema"
-import ProjectCard from '@/components/ProjectCard';
-import { ProjectResponseObject } from '@/app/lib/types';
-import { formatDateForInput } from "@/lib/utils";
-import { toast } from 'sonner';
-
+"use client";
+import { useState } from "react";
+import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import ImageUploader from "@/app/ui/forms/ImageUploader";
+import { useRouter } from "next/navigation";
+import { EditProjectSchema } from "@/app/lib/schema";
+import ProjectCard from "@/components/ProjectCard";
+import { ProjectResponseObject } from "@/app/lib/types";
+import { formatDateForInput, transformProjectFormObject } from "@/lib/utils";
+import { toast } from "sonner";
 
 type ProjectFormData = z.infer<typeof EditProjectSchema>;
-const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}) => {
+const EditProject = ({
+  project,
+  id,
+}: {
+  project: ProjectResponseObject;
+  id: string;
+}) => {
   const router = useRouter();
   const [isPreview, setIsPreview] = useState(false); // State to toggle preview mode
   const [formData, setFormData] = useState<ProjectFormData | null>(null); // State to hold form data for preview
 
   const methods = useForm<ProjectFormData>({
     resolver: zodResolver(EditProjectSchema),
-     defaultValues: {
+    defaultValues: {
       amountGoal: parseFloat(project.amount_goal), // Transform string to number
       projectText: project.project_text,
       imageURL: project.image_url,
@@ -37,47 +42,63 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
     formState: { errors, isSubmitting },
     setError,
     watch,
-    trigger
-  } = methods
-  
+    trigger,
+  } = methods;
+
   const onSubmit: SubmitHandler<ProjectFormData> = async (data) => {
-
     try {
+      // Transform the data before sending
+      const transformedData = transformProjectFormObject(data);
 
-      // Send data to your backend
-      const response: Response = await fetch(`/api/admin/projects/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(data),
-        credentials: "include",
-    });
+      console.log("Sending update request:", transformedData);
 
-      if(response.status === 401) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
+      const backendUrl = `${process.env.NEXT_PUBLIC_API_BASE}/projects/${id}`;
+
+      const response = await fetch(backendUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          // If authentication is needed, include the Authorization header
+          // 'Authorization': `Bearer ${yourAuthToken}`,
+        },
+        body: JSON.stringify(transformedData),
+        credentials: "include", // Ensures cookies are included
+      });
+
+      if (response.status === 401) {
+        const result = await response
+          .json()
+          .catch(() => ({ message: response.statusText }));
         setError("projectTitle", {
-          type: "server", // Custom type for server-side errors
-          message: result.message || "Invalid form field format", 
+          type: "server",
+          message: result.message || "Invalid form field format",
         });
-       return
+        return;
       }
 
-      if(response.ok) {
-        const result = await response.json().catch(() => ({message: response.statusText}));
-        console.log('result', result)
-        toast.success('Update successful!')
-        
-        return router.push(`/admin/projects/${id}`);
+      if (response.ok) {
+        const result = await response
+          .json()
+          .catch(() => ({ message: response.statusText }));
+        console.log("Update result:", result);
+        toast.success("Update successful!");
+        router.push(`/admin/projects/${id}`);
+        return;
       }
 
-      toast.error('Failed to create project.', {description: response.statusText});
-      
+      toast.error("Failed to update project.", {
+        description: response.statusText,
+      });
     } catch (error) {
-      toast.error('Failed to create project.', {description: (error as Error).message});
-    } 
+      toast.error("Failed to update project.", {
+        description: (error as Error).message,
+      });
+    }
   };
 
   const handlePreview = async () => {
-    const outputs = await trigger()
-    if(!outputs) return
+    const outputs = await trigger();
+    if (!outputs) return;
     setFormData(watch()); // Capture current form data
     setIsPreview(true); // Enable preview mode
   };
@@ -88,15 +109,20 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
 
   return (
     <FormProvider {...methods}>
-      { !isPreview ? (
-        <form className="p-4 md:p-8 bg-white shadow-lg container" onSubmit={handleSubmit(onSubmit)}>
+      {!isPreview ? (
+        <form
+          className="p-4 md:p-8 bg-white shadow-lg container"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <div className="py-4">
             <h3 className="font-bold text-xl sm:text-3xl">Edit Project</h3>
           </div>
 
           <div className="flex flex-col gap-4 mt-10">
             <section className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <h3 className="text-xl font-semibold sm:col-span-6">Project Details</h3>
+              <h3 className="text-xl font-semibold sm:col-span-6">
+                Project Details
+              </h3>
 
               <div className="sm:col-span-3">
                 <label htmlFor="projectTitle" className="form-label">
@@ -105,21 +131,26 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
                 <input
                   id="projectTitle"
                   type="text"
-                  {...register('projectTitle')}
+                  {...register("projectTitle")}
                   className="form-input"
                 />
-                {errors.projectTitle?.message && <p className="text-sm text-red-400">{errors.projectTitle.message}</p>}
+                {errors.projectTitle?.message && (
+                  <p className="text-sm text-red-400">
+                    {errors.projectTitle.message}
+                  </p>
+                )}
               </div>
 
               <div className="sm:col-span-3">
                 <label htmlFor="imageURL" className="form-label">
                   Project Image *
                 </label>
-                <ImageUploader
-                  id="imageURL"
-                  {...register('imageURL')}
-                />
-                {errors.imageURL?.message && <p className="text-sm text-red-400">{errors.imageURL.message}</p>}
+                <ImageUploader id="imageURL" {...register("imageURL")} />
+                {errors.imageURL?.message && (
+                  <p className="text-sm text-red-400">
+                    {errors.imageURL.message}
+                  </p>
+                )}
               </div>
 
               <div className="sm:col-span-3">
@@ -129,10 +160,14 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
                 <input
                   id="amountGoal"
                   type="number"
-                  {...register('amountGoal')}
+                  {...register("amountGoal")}
                   className="form-input"
                 />
-                {errors.amountGoal?.message && <p className="text-sm text-red-400">{errors.amountGoal.message}</p>}
+                {errors.amountGoal?.message && (
+                  <p className="text-sm text-red-400">
+                    {errors.amountGoal.message}
+                  </p>
+                )}
               </div>
 
               <div className="sm:col-span-3">
@@ -142,10 +177,14 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
                 <input
                   type="datetime-local"
                   id="deadline"
-                  {...register('deadline')}
+                  {...register("deadline")}
                   className="form-input"
                 />
-                {errors.deadline?.message && <p className="text-sm text-red-400">{errors.deadline.message}</p>}
+                {errors.deadline?.message && (
+                  <p className="text-sm text-red-400">
+                    {errors.deadline.message}
+                  </p>
+                )}
               </div>
 
               <div className="sm:col-span-6">
@@ -154,16 +193,22 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
                 </label>
                 <textarea
                   id="projectText"
-                  {...register('projectText')}
+                  {...register("projectText")}
                   className="form-input"
                 />
-                {errors.projectText?.message && <p className="text-sm text-red-400">{errors.projectText.message}</p>}
+                {errors.projectText?.message && (
+                  <p className="text-sm text-red-400">
+                    {errors.projectText.message}
+                  </p>
+                )}
               </div>
             </section>
 
             <hr className="sm:col-span-6" />
             <section className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 sm:col-span-6">
-              <h3 className="text-xl font-semibold sm:col-span-6">Project Location</h3>
+              <h3 className="text-xl font-semibold sm:col-span-6">
+                Project Location
+              </h3>
 
               <div className="sm:col-span-3">
                 <label htmlFor="city" className="form-label">
@@ -172,10 +217,12 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
                 <input
                   id="city"
                   type="text"
-                  {...register('city')}
+                  {...register("city")}
                   className="form-input"
                 />
-                {errors.city?.message && <p className="text-sm text-red-400">{errors.city.message}</p>}
+                {errors.city?.message && (
+                  <p className="text-sm text-red-400">{errors.city.message}</p>
+                )}
               </div>
 
               <div className="sm:col-span-3">
@@ -185,10 +232,12 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
                 <input
                   id="state"
                   type="text"
-                  {...register('state')}
+                  {...register("state")}
                   className="form-input"
                 />
-                {errors.state?.message && <p className="text-sm text-red-400">{errors.state.message}</p>}
+                {errors.state?.message && (
+                  <p className="text-sm text-red-400">{errors.state.message}</p>
+                )}
               </div>
 
               <div className="sm:col-span-3">
@@ -198,16 +247,20 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
                 <input
                   id="address"
                   type="text"
-                  {...register('address')}
+                  {...register("address")}
                   className="form-input"
                 />
-                {errors.address?.message && <p className="text-sm text-red-400">{errors.address.message}</p>}
+                {errors.address?.message && (
+                  <p className="text-sm text-red-400">
+                    {errors.address.message}
+                  </p>
+                )}
               </div>
             </section>
           </div>
 
           <div className="py-6 flex justify-end gap-4">
-          <button
+            <button
               type="button"
               onClick={handlePreview}
               className="inline-flex w-72 py-3 justify-center text-white bg-accent text-base text-center hover:bg-secondary-dark cursor-pointer"
@@ -217,12 +270,11 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
             <input
               type="submit"
               disabled={isSubmitting}
-              value={isSubmitting ? 'Loading...' : "Submit"}
+              value={isSubmitting ? "Loading..." : "Submit"}
               className="inline-flex w-72 py-3 text-white bg-primary text-base hover:bg-jet-black cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
             />
           </div>
         </form>
-
       ) : (
         <div className="p-4 md:p-8 bg-white shadow-lg container">
           <div className="py-4">
@@ -230,13 +282,20 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
           </div>
 
           <div className="md:py-8 text-center">
-            <h2 className="text-3xl md:text-5xl font-semibold">{formData?.projectTitle}</h2>
+            <h2 className="text-3xl md:text-5xl font-semibold">
+              {formData?.projectTitle}
+            </h2>
             <div className="inline-block capitalize relative mt-1">{`${formData?.city} ${formData?.state}`}</div>
-
           </div>
 
           <ProjectCard
-            project={{image_url: formData?.imageURL, project_text: formData?.projectText, amount_goal: formData?.amountGoal, amount_collected: 0, donation_count: 0}}
+            project={{
+              image_url: formData?.imageURL,
+              project_text: formData?.projectText,
+              amount_goal: formData?.amountGoal,
+              amount_collected: 0,
+              donation_count: 0,
+            }}
             percentage={0}
           />
 
@@ -256,11 +315,9 @@ const EditProject = ({project, id}: {project: ProjectResponseObject, id: string}
             </button>
           </div>
         </div>
-      )
-
-      }
+      )}
     </FormProvider>
-  )
-}
+  );
+};
 
-export default EditProject
+export default EditProject;
