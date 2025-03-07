@@ -11,28 +11,35 @@ interface AuthContextType {
   
 }
 
+interface User {
+  email: string;
+  id: string;
+  role: 'member' | 'admin'
+}
 interface loginResult {
   message: string;
-  user: {
-    email: string;
-    id: string;
-    role: 'member' | 'admin'
-  }
+  user: User
 }
 
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User| null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch("/api/auth/me");
+        const response = await fetch(`${baseUrl}/auth/current`);
         if (!response.ok) throw new Error("Not authenticated");
         const data = await response.json();
-        setUser(data);
+        const user = data?.user;
+      if (!user) {
+        throw new Error("Invalid response: No user data");
+      }
+      // Set user state
+      setUser(user);
       } catch (error) {
         setUser(null);
       } finally {
@@ -84,13 +91,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     setLoading(true)
-    if (!user || !user.userId) {
+    if (!user || !user.id) {
       console.error("No user found for logout.");
       setLoading(false)
       return;
     }
 
-    const success = await logoutUser(user.userId);
+    const success = await logoutUser(user.id);
     if (success) {
       setUser(null);
     }

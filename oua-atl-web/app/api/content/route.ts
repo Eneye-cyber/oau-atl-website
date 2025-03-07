@@ -23,7 +23,7 @@ export async function GET(req: Request): Promise<NextResponse> {
     
     // Fetch page data from MySQL
     const [rows] = await db.execute(
-      `SELECT * FROM pages WHERE name = ? LIMIT 1`,
+      `SELECT * FROM q46r1_pages WHERE name = ? LIMIT 1`,
       [slug]
     );
 

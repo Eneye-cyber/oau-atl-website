@@ -5,7 +5,7 @@ export async function queryPageData(pageName: string, isTemp: boolean = false) {
   try {
     const db = await connectToDatabase();
     const [rows] = await db.execute(
-      `SELECT * FROM ${isTemp ? "temp_pages" : "pages"} WHERE name = ? LIMIT 1`,
+      `SELECT * FROM q46r1_${isTemp ? "temp_pages" : "pages"} WHERE name = ? LIMIT 1`,
       [pageName]
     );
     if (!Array.isArray(rows) || rows.length === 0) {
@@ -22,7 +22,7 @@ export async function querySettingsData(pageName: string, isTemp: boolean = fals
   try {
     const db = await connectToDatabase();
     const [rows] = await db.execute(
-      `SELECT * FROM ${isTemp ? "temp_site_settings" : "site_settings"} WHERE name = ? LIMIT 1`,
+      `SELECT * FROM q46r1_${isTemp ? "temp_site_settings" : "site_settings"} WHERE name = ? LIMIT 1`,
       [pageName]
     );
     if (!Array.isArray(rows) || rows.length === 0) {
@@ -45,7 +45,7 @@ export async function updatePageData(
     const tableName = isTemp ? "temp_pages" : "pages";
 
     const [result] = await db.execute<ResultSetHeader>(
-      `UPDATE ${tableName} SET sections = ? WHERE name = ?`,
+      `UPDATE q46r1_${tableName} SET sections = ? WHERE name = ?`,
       [JSON.stringify(newSections), pageName]
     );
     
@@ -71,7 +71,7 @@ export async function updateSettingsData(
     const tableName = isTemp ? "temp_site_settings" : "site_settings";
 
     const [result] = await db.execute<ResultSetHeader>(
-      `UPDATE ${tableName} SET sections = ? WHERE name = ?`,
+      `UPDATE q46r1_${tableName} SET sections = ? WHERE name = ?`,
       [JSON.stringify(newSections), pageName]
     );
     

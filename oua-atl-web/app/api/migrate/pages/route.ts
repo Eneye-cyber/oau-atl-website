@@ -11,35 +11,35 @@ export async function GET(req: Request) {
     const db = await connectToDatabase();
     const tableNames = ["pages", "temp_pages"];
 
-    for (const tableName of tableNames) {
-      // Ensure table exists
-      await db.execute(`
-        CREATE TABLE IF NOT EXISTS ${tableName} (
-          id INT AUTO_INCREMENT PRIMARY KEY,
-          name VARCHAR(255) UNIQUE NOT NULL,
-          sections JSON NOT NULL
-        )
-      `);
+    // for (const tableName of tableNames) {
+    //   // Ensure table exists
+    //   await db.execute(`
+    //     CREATE TABLE IF NOT EXISTS q46r1_${tableName} (
+    //       id INT AUTO_INCREMENT PRIMARY KEY,
+    //       name VARCHAR(255) UNIQUE NOT NULL,
+    //       sections JSON NOT NULL
+    //     )
+    //   `);
 
-      for (const key of keys) {
-        const item = data[key];
+    //   for (const key of keys) {
+    //     const item = data[key];
 
-        try {
-          await db.execute(
-            `INSERT INTO ${tableName} (name, sections) VALUES (?, ?)`,
-            [key, JSON.stringify(item.sections)]
-          );
+    //     try {
+    //       await db.execute(
+    //         `INSERT INTO q46r1_${tableName} (name, sections) VALUES (?, ?)`,
+    //         [key, JSON.stringify(item.sections)]
+    //       );
 
-          allResults.push({ page: key, isStored: true });
-        } catch (error: any) {
-          if (error.code === "ER_DUP_ENTRY") {
-            allResults.push({ page: key, isStored: false, error: "Duplicate entry" });
-          } else {
-            throw error;
-          }
-        }
-      }
-    }
+    //       allResults.push({ page: key, isStored: true });
+    //     } catch (error: any) {
+    //       if (error.code === "ER_DUP_ENTRY") {
+    //         allResults.push({ page: key, isStored: false, error: "Duplicate entry" });
+    //       } else {
+    //         throw error;
+    //       }
+    //     }
+    //   }
+    // }
 
     return NextResponse.json({
       message: "Migration successful",

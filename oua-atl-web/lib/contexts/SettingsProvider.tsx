@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import json from "@/lib/pages/siteSchema.json"
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
@@ -12,7 +13,7 @@ const getData = async () => {
     return payload.data;
   } catch (error) {
     console.error("Failed to fetch settings:", error);
-    return null;
+    return json;
   }
 };
 

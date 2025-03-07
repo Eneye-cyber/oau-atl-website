@@ -14,7 +14,7 @@ import {
   JsonData,
   ProjectCollection,
 } from "@/app/lib/types";
-import { fetchData, fetchPageSchema, fetchRouteList } from "../utils/api";
+import { fetchData, fetchPageSchema } from "../utils/client/api";
 import { usePathname } from "next/navigation";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
@@ -107,7 +107,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
           pageReq,
         ]);
 
-        setRoutes(pageData.routeList);
+        // setRoutes(pageData.routeList);
         setProjects(projects.payload.data);
         setEvents(events.payload.data);
         setState(pageData.pageSchema);

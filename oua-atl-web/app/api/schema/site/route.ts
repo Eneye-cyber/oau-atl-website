@@ -134,12 +134,12 @@ export async function PUT(req: Request): Promise<NextResponse<{message: string; 
 
      // Fetch current data from `pages` table
      const [currentData] = await db.execute<RowDataPacket[]>(
-      `SELECT name, sections FROM site_settings`
+      `SELECT name, sections FROM q46r1_site_settings`
     );
 
     // Fetch new data from `temp_pages` table
     const [newData] = await db.execute<RowDataPacket[]>(
-      `SELECT name, sections FROM temp_site_settings`
+      `SELECT name, sections FROM q46r1_temp_site_settings`
     );
 
     // Ensure data is an array of objects
@@ -152,7 +152,7 @@ export async function PUT(req: Request): Promise<NextResponse<{message: string; 
     for (const page of newData) {
       const { name, sections } = page as { name: string; sections: any }; // Explicitly define structure
       await db.execute(
-        `INSERT INTO site_settings (name, sections) VALUES (?, ?)
+        `INSERT INTO q46r1_site_settings (name, sections) VALUES (?, ?)
          ON DUPLICATE KEY UPDATE sections = VALUES(sections)`,
         [name, JSON.stringify(sections)]
       );

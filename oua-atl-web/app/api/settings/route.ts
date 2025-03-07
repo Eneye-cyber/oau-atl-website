@@ -19,7 +19,7 @@ export async function GET(req: Request): Promise<NextResponse> {
     console.log(tableName, "tableName");
 
     // Fetch all site settings
-    const [rows] = await db.execute(`SELECT * FROM ${tableName}`);
+    const [rows] = await db.execute(`SELECT * FROM q46r1_${tableName}`);
 
     if (!Array.isArray(rows) || rows.length === 0) {
       return NextResponse.json(

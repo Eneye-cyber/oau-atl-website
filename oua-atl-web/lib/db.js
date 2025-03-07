@@ -5,6 +5,7 @@ const dbConfig = {
   user: process.env?.MYSQL_USER ?? "root",
   password: process.env?.MYSQL_PASSWORD ?? "",
   database: process.env?.MYSQL_DATABASE ?? "oau_atl",
+  port: 3306, // Ensure this is correct
 };
 
 export async function connectToDatabase() {

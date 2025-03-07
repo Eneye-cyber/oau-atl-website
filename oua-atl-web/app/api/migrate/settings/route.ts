@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     for (const tableName of tableNames) {
       // Ensure table exists
       await db.execute(`
-        CREATE TABLE IF NOT EXISTS ${tableName} (
+        CREATE TABLE IF NOT EXISTS q46r1_${tableName} (
           id INT AUTO_INCREMENT PRIMARY KEY,
           name VARCHAR(255) UNIQUE NOT NULL,
           sections JSON NOT NULL
@@ -26,7 +26,7 @@ export async function GET(req: Request) {
 
         try {
           await db.execute(
-            `INSERT INTO ${tableName} (name, sections) VALUES (?, ?)`,
+            `INSERT INTO q46r1_${tableName} (name, sections) VALUES (?, ?)`,
             [key, JSON.stringify(item.sections)]
           );
 

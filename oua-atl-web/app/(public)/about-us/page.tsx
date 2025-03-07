@@ -8,7 +8,7 @@ import HeroSection from "@/app/ui/HeroSection";
 import ContactForm from "@/app/ui/forms/ContactForm";
 import { PageData } from "@/app/lib/types";
 import LoadingSpinner from "@/components/LoadingSpinner";
-
+import json from "@/lib/pages/pageSchema.json";
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 export default function AboutPage() {
@@ -24,6 +24,7 @@ export default function AboutPage() {
         const result = await response.json();
         setPageData(result.data.pages.about);
       } catch (error) {
+        setPageData(json.pages.about)
         console.error("Error fetching about page data:", error);
       } finally {
         setLoading(false);

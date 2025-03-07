@@ -40,23 +40,23 @@ const HomePage = () => {
 
   if(loading) return <LoadingSpinner />
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-red-100 text-red-700 p-6">
-        <p className="text-lg font-semibold">{error}</p>
-        <button
-          onClick={() => {
-            setError(null);
-            setLoading(true);
-            setHomeData(null);
-          }}
-          className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-        >
-          Retry
-        </button>
-      </div>
-    );
-  }
+  // if (error) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen bg-red-100 text-red-700 p-6">
+  //       <p className="text-lg font-semibold">{error}</p>
+  //       <button
+  //         onClick={() => {
+  //           setError(null);
+  //           setLoading(true);
+  //           setHomeData(null);
+  //         }}
+  //         className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+  //       >
+  //         Retry
+  //       </button>
+  //     </div>
+  //   );
+  // }
 
   if (!homeData) return (
     <div className="flex items-center justify-center min-h-screen bg-red-100 text-red-700 p-6">
