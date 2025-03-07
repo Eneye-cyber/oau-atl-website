@@ -124,7 +124,7 @@ const TopBar = ({
                   </div>
                 ) : (
                   <div className="inline-block border-l border-muted-foreground h-fit">
-                    {/* <Link
+                    <Link
                       className={`${linkClass}`}
                       href={
                         customizablePage.includes(pathName)
@@ -133,7 +133,7 @@ const TopBar = ({
                       }
                     >
                       Customize
-                    </Link> */}
+                    </Link>
                     {/* <Link className={`${linkClass}`} href={`/customize${pathName}`}>Customize</Link> */}
                   </div>
                 )}

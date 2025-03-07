@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { fetchData } from '../../lib/utils/api';
+import { fetchData } from '../../lib/utils/client/api';
 import { PaginatedResponse, ProjectCollection } from '../lib/types';
 
 

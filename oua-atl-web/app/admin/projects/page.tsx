@@ -6,7 +6,7 @@ import StatsFeed from './ui/StatsFeed';
 
 import Tabs from '@/app/ui/Tabs'
 import { FaChevronRight } from "react-icons/fa6";
-import {useSearchParams} from "next/navigation"
+
 
 import type { Metadata } from "next";
 
@@ -17,9 +17,7 @@ export const metadata: Metadata = {
 
 
 const Page = () => {
-  const searchParams = useSearchParams();
-  const status = searchParams?.get('status') || '';
-  const page = Number(searchParams?.get('page')) || 1;
+
 
 
   return (
@@ -53,7 +51,7 @@ const Page = () => {
         />
         
         <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 space-y-4">
-          <ProjectsTable status={status} page={page} />
+          <ProjectsTable />
         </section>
 
 

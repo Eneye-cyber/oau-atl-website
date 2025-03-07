@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import EditGallery from "@/app/ui/forms/gallery/EditGallery";
-import { fetchData } from "@/lib/utils/api";
+import { fetchData } from "@/lib/utils/client/api";
 import type { Album } from "@/app/lib/types";
 
 const EditGalleryPage = ({ params }: { params: { id: string } }) => {

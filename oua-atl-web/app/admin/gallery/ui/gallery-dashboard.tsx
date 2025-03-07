@@ -5,7 +5,7 @@ import { FaChevronRight } from "react-icons/fa6";
 import { Separator } from "@/components/ui/separator";
 import Button from '@/app/ui/shared/Button';
 import type { GalleryCollection } from "@/app/lib/types";
-import { fetchData } from "@/lib/utils/api";
+import { fetchData } from "@/lib/utils/client/api";
 import ActionMenu from "@/components/actions/ActionMenu";
 import { toast } from 'sonner';
 import LoadingSpinner from '@/components/LoadingSpinner';

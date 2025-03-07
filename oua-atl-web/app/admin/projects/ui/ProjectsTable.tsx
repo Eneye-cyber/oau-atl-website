@@ -8,13 +8,18 @@ import { ProjectColumns } from "@/lib/utils/tables";
 import { PaginationComponent } from "@/components/ui/pagination";
 import TableLoader from '@/app/ui/loaders/TableLoader';
 import {FetchError} from "@/components/ui/fetch-error";
+import {useSearchParams} from "next/navigation"
 
 type ProjectCollectionResponse = PaginatedResponse<ProjectCollection[] | []>;
 
-const ProjectsTable = ({ status, page }: { status: string; page: number }) => {
+const ProjectsTable = () => {
   const [data, setData] = useState<ProjectCollectionResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const searchParams = useSearchParams();
+  const status = searchParams?.get('status') || '';
+  const page = Number(searchParams?.get('page')) || 1;
 
   useEffect(() => {
     const fetchProjects = async () => {
