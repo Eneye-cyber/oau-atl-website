@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { logoutUser } from "../utils/api/auth";
+import apiClient from "../apiClient";
 
 interface AuthContextType {
   user: any;
@@ -31,9 +32,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`${baseUrl}/auth/current`);
+        // const response = await apiClient.get("/auth/current");
+        // console.log("User data:", response.data);
+
+        const response = await fetch(`${baseUrl}/auth/current`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: "include", // Include cookies
+        });
         if (!response.ok) throw new Error("Not authenticated");
         const data = await response.json();
+        console.log("data", data)
         const user = data?.user;
       if (!user) {
         throw new Error("Invalid response: No user data");
@@ -62,9 +73,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
   
       if (!response.ok) {
-        const errorData = await response.json().catch(() => `${response.status} - ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({message: `${response.status} - ${response.statusText}`}));
         console.error("Login failed:", errorData);
-        throw new Error(errorData?.error || errorData || "Login failed");
+        throw new Error(errorData?.message || "Login failed");
       }
   
       const data = await response.json();
@@ -89,6 +100,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // const login = async (endpoint: string, credentials: any) => {
+  //   setLoading(true);
+  //   try {
+  //     console.log("Processing login...");
+  
+  //     const response = await apiClient.post(endpoint, credentials);
+
+  //     // Read response headers (optional: check Set-Cookie directive)
+  //     const setCookieHeader = response.headers["set-cookie"];
+  //     console.log(response.headers)
+  //     if (setCookieHeader) {
+  //       console.log("Set-Cookie received:", setCookieHeader);
+  //     }
+  
+  //     console.log("Login successful:", response.data);
+  
+  //     // User data
+  //     const user = response.data?.user;
+  //     if (!user) {
+  //       throw new Error("Invalid response: No user data");
+  //     }
+  
+  //     setUser(user);
+  //     return { data: user, error: null };
+  //   } catch (error: any) {
+  //     console.error("Login error:", error);
+  //     setUser(null);
+  //     return { data: null, error: error?.message || "Login failed" };
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const logout = async () => {
     setLoading(true)
     if (!user || !user.id) {
@@ -97,7 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const success = await logoutUser(user.id);
+    const success = await logoutUser(user.id, user.role);
     if (success) {
       setUser(null);
     }

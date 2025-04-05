@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { toast } from "sonner";
 import { useAuth } from "@/lib/contexts/AuthProvider";
+import { useRouter } from "next/navigation";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE
 
@@ -15,6 +16,7 @@ type Inputs = z.infer<typeof SignInFormDataSchema>;
 
 const SignInForm = ({ noRedirect = false, onLoginSuccess }: { noRedirect?: boolean; onLoginSuccess?: (user: any) => void }) => {
   const { login } = useAuth();
+  const router = useRouter()
 
   useEffect(() => {
     const message = sessionStorage.getItem("flashMessage");
@@ -39,12 +41,14 @@ const SignInForm = ({ noRedirect = false, onLoginSuccess }: { noRedirect?: boole
     try {
       const url = `${baseUrl}/users/auth/login`;
       const { data, error} = await login(url, formData); // Use login from AuthProvider
-      if(error) throw error
+      // console.log('result', data, error)
+      if(error) throw new Error(error ?? 'Something went wrong')
       if(data)
       toast.success("Login successful");
 
       if (!noRedirect) {
-        window.location.replace("/members/profile");
+        router.replace("/members/profile");
+        // window.location.replace("/members/profile");
         return;
       }
 

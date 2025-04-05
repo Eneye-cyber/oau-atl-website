@@ -4,8 +4,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/contexts/AuthProvider";
+import { useRouter } from "next/navigation"
 
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
+// const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
 
 const accountSchema = z.object({
   email: z.string().min(3, "Email is required").email("Invalid email address"),
@@ -24,18 +25,20 @@ const AccountForm = () => {
     resolver: zodResolver(accountSchema),
   });
   const { login } = useAuth();
+  const router = useRouter()
 
   const processForm: SubmitHandler<AccountFormValues> = async (formData) => {
     try {
-      const url = `${baseUrl}/admins/auth/login`;
+      const url = `/admins/auth/login`;
       const { data, error } = await login(url, formData); // Use login from AuthProvider
       if (error) throw error;
 
       if (data) {
         toast.success("Administrator login successful");
-        const newUrl =
-          window.location.protocol + "//" + window.location.host + "/admin";
-        window.location.replace(newUrl);
+        // const newUrl =
+        //   window.location.protocol + "//" + window.location.host + "/admin";
+        // window.location.replace(newUrl);
+        router.replace('/admin')
         return;
       }
     } catch (err: any) {

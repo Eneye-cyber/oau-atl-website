@@ -6,10 +6,19 @@ import SettingsProvider from "@/lib/contexts/SettingsProvider";
 import TopBar from "@/app/ui/shared/TopBar";
 import NavBar from "@/app/ui/shared/NavBar";
 import Footer from "@/app/ui/shared/Footer";
-import { FooterSkeleton, NavBarSkeleton, TopBarSkeleton } from "@/app/ui/loaders/LayoutElementLoaders";
+import {
+  FooterSkeleton,
+  NavBarSkeleton,
+  TopBarSkeleton,
+} from "@/app/ui/loaders/LayoutElementLoaders";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { SiteSchema } from "@/app/lib/types";
 
-export default function MembersLayout({ children }: { children: React.ReactNode }) {
+export default function MembersLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   type Role = "member" | "admin" | "guest";
   const { user, loading: authLoading } = useAuth();
   const role = (user?.role as Role) ?? "guest";
@@ -17,7 +26,9 @@ export default function MembersLayout({ children }: { children: React.ReactNode 
 
   useEffect(() => {
     if ((!role || role !== "member") && !authLoading) {
-      router.replace('/members/login');
+      router.replace("/members/login");
+      // console.log(role, authLoading, router)
+      return
     }
   }, [role, authLoading, router]);
 
@@ -25,11 +36,13 @@ export default function MembersLayout({ children }: { children: React.ReactNode 
     return <LoadingSpinner />;
   }
 
+  if (!authLoading && role !== "member") return <LoadingSpinner />;
+
   return (
     <SettingsProvider>
-      {({ data, loading }: { data: any; loading: boolean }) => (
+      {(data: SiteSchema, loading: boolean) => (
         <div className="flex-column h-full min-h-screen">
-          <header aria-label="page-header" className="mb-auto">
+          <header aria-label="page-header" className="mb-uto">
             {loading ? (
               <>
                 <TopBarSkeleton />
@@ -46,7 +59,11 @@ export default function MembersLayout({ children }: { children: React.ReactNode 
           <main className="min-h-96 flex-1">{children}</main>
 
           <footer>
-            {loading ? <FooterSkeleton /> : <Footer data={data?.general?.footer ?? {}} />}
+            {loading ? (
+              <FooterSkeleton />
+            ) : (
+              <Footer data={data?.general?.footer ?? {}} />
+            )}
           </footer>
         </div>
       )}

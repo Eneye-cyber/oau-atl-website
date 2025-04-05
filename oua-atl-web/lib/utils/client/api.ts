@@ -73,9 +73,6 @@ export const sendContactRequest = async (data: Record<string, any>) => {
   try {
     const url = `${baseUrl}/contact`;
 
-    // console.log('Sending Contact Enquiry: ', url);
-    // console.log('Payload: ', data);
-
     const response = await fetch(url, {
       method: "POST",
       headers: {

@@ -51,8 +51,8 @@ export type AuthResponse = {
 };
 
 export type UserProfile = {
-  graduation_year: string;
-  field_of_study: string;
+  year_graduated: string;
+  study_field: string;
   user_id: string;
   first_name: string;
   last_name: string;

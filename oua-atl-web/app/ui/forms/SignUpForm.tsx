@@ -65,7 +65,7 @@ export default function SignUpForm() {
     try {
       const {result, error, message, code} = await signupUser(formData)
 
-      if (code === 200) {
+      if (code === 200 || code === 201) {
         if (result?.message) {
           sessionStorage.setItem('flashMessage', 'Account created successfully!');
           router.push('/members/login');

@@ -82,13 +82,13 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
                 <p className="text-gray-600 text-sm">
                   Field of Study:{" "}
                   <span className="font-medium">
-                    {user?.field_of_study ??
+                    {user?.study_field ??
                       (<span className="text-red-600">User field of study not returned from backend</span>)}
                   </span>{" "}
                   <br />
                   Graduation Year:{" "}
                   <span className="font-medium">
-                    {user.graduation_year ??
+                    {user.year_graduated ??
                       (<span className="text-red-600">User graduation year not returned from backend</span>)}
                   </span>
                 </p>

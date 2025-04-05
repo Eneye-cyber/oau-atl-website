@@ -5,10 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "dev:host": "next dev -H 192.168.43.40",
+    "dev:secure": "next dev --experimental-https",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-     "tsc:check": "tsc --noEmit"
+    "tsc:check": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -23,6 +24,7 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@tabler/icons-react": "^3.14.0",
+    "axios": "^1.8.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",

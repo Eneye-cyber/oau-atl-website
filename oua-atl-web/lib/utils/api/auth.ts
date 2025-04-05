@@ -142,16 +142,16 @@ export const requestPasswordReset = async ({email}: {email: string}) => {
 
 
 
-export const logoutUser = async (adminId: string): Promise<boolean> => {
-  if (!adminId) {
-    toast.error("Admin ID is missing.");
+export const logoutUser = async (userId: string, role: 'admin' | 'member' ): Promise<boolean> => {
+  if (!userId) {
+    toast.error("User identifier is missing.");
     return false;
   }
 
   try {
-    console.log("Logging out admin with ID:", adminId);
+    // console.log("Logging out user with identifier:", userId);
 
-    const response = await fetch(`${baseUrl}/admins/${adminId}/logout`, {
+    const response = await fetch(`${baseUrl}/${ role === 'admin' ? 'admins' : 'users'}/${userId}/logout`, {
       method: "POST",
       credentials: "include", // Ensure authentication cookies are included
     });

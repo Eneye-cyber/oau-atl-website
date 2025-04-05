@@ -5,6 +5,7 @@ import UserProfile from "@/app/ui/cards/UserProfile";
 import { fetchData } from "@/lib/utils/client/api";
 import { useAuth } from '@/lib/contexts/AuthProvider';
 import LoadingSpinner from "@/components/LoadingSpinner";
+import apiClient from "@/lib/apiClient";
 
 const UserProfilePage = () => {
   const [userData, setUserData] = useState<any | null>(null);
@@ -19,13 +20,16 @@ const UserProfilePage = () => {
         if (!id) throw new Error("User ID not found");
 
         const url = `/users/${id}/profile`;
-        const result = await fetchData(url);
+        // const result = await fetchData(url);
+        const response = await apiClient.get(url);
+        console.log("User full data:", response.data);
+        const data = response.data;
 
-        if (!result.payload) {
-          throw new Error(result.message || "Failed to fetch user profile");
-        }
+        // if (!result.payload) {
+        //   throw new Error(result.message || "Failed to fetch user profile");
+        // }
 
-        setUserData(result.payload);
+        setUserData(data.payload);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {

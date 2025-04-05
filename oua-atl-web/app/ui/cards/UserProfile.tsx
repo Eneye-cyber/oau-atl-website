@@ -61,13 +61,13 @@ export default function UserProfile({ user }: { user: UserProfile }) {
               <div>
                 <p className="text-sm text-gray-500"> Field of Study</p>
                 <p className="font-medium">
-                  {user?.field_of_study ??
+                  {user?.study_field ??
                       (<span className="text-red-600">User field of study not returned from backend</span>)}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500">Graduation Year</p>
-                <p className="font-medium">{user.graduation_year ??
+                <p className="font-medium">{user.year_graduated ??
                       (<span className="text-red-600">User graduation year not returned from backend</span>)}
                   </p>
               </div>

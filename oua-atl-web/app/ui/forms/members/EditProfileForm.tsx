@@ -55,9 +55,9 @@ export default function EditProfileForm({ user }: { user: UserProfile }) {
       lastName: user.last_name,
       phone: user.phone,
       birthDate: birthDate,
-      studyField: user?.field_of_study ?? "",
-      yearGraduated: user?.graduation_year
-        ? Number(user.graduation_year)
+      studyField: user?.study_field ?? "",
+      yearGraduated: user?.year_graduated
+        ? Number(user.year_graduated)
         : undefined,
       address: user.address,
       city: user.city,
