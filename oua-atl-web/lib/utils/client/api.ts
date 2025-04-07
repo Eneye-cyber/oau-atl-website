@@ -1,4 +1,4 @@
-import { PostPaymentResponse } from '@/app/lib/types';
+import {  PostPaymentResponse } from '@/app/lib/types';
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
 const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -94,43 +94,6 @@ export const sendContactRequest = async (data: Record<string, any>) => {
     return {result: null, error: true, message: (error as Error)?.message ?? "Internal Server Error"};
   }
 };
-
-export const uploadImage = async (file: File): Promise<any> => {
-  try {
-    if (!file) {
-      throw new Error("No file selected for upload.");
-    }
-
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE; // Use NEXT_PUBLIC_ for client-side
-    const url = `${baseUrl}/images`;
-
-    console.log("Uploading file to:", url);
-    console.log("File details:", file.name, file.size, file.type);
-
-    const formData = new FormData();
-    formData.append("images", file);
-
-    const response = await fetch(url, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const errorResponse = await response.json();
-      console.error("Upload failed:", errorResponse);
-      throw new Error(errorResponse.message || "File upload failed");
-    }
-
-    const result = await response.json();
-    console.log("Upload Successful:", result);
-    return result;
-  } catch (error) {
-    console.error("Error in file upload:", error);
-    throw new Error(error instanceof Error ? error.message : "Internal Server Error");
-  }
-};
-
-
 
 
 

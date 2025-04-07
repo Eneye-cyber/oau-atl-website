@@ -71,6 +71,29 @@ export type UserProfile = {
   email_verified: boolean;
 };
 
+export interface RegularMemberCollection {
+  email: string;
+  status: 'active' | 'inactive'; // Assuming only two statuses
+  user_id: string;
+  full_name: string;
+  study_field: string;
+  year_graduated: number;
+}
+
+export interface UploadResponse {
+  message: string;
+  payload: {
+    success: boolean;
+    url: string;
+  };
+}
+export interface DeleteResponse {
+  message: string;
+  payload: {
+    imageID: string;
+  };
+}
+
 export type PaymentResponse = {
   message: string;
   payload?: {

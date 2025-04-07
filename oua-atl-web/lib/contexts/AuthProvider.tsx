@@ -60,78 +60,78 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     fetchUser();
   }, []);
 
-  const login = async (endpoint: string, credentials: any) => {
-    setLoading(true);
-    try {
-      console.log("Processing login...");
-  
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
-        credentials: "include", // Ensure cookies are included
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({message: `${response.status} - ${response.statusText}`}));
-        console.error("Login failed:", errorData);
-        throw new Error(errorData?.message || "Login failed");
-      }
-  
-      const data = await response.json();
-      console.log("Login successful:", data);
-  
-      // Extract user details from the response
-      const user = data?.user;
-      if (!user) {
-        throw new Error("Invalid response: No user data");
-      }
-  
-      // Set user state
-      setUser(user);
-      return {data: user, error: null};
-  
-    } catch (error) {
-      console.error("Login error:", error);
-      setUser(null);
-      return {data: null, error: (error as Error)?.message}
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // const login = async (endpoint: string, credentials: any) => {
   //   setLoading(true);
   //   try {
   //     console.log("Processing login...");
   
-  //     const response = await apiClient.post(endpoint, credentials);
-
-  //     // Read response headers (optional: check Set-Cookie directive)
-  //     const setCookieHeader = response.headers["set-cookie"];
-  //     console.log(response.headers)
-  //     if (setCookieHeader) {
-  //       console.log("Set-Cookie received:", setCookieHeader);
+  //     const response = await fetch(endpoint, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(credentials),
+  //       credentials: "include", // Ensure cookies are included
+  //     });
+  
+  //     if (!response.ok) {
+  //       const errorData = await response.json().catch(() => ({message: `${response.status} - ${response.statusText}`}));
+  //       console.error("Login failed:", errorData);
+  //       throw new Error(errorData?.message || "Login failed");
   //     }
   
-  //     console.log("Login successful:", response.data);
+  //     const data = await response.json();
+  //     console.log("Login successful:", data);
   
-  //     // User data
-  //     const user = response.data?.user;
+  //     // Extract user details from the response
+  //     const user = data?.user;
   //     if (!user) {
   //       throw new Error("Invalid response: No user data");
   //     }
   
+  //     // Set user state
   //     setUser(user);
-  //     return { data: user, error: null };
-  //   } catch (error: any) {
+  //     return {data: user, error: null};
+  
+  //   } catch (error) {
   //     console.error("Login error:", error);
   //     setUser(null);
-  //     return { data: null, error: error?.message || "Login failed" };
+  //     return {data: null, error: (error as Error)?.message}
   //   } finally {
   //     setLoading(false);
   //   }
   // };
+
+  const login = async (endpoint: string, credentials: any) => {
+    setLoading(true);
+    try {
+      console.log("Processing login...");
+  
+      const response = await apiClient.post(endpoint, credentials);
+
+      // Read response headers (optional: check Set-Cookie directive)
+      const setCookieHeader = response.headers["set-cookie"];
+      console.log(response.headers)
+      if (setCookieHeader) {
+        console.log("Set-Cookie received:", setCookieHeader);
+      }
+  
+      console.log("Login successful:", response.data);
+  
+      // User data
+      const user = response.data?.user;
+      if (!user) {
+        throw new Error("Invalid response: No user data");
+      }
+  
+      setUser(user);
+      return { data: user, error: null };
+    } catch (error: any) {
+      console.error("Login error:", error);
+      setUser(null);
+      return { data: null, error: error?.message || "Login failed" };
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const logout = async () => {
     setLoading(true)

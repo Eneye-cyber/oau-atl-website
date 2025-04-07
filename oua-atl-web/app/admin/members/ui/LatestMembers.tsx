@@ -2,55 +2,50 @@
 
 import { useEffect, useState } from "react";
 import DataTable from "@/app/ui/DataTable";
-
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE; // Use NEXT_PUBLIC_ for client-side access
+import { RegularMembersColumn } from "@/lib/utils/tables";
+import { PaginatedResponse, RegularMemberCollection } from "@/app/lib/types";
+import { fetchData } from "@/lib/utils/client/api";
+import { FetchError } from "@/components/ui/fetch-error";
+import Loading from "../regular/loading";
 
 const LatestMembers = () => {
-  const [data, setData] = useState<any[]>([]);
+  const [members, setMembers] = useState<RegularMemberCollection[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    async function fetchData() {
+    async function getData() {
       try {
-        const url = `${baseUrl}/users`;
-        const res = await fetch(url, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-          cache: "force-cache", // Allow caching for static export compatibility
-        });
-
-        if (res.ok) {
-          const result = await res.json().catch(() => ({message: res.statusText}));
-          setData(result.payload?.data ?? []);
-        } else {
-          throw new Error(res.statusText);
+        const data: PaginatedResponse<RegularMemberCollection[]> =
+          await fetchData("/users");
+        if (data.error) {
+          throw new Error(data.message);
         }
-      } catch (error: any) {
-        console.error("Error fetching data:", error);
-        setData([]); // Set empty array on error
+
+        setMembers(data.payload.data);
+      } catch (err: any) {
+        console.error("Fetch Error:", err);
+        setError(err as Error);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchData();
+    getData();
   }, []);
 
-  const columns = [
-    { key: "full_name", label: "Full Name" },
-    { key: "email", label: "Email" },
-    { key: "study_field", label: "Course of Study" },
-    { key: "year_graduated", label: "Graduating Year" },
-    { key: "status", label: "Status" },
-  ];
+  if (loading) return <Loading />;
+  if (error)
+    return <FetchError error={error ? error : null} showDetails={!!error} />;
 
   return (
     <>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <DataTable title="Latest Members" columns={columns} data={data} showActions={false} />
-      )}
+      <DataTable
+        title="Latest Members"
+        columns={RegularMembersColumn}
+        data={members}
+        showActions={false}
+      />
     </>
   );
 };

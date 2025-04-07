@@ -4,7 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { LuMoreHorizontal, LuEye, LuFileEdit, LuTrash2 } from 'react-icons/lu';
+import { toast } from 'sonner';
 
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
+const deleteUrlMap: Record<string, (id: string) => string> = {
+  'members/regular': id => `${baseUrl}/users/${id}/profile/delete`,
+  // Add more if needed
+};
 
 const ActionMenu = ({ path, id, hasEdit = true, hasDelete = true, hasView = true }: { path?: string; id?: string; hasEdit?: boolean; hasDelete?: boolean; hasView?: boolean}) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -17,19 +23,29 @@ const ActionMenu = ({ path, id, hasEdit = true, hasDelete = true, hasView = true
     setIsDeleting(true);
 
     try {
-      const response = await fetch(`/api/admin/${path}/${id}`, {
-        method: "DELETE",
+      const url = deleteUrlMap?.[path]?.(id);
+      if (!url) {
+        toast.error("Invalid delete path.");
+        return;
+      }
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', 
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete the item.");
+        throw new Error(`${response.status} - ${response.statusText}`);
       }
 
       // Refresh or redirect after deletion
+      toast.success('Item deleted successfully')
       router.refresh();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
-      alert("Failed to delete. Please try again.");
+      toast.error("Failed to delete. Please try again.", {description: (error as Error)?.message});
     } finally {
       setIsDeleting(false);
       setShowDeleteModal(false);

@@ -20,12 +20,13 @@ const AllowSubscription = ({
 
   const approveMember = async () => {
     const url = `${apiUrl}/subscriptions/approve-user`;
-    const body = JSON.stringify({ userId: id });
+    const body = JSON.stringify({ userID: id });
 
     try {
       setLoading(true);
       const req: Response = await fetch(url, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body,
         credentials: "include",
       });

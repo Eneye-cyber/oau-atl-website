@@ -3,29 +3,29 @@
 import { useState, useEffect } from "react";
 import DataTable from "@/app/ui/DataTable";
 import { Separator } from "@/components/ui/separator";
-import { PaginatedResponse } from "@/app/lib/types";
+import { PaginatedResponse, RegularMemberCollection } from "@/app/lib/types";
 import { fetchData } from "@/lib/utils/client/api";
 import { FetchError } from "@/components/ui/fetch-error";
 import Loading from "./loading";
 import {RegularMembersColumn} from "@/lib/utils/tables";
 
 export default function MembersPage() {
-  const [members, setMembers] = useState<any[]>([]);
+  const [members, setMembers] = useState<RegularMemberCollection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     async function getData() {
       try {
-        const data: PaginatedResponse<any[]> = await fetchData("/users");
+        const data: PaginatedResponse<RegularMemberCollection[]> = await fetchData("/users");
         if(data.error) {
           throw new Error(data.message)
         }
-        const transformedData =
-          data.payload?.data.map((item: any) => ({
-            ...item,
-            is_active: item.is_active ? "Active" : "Inactive",
-          })) ?? [];
+        const transformedData = data.payload?.data ?? []
+          // data.payload?.data.map((item: RegularMemberCollection) => ({
+          //   ...item,
+          //   is_active: item.is_active ? "Active" : "Inactive",
+          // })) ?? [];
 
         setMembers(transformedData);
       } catch (err: any) {
