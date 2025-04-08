@@ -1,4 +1,6 @@
-import {  PostPaymentResponse } from '@/app/lib/types';
+import {  BasicResponse, PostPaymentResponse } from '@/app/lib/types';
+import apiClient from '@/lib/apiClient';
+import { AxiosError } from 'axios';
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
 const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
@@ -30,6 +32,35 @@ export async function fetchData(path: string, cache: RequestCache = 'no-store' )
     // Log or handle the error
     console.error("Failed to fetch stats:", error);
     return { message: error?.message ?? 'Failed to fetch data', error: true}
+  }
+}
+
+
+
+export const finalizeChange = async (id: string, url: string): Promise<BasicResponse<{response: string}>> => {
+
+  try {
+    if(!id) throw new Error("No item selected")
+      if(!url) throw new Error("Endpoint missing")
+        const normalizedPath = url.startsWith('/') ? url.slice(1) : url;
+    const response = await apiClient.post(`/${normalizedPath}`)
+    const result: BasicResponse<{response: string}> = response.data
+    return {...result, error: false}
+  } catch (error: any) {
+    console.error("Upload error:", error);
+        const axiosError = error as AxiosError;
+        const statusCode = axiosError.response?.status;
+        const fallbackMessage =
+          error.response?.data?.message ||
+          axiosError.message || (error as Error)?.message
+          "Something went wrong";
+        return {
+          message: `${statusCode ?? 'Error'} - ${ fallbackMessage}`,
+          payload: {
+            response: "",
+          },
+          error: true
+        };
   }
 }
 

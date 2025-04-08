@@ -35,7 +35,7 @@ const Page = () => {
       <StatsFeed />
       
       <section className=" py-4">
-        <Tabs tabs={[{label: 'Current', value: null, href: '/admin/events'}, {label: 'History', value: 'history', href: '/admin/events?status=history'}]} />
+        <Tabs tabs={[{label: 'Pending', value: null, href: '/admin/events'}, {label: 'Upcoming', value: 'latest', href: '/admin/events?status=latest'}, {label: 'Past', value: 'history', href: '/admin/events?status=history'}]} />
       </section>
 
       <section className="bg-white ring-1 ring-gray-950/5 rounded p-3 sm:p-6 space-y-4">

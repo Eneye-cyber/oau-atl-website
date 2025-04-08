@@ -3,6 +3,7 @@ import { type FC } from 'react';
 import Image from 'next/image'
 import { formatDate } from '@/lib/utils'
 import ActionMenu from "@/components/actions/ActionMenu";
+import { Button } from '@/components/ui/button';
 
 interface TableProps {
   columns: { key: string; label: string; type?: string}[]; // Defines table columns with a key and label
@@ -12,30 +13,24 @@ interface TableProps {
   title?: string;
   idKey?: string;
   errorMessage?: string;
+  customActions?: {
+    label: string;
+    icon?: React.ReactNode;
+    onClick: (id: string) => void;
+  }[];
 }
 
-const TableDataCell: FC<{ children: React.ReactNode }> = ({ children }) => (
+const TableDataCell: FC<{ children: React.ReactNode; align?: 'start' | 'center' | 'end' }> = ({ children, align = "start" }) => (
   <td className="p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 max-w-[300px] text-wrap sm:last-of-type:pe-3">
     <div className="grid w-full gap-y-1 px-3 py-4">
-      <div className="inline-flex items-center gap-1.5">{children}</div>
-    </div>
-  </td>
-);
-
-const TableImageCell: FC<{ src: string }> = ({ src }) => (
-  <td className="p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
-    <div className="grid w-full gap-y-1 px-3 py-2">
-      <div className="inline-flex items-center gap-1.5">
-        <Image src={src} width={100} height={70} alt={'row image'} />
-      </div>
+      <div className={`inline-flex items-center gap-1.5 ${align === "start" ? "justify-start" : align === "center" ? "justify-center" : "justify-end"}`}>{children}</div>
     </div>
   </td>
 );
 
 
-
-
-const DataTable: FC<TableProps> = ({title, columns, path, data, idKey, showActions = false, errorMessage }) => {
+const DataTable: FC<TableProps> = ({title, columns, path, data, idKey, showActions = false, errorMessage, customActions = [] // New prop to pass custom actions 
+}) => {
   return (
     <div className="w-full divide-y divide-gray-200 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-950/5">
       <div className="divide-y divide-gray-200 dark:divide-white/10">
@@ -71,7 +66,7 @@ const DataTable: FC<TableProps> = ({title, columns, path, data, idKey, showActio
                     </button>
                   </th>
                 ))}
-                {showActions && (
+                {(showActions || customActions.length) && (
                   <th className="fi-ta-header-cell px-3 py-3.5 sm:first-of-type:ps-6 sm:last-of-type:pe-6">
                     <span className="fi-ta-header-cell-label text-sm font-semibold text-gray-950 dark:text-white">
                       Actions
@@ -98,9 +93,18 @@ const DataTable: FC<TableProps> = ({title, columns, path, data, idKey, showActio
                       )}
                     </TableDataCell>
                   ))}
-                  {showActions && (
-                    <TableDataCell>
-                      <ActionMenu path={path} id={row[idKey ?? 'id']} />
+                  {(showActions || customActions.length) && (
+                    <TableDataCell align='center'>
+                      {/* Render custom actions */}
+                      {customActions.length > 0 && customActions.map((CustomAction, index) => (
+                        <Button variant={"outline"} onClick={() => CustomAction.onClick(row[idKey ?? 'id'])} size={"icon"} key={index} >
+                          {CustomAction.icon && CustomAction.icon}
+                          {/* <span>{CustomAction.label}</span> */}
+                        </Button>
+                      ))}
+                      
+                      {showActions && <ActionMenu path={path} id={row[idKey ?? 'id']} />}
+                     
                     </TableDataCell>
                   )}
                 </tr>

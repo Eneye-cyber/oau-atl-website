@@ -107,8 +107,8 @@ export const ContactFormDataSchema = z.object({
 export const CreateEventSchema = z.object({
   title: z.string().min(1, 'Event name is required'),
   imageUrl: z.string().min(1, 'Event image is required'),
-  startDate: z.string().min(1, 'Start date is required'),
-  endDate: z.string().optional(),
+  startDate: z.string().min(1, 'Start date and time is required'),
+  endDate: z.string().min(1, 'End date and time is required'),
   tags: z.string().min(1, 'Tags are required').refine(
     (tags) =>
       !tags || // Allow empty or undefined
@@ -133,7 +133,7 @@ export const CreateEventSchema = z.object({
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'End date must be later than start date',
-      path: ['startDate', 'endDate'],
+      path: ['endDate'],
     })// endDate must be later than startDate
   }
 });

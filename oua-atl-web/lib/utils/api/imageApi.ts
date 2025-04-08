@@ -53,13 +53,12 @@ export const uploadImage = async (
     console.error("Upload error:", error);
     const axiosError = error as AxiosError;
     const statusCode = axiosError.response?.status;
-    const statusText = axiosError.response?.statusText;
     const fallbackMessage =
       error.response?.data?.message ||
-      axiosError.message ||
+      axiosError.message || (error as Error)?.message
       "File upload failed";
     return {
-      message: `${statusCode} - ${statusText || fallbackMessage}`,
+      message: `${statusCode ?? 'Error'} - ${fallbackMessage}`,
       payload: {
         success: false,
         url: "",

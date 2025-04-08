@@ -24,6 +24,7 @@ const CreateEvent = () => {
     resolver: zodResolver(CreateEventSchema),
     defaultValues: {
       imageUrl: "",
+      entranceFee: 0
     },
   });
   const {
@@ -90,6 +91,7 @@ const CreateEvent = () => {
             <h3 className="font-bold text-xl sm:text-3xl">Create Event</h3>
           </div>
 
+
           <div className="grid grid-cols-1 gap-4 md:grid-cols-12 mt-10">
             <section className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-12">
               <h3 className="text-xl font-semibold sm:col-span-6">
@@ -125,7 +127,7 @@ const CreateEvent = () => {
 
               <div className="sm:col-span-3">
                 <label htmlFor="startDate" className="form-label">
-                  Start date *
+                  Start date and time *
                 </label>
                 <input
                   type="datetime-local"
@@ -142,10 +144,7 @@ const CreateEvent = () => {
 
               <div className="sm:col-span-3">
                 <label htmlFor="endDate" className="form-label">
-                  End date{" "}
-                  <span className="text-gray-500 text-sm">
-                    ( Ignore if event is a single day event )
-                  </span>
+                  End date and time *
                 </label>
                 <input
                   type="datetime-local"
@@ -153,6 +152,11 @@ const CreateEvent = () => {
                   {...register("endDate")}
                   className="form-input"
                 />
+                {errors.endDate?.message && (
+                  <p className="text-sm text-red-400">
+                    {errors.endDate.message}
+                  </p>
+                )}
               </div>
 
               <div className="sm:col-span-6">

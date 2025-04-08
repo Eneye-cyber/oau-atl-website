@@ -15,6 +15,14 @@ export const EventColumns = [
   { key: 'entrance_fee', label: '($) Entrance fee' },
 ];
 
+export const EventPreviewColumns = [
+  { key: 'image_url', label: 'Image' },
+  { key: 'title', label: 'Event name' },
+  { key: 'start_date', label: 'Event date', type: 'date' },
+  { key: 'entrance_fee', label: '($) Entrance fee' },
+  { key: 'method', label: 'Event Action' },
+];
+
 export const ProjectColumns = [
   { key: 'project_title', label: 'Project name' },
   { key: 'amount_goal', label: 'Financial goal' },

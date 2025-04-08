@@ -23,6 +23,34 @@ export interface PaginatedResponse<T> {
   error?: boolean;
 }
 
+export interface BasicResponse<T> {
+  message: string;
+  payload: T
+  error?: boolean;
+}
+
+// Alternate Event structure for update/delete payload (no full location, just location_id)
+interface EventPayload {
+  tags: string[];
+  title: string;
+  content: string;
+  end_date: string;
+  event_id: string;
+  image_url: string;
+  start_date: string;
+  is_featured: boolean;
+  entrance_fee: number;
+  location_id: string;
+}
+
+export type PreviewMethods = 'DELETE' | 'POST' | 'PUT' | 'PATCH'; // Expandable
+// Structure for the wrapper with preview_id and method
+export interface EventPreviewCollection {
+  preview_id: string;
+  method: PreviewMethods
+  payload: EventPayload;
+}
+
 type Location = {
   city: string;
   state: string;
