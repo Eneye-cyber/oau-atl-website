@@ -49,7 +49,7 @@ const Page = () => {
         type: "server",
         message: err?.message || "Invalid form field format",
       });
-      toast.error('Failed to create phot album?.');
+      toast.error('Failed to submit photo album?.', { description: err?.message });
 
     } 
   };
@@ -58,7 +58,6 @@ const Page = () => {
       {Object.keys(errors).length > 0 && (
         <div className="text-red-500 mb-4">
           <p>There are errors in your form. Please correct them below:</p>
-          {Object.values(errors).map((item, index) => <p key={index}>{item.message}</p>)}
         </div>
       )}
       <FormProvider {...methods}>
@@ -84,13 +83,16 @@ const Page = () => {
               </div>
 
             </section>
+
+
+            {errors.urls?.message && <p className="text-sm text-red-400">{errors.urls.message}</p>}
             <MultipleImageUploader id="urls" {...register('urls')} />
 
             
           </section>
 
           <div className="py-6 flex justify-end">
-            <input type="submit" disabled={isSubmitting} value={isSubmitting ? 'Loading...' : "Update"} className="inline-flex w-72 py-3 text-white bg-primary text-base hover:bg-jet-black cursor-pointer disabled:opacity-40 disabled:pointer-events-none" />
+            <input type="submit" disabled={isSubmitting} value={isSubmitting ? 'Loading...' : "Create"} className="inline-flex w-72 py-3 text-white bg-primary text-base hover:bg-jet-black cursor-pointer disabled:opacity-40 disabled:pointer-events-none" />
           </div>
 
         </form>

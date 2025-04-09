@@ -108,7 +108,8 @@ const EditGallery = ({ album, id }: { album: Album; id: string }) => {
               )}
             </div>
           </section>
-          <MultipleImageUploader id="urls" {...register("urls")} />
+            {errors.urls?.message && <p className="text-sm text-red-400">{errors.urls.message}</p>}
+            <MultipleImageUploader id="urls" {...register("urls")} />
         </section>
 
         <div className="py-6 flex justify-end">
