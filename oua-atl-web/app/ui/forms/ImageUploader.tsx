@@ -32,6 +32,7 @@ const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInput
     }
   }, [getValues, name]);
 
+  const { onChange } = props
   // Reset uploader state and form value
   const reset = useCallback(() => {
     setFileName("");
@@ -39,7 +40,16 @@ const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInput
     setUploadError(null);
     setUploadProgress(0);
     setValue(name, "");
-  }, [setValue, name]);
+    if (onChange) {
+      const syntheticEvent = {
+        target: {
+          name,
+          value: "",
+        }
+      };
+      onChange(syntheticEvent as any);
+    }
+  }, [setValue, name, onChange]);
 
   // Handle image deletion
   const removeImage = useCallback(async () => {
@@ -78,6 +88,15 @@ const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInput
         setFileName(data.payload.url);
         setFileUrl(imgUrl);
         setValue(name, imgUrl);
+        if (onChange) {
+          const syntheticEvent = {
+            target: {
+              name,
+              value: imgUrl,
+            }
+          };
+          onChange(syntheticEvent as any);
+        }
       } else {
         throw new Error(data.message ?? "Upload failed without server message");
       }
@@ -90,7 +109,7 @@ const ImageUploader = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInput
     } finally {
       setIsUploading(false);
     }
-  }, [setValue, name]);
+  }, [setValue, name, onChange]);
 
   // Handle file input change
   const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {

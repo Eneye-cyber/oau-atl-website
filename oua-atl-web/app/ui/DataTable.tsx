@@ -37,7 +37,7 @@ const DataTable: FC<TableProps> = ({title, columns, path, data, idKey, showActio
         <div className="flex items-center gap-x-4 px-4 sm:px-6">
           {title && (
             <div className="py-3">
-              <h3 className="text-xl font-bold">{title}</h3>
+              <h3 className="text-xl font-semibold">{title}</h3>
             </div>
           )}
         </div>

@@ -44,13 +44,15 @@ export default function EnquiryCard({
         credentials: 'include', // Include cookies if authentication is needed
       });
 
-      const result = await response.json();
+      const result = await response.json().catch(() => ({message: response.statusText}));
 
       if (!response.ok) {
         throw new Error(result?.message || 'Failed to close issue');
       }
 
-      toast.success(result?.message ?? 'This issue has been marked as resolved')
+      toast.success((result?.message) ?? 'This issue has been marked as resolved', {
+        description: !result?.message.trim() ? "Backend developer forgot to send a message" : 'This issue has been marked as resolved'
+      })
       setClosed(true)
       return result;
     } catch (error: any) {

@@ -60,7 +60,7 @@ const EntityTable = ({ config }: { config: Config }) => {
 
       const path = !status
         ? `${config.previewEndpoint}`
-        : `${config.endpoint}?status=${status}&page=${page}`;
+        : status === "all" ? `${config.endpoint}?page=${page}` : `${config.endpoint}?status=${status}&page=${page}`;
 
       try {
         const response = await fetchData(path);

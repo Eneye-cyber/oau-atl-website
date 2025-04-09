@@ -1,7 +1,7 @@
 "use client";
 import EntityTable from "@/app/ui/EntityTable";
 import { ProjectColumns, ProjectPreviewColumns } from "@/lib/utils/tables";
-import { PreviewMethods, ProjectCollection, ProjectPreviewCollection } from "@/app/lib/types";
+import { ProjectCollection, ProjectPreviewCollection } from "@/app/lib/types";
 
 const ProjectsTable = () => {
   return (

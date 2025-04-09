@@ -126,6 +126,8 @@ export interface RegularMemberCollection {
   year_graduated: number;
 }
 
+
+
 export interface UploadResponse {
   message: string;
   payload: {

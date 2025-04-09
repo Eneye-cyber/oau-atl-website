@@ -56,6 +56,16 @@ export const ExecutiveMembersColumns = [
   { key: 'image_url', label: 'Image' },
   { key: 'full_name', label: 'Full name' },
   { key: 'position_assigned', label: 'Position assigned' },
-  { key: 'year_graduated:', label: 'Graduating year' },
+  { key: 'year_graduated', label: 'Graduating year' },
   { key: 'is_active', label: 'Status' },
+];
+
+export const ExecutiveMembersPreviewColumns = [
+  { key: 'image_url', label: 'Image' },
+  { key: 'full_name', label: 'Full name' },
+  { key: 'position_assigned', label: 'Position assigned' },
+  { key: 'year_graduated', label: 'Graduating year' },
+  { key: 'is_active', label: 'Status' },
+  { key: 'method', label: 'Project Action' },
+
 ];
