@@ -5,13 +5,19 @@ import { useParams, useRouter } from 'next/navigation';
 import Head from 'next/head';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { format } from "date-fns"
 
-import { EventResponseObject } from '@/app/lib/types';
+import { EventResponseObject, TicketType } from '@/app/lib/types';
 import { formatEventDates, formatEventTimes } from '@/lib/utils';
 import { ClockIcon, MapPinIcon, TicketIcon } from '@/app/ui/Icons';
 import BookingAction from '@/components/actions/BookingAction';
 import { fetchData } from '@/lib/utils/client/api';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import UpcomingEvents from '@/app/ui/UpcomingEvents';
+import { Ticket } from 'lucide-react';
 
 export default function EventPage() {
   const { eventSlug } = useParams();
@@ -19,6 +25,16 @@ export default function EventPage() {
   const [event, setEvent] = useState<EventResponseObject | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null)
+
+  const handleTicketSelect = (ticket: TicketType) => {
+    setSelectedTicket(ticket)
+    // toast({
+    //   title: `${ticket.title} selected`,
+    //   description: `Price: $${ticket.price}`,
+    // })
+  }
 
   useEffect(() => {
     if (!eventSlug) {
@@ -124,43 +140,79 @@ export default function EventPage() {
         </div>
 
         <section className="container">
-          <TicketsSection id={event.event_id} fee={event.entrance_fee} date={event.start_date} />
+  
+
+          <Separator className="my-4" />
+
+          <Tabs defaultValue="tickets" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="tickets">Tickets</TabsTrigger>
+              <TabsTrigger value="details">Event Details</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="tickets" className="space-y-4">
+              <h3 className="text-lg font-semibold mt-4 flex items-center">
+                <Ticket className="h-5 w-5 mr-2" />
+                Available Tickets
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {event.tickets.map((ticket) => (
+                  <Card
+                    key={ticket.ticket_id}
+                    className={`cursor-pointer transition-all ${selectedTicket?.ticket_id === ticket.ticket_id ? "ring-2 ring-primary" : ""}`}
+                    onClick={() => handleTicketSelect(ticket)}
+                  >
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-xl">{ticket.title}</CardTitle>
+                      <CardDescription>Available: {ticket.quantity_available} tickets</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-2xl font-bold">${ticket.price}</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Valid: {format(new Date(ticket.starts_at), "MMM d, yyyy")} -{" "}
+                        {format(new Date(ticket.expires_at), "MMM d, yyyy")}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="details">
+              <div className="prose max-w-none">
+                <p className="text-muted-foreground">{event.content}</p>
+                <h3 className="text-lg font-semibold mt-4">Contact Information</h3>
+                <p>For RSVP and inquiries:</p>
+                <ul className="list-disc pl-5">
+                  {event.tickets.flatMap((ticket) =>
+                    ticket.rsvp_contacts.map((contact, idx) => (
+                      <li key={`${ticket.ticket_id}-${idx}`}>
+                        {contact} ({ticket.title})
+                      </li>
+                    )),
+                  )}
+                </ul>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-between py-6">
+            <div>
+              {selectedTicket && (
+                <p className="text-sm">
+                  Selected: <span className="font-semibold">{selectedTicket.title}</span> - ${selectedTicket.price}
+                </p>
+              )}
+            </div>
+            <BookingAction ticketID={selectedTicket?.ticket_id} ticketPrice={Number(selectedTicket?.price)} />
+          </div>
         </section>
 
         <div className="container py-16">
-          {/* <UpcomingEvents id={event.event_id} /> */}
+          <UpcomingEvents id={event.event_id} />
         </div>
       </article>
     </>
   );
 }
-
-const TicketsSection = ({ id, fee, date }: { id: string; fee: number; date: string }) => {
-  return (
-    <div className="mx-auto bg-white shadow-md rounded-lg">
-      <div className="pt-4">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="py-2 px-8 text-sm font-medium text-gray-600">Ticket Type</th>
-              <th className="py-2 px-8 text-sm font-medium text-gray-600 hidden md:table-cell">Sales End</th>
-              <th className="py-2 px-8 text-sm font-medium text-gray-600">Price</th>
-              <th className="py-2 px-8 text-sm font-medium text-gray-600">Quantity</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b hover:bg-gray-50">
-              <td className="py-2 px-8 font-semibold">Dinner Tickets</td>
-              <td className="py-2 px-8 hidden md:table-cell">Sale ends at: {formatEventDates(date, date)}</td>
-              <td className="py-2 px-8 text-green-600">${fee}</td>
-              <td className="py-2 px-8 text-gray-500">N/A</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div className="p-4 flex justify-end">
-        <BookingAction eventID={id} ticketPrice={Number(fee)} />
-      </div>
-    </div>
-  );
-};

@@ -30,7 +30,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             src={project.image_url ?? "/img/scholarship1.jpg"}
             width={420}
             height={244}
-            className="rounded-md w-full"
+            className="rounded-md w-full max-h-full"
           />
         </figure>
 

@@ -43,7 +43,7 @@ const SubscriptionAction = ({ amountAttempted, planName, label }: { label?: stri
     try {
       const data: User = user;
 
-      if (!data.role || !data.id || !data.email) {
+      if (!data?.role || !data?.id || !data?.email) {
         setDialogState("signIn");
         return;
       }

@@ -12,7 +12,7 @@ interface User extends UserRoleResponse {
   email: string | null;
 }
 
-const BookingAction = ({ eventID, ticketPrice }: { eventID: string; ticketPrice: number; }) => {
+const BookingAction = ({ ticketID, ticketPrice }: { ticketID?: number; ticketPrice?: number; }) => {
   const [dialogState, setDialogState] = useState<"signIn" | "donation" | null>(null);
   // const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +23,7 @@ const BookingAction = ({ eventID, ticketPrice }: { eventID: string; ticketPrice:
     try {
       const data: User = user;
 
-      if (!data.role || !data.id || !data.email) {
+      if (!data?.role || !data?.id || !data?.email) {
         setDialogState("signIn");
         return;
       }
@@ -51,15 +51,17 @@ const BookingAction = ({ eventID, ticketPrice }: { eventID: string; ticketPrice:
     setDialogState("donation")
   }
 
+  const hasTicketInfo = !!ticketID && !!ticketPrice
+
   return (
     <>
       <button
-        disabled={isLoading}
+        disabled={isLoading || !hasTicketInfo}
         onClick={verifyUser}
         className={`w-full sm:w-fit ml-auto bg-primary text-white px-4 py-2 rounded-lg hover:bg-jet-black
-           ${isLoading && "opacity-40 pointer-events-none"}`}
+           ${(isLoading || !hasTicketInfo) && "opacity-40 pointer-events-none"}`}
       >
-        {isLoading ? "Processing..." : "Order now"}
+        {isLoading ? "Processing..." : "Purchase Ticket"}
       </button>
 
       <Dialog open={dialogState === "signIn"} onOpenChange={() => setDialogState(null)}>
@@ -78,8 +80,8 @@ const BookingAction = ({ eventID, ticketPrice }: { eventID: string; ticketPrice:
             <DialogTitle>Booking Form</DialogTitle>
             {/* <DialogDescription>Number </DialogDescription> */}
           </DialogHeader>
-          {(user?.email && user?.id) && (
-            <BookingForm ticketID={eventID} userID={user.id} userEmail={user.email} amountAttempted={ticketPrice} />
+          {(user?.email && user?.id && hasTicketInfo) && (
+            <BookingForm ticketID={ticketID} userID={user.id} userEmail={user.email} amountAttempted={ticketPrice} />
           )}
         </DialogContent>
       </Dialog>

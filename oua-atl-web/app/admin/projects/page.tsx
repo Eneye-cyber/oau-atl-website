@@ -43,10 +43,11 @@ const Page = () => {
 
       <section className="flex flex-col gap-10 py-14">
         <Tabs tabs={[
-            { label: "All", value: null, href: '/admin/projects' },
+            { label: "Pending", value: null, href: '/admin/projects' },
             { label: "Active", value: "active", href: '/admin/projects?status=active' },
             { label: "Complete", value: "complete", href: '/admin/projects?status=complete'  },
             { label: "Overdue", value: "overdue", href: '/admin/projects?status=overdue'  },
+            // { label: "All", value: null, href: '/admin/projects' },
           ]} 
         />
         

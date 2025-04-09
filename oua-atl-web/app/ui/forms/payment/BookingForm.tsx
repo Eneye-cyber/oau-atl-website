@@ -14,7 +14,7 @@ interface User extends UserRoleResponse {
 // Define Zod schema
 const bookingFormSchema = z.object({
   paymentType: z.enum(['booking', 'donation', 'subscription']),
-  ticketID: z.string().min(2, "Ticket ID is required"),
+  ticketID: z.coerce.number().positive("Ticket id must be a valid ticket"),
   userID: z.string().min(2, "User ID is required"),
   userEmail: z.string().email("Invalid email address"),
   amountAttempted: z
@@ -31,7 +31,7 @@ const BookingForm = ({
   userEmail,
   amountAttempted,
 }: {
-  ticketID: string;
+  ticketID: number;
   userID: string;
   userEmail: string;
   amountAttempted: number
@@ -57,7 +57,6 @@ const BookingForm = ({
     const body = {
       ...data,
       amountAttempted: totalPrice,
-      ticketID: "1", // Temporary fix until backend updates, Change this when the backend fixes the booking input
     };
   
     const { success, message, payload } = await processPayment(body);

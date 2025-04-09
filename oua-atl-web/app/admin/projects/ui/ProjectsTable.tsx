@@ -1,69 +1,46 @@
 "use client";
-
-import { useEffect, useState } from "react";
-import DataTable from "@/app/ui/DataTable";
-import { fetchData } from "@/lib/utils/client/api";
-import { ProjectCollection, PaginatedResponse } from "@/app/lib/types";
-import { ProjectColumns } from "@/lib/utils/tables";
-import { PaginationComponent } from "@/components/ui/pagination";
-import TableLoader from '@/app/ui/loaders/TableLoader';
-import {FetchError} from "@/components/ui/fetch-error";
-import {useSearchParams} from "next/navigation"
-
-type ProjectCollectionResponse = PaginatedResponse<ProjectCollection[] | []>;
+import EntityTable from "@/app/ui/EntityTable";
+import { ProjectColumns, ProjectPreviewColumns } from "@/lib/utils/tables";
+import { PreviewMethods, ProjectCollection, ProjectPreviewCollection } from "@/app/lib/types";
 
 const ProjectsTable = () => {
-  const [data, setData] = useState<ProjectCollectionResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const searchParams = useSearchParams();
-  const status = searchParams?.get('status') || '';
-  const page = Number(searchParams?.get('page')) || 1;
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      setLoading(true);
-      setError(null);
-
-      const path = status ? `projects?status=${status}&page=${page}` : `projects?page=${page}`;
-
-      try {
-        const response = await fetchData(path);
-        if(response?.error) {
-          throw new Error(response?.message ?? "Something went wrong")
-        }
-        setData(response);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError((err as Error)?.message ?? "Failed to fetch projects.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, [status, page]);
-
-  let tableData =
-    data?.payload?.data?.map((item: ProjectCollection) => ({
-      ...item,
-      location: `${item.location.city}, ${item.location.state}`,
-    })) ?? [];
-
   return (
-    <>
-      {loading ? (
-        <TableLoader />
-      ) : error ? (
-        <FetchError message={error} />
-      ) : (
-        <>
-          <DataTable columns={ProjectColumns} path="projects" idKey="project_id" data={tableData} showActions />
-          <PaginationComponent path="projects" page={page} total={data?.payload?.totalPages || 1} />
-        </>
-      )}
-    </>
+    <EntityTable
+      config={{
+        entityName: "Project",
+        endpoint: "projects",
+        path: "projects",
+        previewEndpoint: "projects/preview",
+        idKey: "project_id",
+        displayKey: "name",
+        columns: ProjectColumns,
+        previewColumns: ProjectPreviewColumns,
+        methodLabels: {
+          DELETE: "Project Deleted",
+          POST: "Project Created",
+          PUT: "Project Edited",
+          PATCH: "Project Modified",
+        },
+        transformRow: (item: ProjectCollection) => ({
+          ...item,
+          location: `${item.location.city}, ${item.location.state}`,
+        }),
+        transformPreviewRow: (item: ProjectPreviewCollection) => {
+          const { method, payload } = item;
+
+          const location =
+            payload.location_data
+              ? `${payload.location_data.city}, ${payload.location_data.state}`
+              : "Unknown Location";
+        
+          return {
+            ...payload,
+            method,
+            location,
+          };
+        },
+      }}
+    />
   );
 };
 

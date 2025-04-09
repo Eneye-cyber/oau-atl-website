@@ -1,45 +1,84 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
-import { z } from "zod";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import ImageUploader from "@/app/ui/forms/ImageUploader";
-import { useRouter } from "next/navigation";
-import { CreateEventSchema } from "@/app/lib/schema";
-import { formatEventDates, formatEventTimes } from "@/lib/utils";
-import { ClockIcon, MapPinIcon, TicketIcon } from "@/app/ui/Icons";
-import { toast } from "sonner";
-import { transformEventObject } from "@/lib/utils";
+import * as z from "zod";
+import { CalendarIcon, Plus, Trash2 } from "lucide-react";
+import { format } from "date-fns";
 
-type EventFormData = z.infer<typeof CreateEventSchema>;
+import ImageUploader from "@/app/ui/forms/ImageUploader";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+import { CreateEventSchema } from "@/app/lib/schema";
+import { useRouter } from "next/navigation";
+
+type FormValues = z.infer<typeof CreateEventSchema>;
 
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
-const CreateEvent = () => {
-  const router = useRouter();
-  const [isPreview, setIsPreview] = useState(false); // State to toggle preview mode
-  const [formData, setFormData] = useState<EventFormData | null>(null); // State to hold form data for preview
 
-  const methods = useForm<EventFormData>({
+export default function CreateEvent() {
+  const [tagInput, setTagInput] = useState("");
+    const router = useRouter();
+  
+
+  // Initialize the form with default values
+  const form = useForm<FormValues>({
     resolver: zodResolver(CreateEventSchema),
     defaultValues: {
-      imageUrl: "",
-      entranceFee: 0
+      entranceFee: 0,
+      isFeatured: true,
+      ticketData: [
+        {
+          quantityAvailable: 0,
+          price: 0,
+          title: "Standard ticket",
+        }
+      ],
     },
   });
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
-    watch,
-    trigger,
-  } = methods;
 
-  
-  const onSubmit: SubmitHandler<EventFormData> = async (data) => {
+  // Set up field arrays for tickets and RSVP contacts
+  const {
+    fields: ticketFields,
+    append: appendTicket,
+    remove: removeTicket,
+  } = useFieldArray({
+    control: form.control,
+    name: "ticketData",
+  });
+
+  // Handle form submission
+  async function onSubmit(data: FormValues) {
+    // console.log(data);
     try {
-      const transformedData = transformEventObject(data);
+      // const transformedData = transformEventObject(data);
 
       const response: Response = await fetch(`${baseUrl}/physical-events`, {
         method: "POST",
@@ -47,373 +86,637 @@ const CreateEvent = () => {
           "Content-Type": "application/json",
         },
         credentials: "include", // Include cookies for authentication if needed
-        body: JSON.stringify(transformedData),
+        body: JSON.stringify(data),
       });
 
       if (response.ok) {
-        toast.success("Event created successfully!");
+        const result = await response.json().catch(() => ({message: `${response.status} - ${response.statusText}`}))
+        toast.success("Event created successfully", {
+          description: result.message,
+        });
         router.push("/admin/events");
       } else {
         const result = await response
           .json()
           .catch(() => ({ message: response.statusText }));
-        setError("title", {
-          type: "server",
-          message: result.message || "Invalid form field format",
-        });
+
         throw new Error(`${response.status} - ${result.message}`);
       }
     } catch (err) {
       console.error("Error submitting form:", err);
       toast.error("Backend Error", { description: (err as Error)?.message });
     }
+    
+  }
+
+  // Handle adding a new tag
+  const handleAddTag = () => {
+    if (tagInput.trim() !== "") {
+      const currentTags = form.getValues("tags") || [];
+      if (!currentTags.includes(tagInput.trim())) {
+        form.setValue("tags", [...currentTags, tagInput.trim()]);
+        setTagInput("");
+      }
+    }
   };
 
-  const handlePreview = async () => {
-    const outputs = await trigger();
-    if (!outputs) return;
-    setFormData(watch()); // Capture current form data
-    setIsPreview(true); // Enable preview mode
+  // Handle removing a tag
+  const handleRemoveTag = (tagToRemove: string) => {
+    const currentTags = form.getValues("tags") || [];
+    form.setValue(
+      "tags",
+      currentTags.filter((tag) => tag !== tagToRemove)
+    );
   };
 
-  const handleEdit = () => {
-    setIsPreview(false); // Switch back to edit mode
+  // Handle adding a new RSVP contact to a ticket
+  const handleAddRSVPContact = (ticketIndex: number) => {
+    const currentContacts =
+      form.getValues(`ticketData.${ticketIndex}.RSVPContact`) || [];
+    form.setValue(`ticketData.${ticketIndex}.RSVPContact`, [
+      ...currentContacts,
+      "",
+    ]);
+  };
+
+  // Handle adding a new ticket
+  const handleAddTicket = () => {
+    appendTicket({
+      quantityAvailable: 1,
+      price: 0,
+      startsAt: new Date(),
+      expiresAt: new Date(),
+      email: "",
+      title: "",
+      RSVPContact: [""],
+    });
   };
 
   return (
-    <FormProvider {...methods}>
-      {!isPreview ? (
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="p-4 md:p-8 bg-white shadow-lg container"
-        >
-          <div className="py-4">
-            <h3 className="font-bold text-xl sm:text-3xl">Create Event</h3>
-          </div>
-
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-12 mt-10">
-            <section className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 md:col-span-12">
-              <h3 className="text-xl font-semibold sm:col-span-6">
-                Event Details
-              </h3>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="title" className="form-label">
-                  Event name *
-                </label>
-                <input
-                  id="title"
-                  type="text"
-                  {...register("title")}
-                  className="form-input"
-                />
-                {errors.title?.message && (
-                  <p className="text-sm text-red-400">{errors.title.message}</p>
-                )}
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="imageUrl" className="form-label">
-                  Event image *
-                </label>
-                <ImageUploader id="imageUrl" {...register("imageUrl")} />
-                {errors.imageUrl?.message && (
-                  <p className="text-sm text-red-400">
-                    {errors.imageUrl.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="startDate" className="form-label">
-                  Start date and time *
-                </label>
-                <input
-                  type="datetime-local"
-                  id="startDate"
-                  {...register("startDate")}
-                  className="form-input"
-                />
-                {errors.startDate?.message && (
-                  <p className="text-sm text-red-400">
-                    {errors.startDate.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="endDate" className="form-label">
-                  End date and time *
-                </label>
-                <input
-                  type="datetime-local"
-                  id="endDate"
-                  {...register("endDate")}
-                  className="form-input"
-                />
-                {errors.endDate?.message && (
-                  <p className="text-sm text-red-400">
-                    {errors.endDate.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="sm:col-span-6">
-                <label htmlFor="tags" className="form-label">
-                  Event tags *
-                </label>
-                <input
-                  id="tags"
-                  type="text"
-                  {...register("tags")}
-                  className="form-input"
-                  placeholder="Conference, Tech"
-                />
-                {errors.tags?.message && (
-                  <p className="text-sm text-red-400">{errors.tags.message}</p>
-                )}
-              </div>
-
-              <div className="sm:col-span-6">
-                <label htmlFor="content" className="form-label">
-                  Event Description *
-                </label>
-                <textarea
-                  id="content"
-                  {...register("content")}
-                  className="form-input"
-                />
-                {errors.content?.message && (
-                  <p className="text-sm text-red-400">
-                    {errors.content.message}
-                  </p>
-                )}
-              </div>
-
-              <hr className="sm:col-span-6" />
-              <section className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 sm:col-span-6">
-                <h3 className="text-xl font-semibold sm:col-span-6">
-                  Event Price
-                </h3>
-
-                <div className="sm:col-span-3">
-                  <label htmlFor="entranceFee" className="form-label">
-                    Ticket Price ($)*
-                  </label>
-                  <input
-                    id="entranceFee"
-                    type="number"
-                    {...register("entranceFee", { valueAsNumber: true })}
-                    className="form-input"
-                  />
-                  {errors.entranceFee?.message && (
-                    <p className="text-sm text-red-400">
-                      {errors.entranceFee.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="sm:col-span-3">
-                  <label htmlFor="isFeatured" className="form-label">
-                    Show in homepage
-                  </label>
-                  <select
-                    id="isFeatured"
-                    {...register("isFeatured")}
-                    className="form-input"
-                  >
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
-                  </select>
-                </div>
-              </section>
-
-              <hr className="sm:col-span-6" />
-              <section className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 sm:col-span-6">
-                <h3 className="text-xl font-semibold sm:col-span-6">
-                  Event Location
-                </h3>
-
-                <div className="sm:col-span-3">
-                  <label htmlFor="locationName" className="form-label">
-                    Location name *
-                  </label>
-                  <input
-                    id="locationName"
-                    type="text"
-                    {...register("locationName")}
-                    className="form-input"
-                  />
-                  {errors.locationName?.message && (
-                    <p className="text-sm text-red-400">
-                      {errors.locationName.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="sm:col-span-3">
-                  <label htmlFor="city" className="form-label">
-                    Location city *
-                  </label>
-                  <input
-                    id="city"
-                    type="text"
-                    {...register("city")}
-                    className="form-input"
-                  />
-                  {errors.city?.message && (
-                    <p className="text-sm text-red-400">
-                      {errors.city.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="sm:col-span-3">
-                  <label htmlFor="state" className="form-label">
-                    Location state *
-                  </label>
-                  <input
-                    id="state"
-                    type="text"
-                    {...register("state")}
-                    className="form-input"
-                  />
-                  {errors.state?.message && (
-                    <p className="text-sm text-red-400">
-                      {errors.state.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="sm:col-span-3">
-                  <label htmlFor="postal_code" className="form-label">
-                    Location zipcode
-                  </label>
-                  <input id="postal_code" type="text" className="form-input" />
-                </div>
-
-                <div className="sm:col-span-6">
-                  <label htmlFor="address" className="form-label">
-                    Location address *
-                  </label>
-                  <input
-                    id="address"
-                    type="text"
-                    {...register("address")}
-                    className="form-input"
-                  />
-                  {errors.address?.message && (
-                    <p className="text-sm text-red-400">
-                      {errors.address.message}
-                    </p>
-                  )}
-                </div>
-              </section>
-            </section>
-          </div>
-
-          <div className="py-6 flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={handlePreview}
-              className="inline-flex w-72 py-3 justify-center text-white bg-accent text-base text-center hover:bg-secondary-dark cursor-pointer"
-            >
-              Preview
-            </button>
-            <input
-              type="submit"
-              disabled={isSubmitting}
-              value={isSubmitting ? "Loading..." : "Submit"}
-              className="inline-flex w-72 py-3 text-white bg-primary text-base text-center hover:bg-jet-black cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mb-10">
+        <Card>
+          <CardHeader>
+            <CardTitle>Event Details</CardTitle>
+            <CardDescription>
+              Enter the basic information about your event.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Event Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter event title" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </form>
-      ) : (
-        <div className="p-4 md:p-8 bg-white shadow-lg container">
-          <div className="py-4">
-            <h3 className="font-bold text-xl sm:text-3xl">Preview Event</h3>
-          </div>
 
-          <div className="w-full mx-auto py-6 sm:py-8 lg:py-12">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-              <div className="relative rounded-lg overflow-hidden">
-                <img
-                  src={formData?.imageUrl ?? "/img/placeholder.svg"}
-                  alt={formData?.title}
-                  width="700"
-                  height="500"
-                  className="w-full h-full object-cover"
-                  style={{ aspectRatio: "700/500", objectFit: "cover" }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 lg:bottom-8 lg:left-8">
-                  <div className="flex gap-2">
-                    {/* {formData?.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="bg-primary text-primary-foreground">{tag}</Badge>
-                    ))}
-                    <Badge variant="secondary" className="bg-accent text-accent-foreground">
-                      Tech
-                    </Badge> */}
+            <FormField
+              control={form.control}
+              name="content"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Event Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Enter event description"
+                      className="min-h-[120px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="startDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Start Date & Time</FormLabel>
+                    <div className="flex flex-col space-y-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className="w-full pl-3 text-left font-normal"
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+
+                      <div className="flex space-x-2">
+                        <FormControl>
+                          <Input
+                            type="time"
+                            value={
+                              field.value ? format(field.value, "HH:mm") : ""
+                            }
+                            onChange={(e) => {
+                              const [hours, minutes] = e.target.value
+                                .split(":")
+                                .map(Number);
+                              // Only update if there's already a selected date
+                              if (field.value instanceof Date && !isNaN(hours) && !isNaN(minutes)) {
+                                const newDate = new Date(field.value);
+                                newDate.setHours(hours);
+                                newDate.setMinutes(minutes);
+                                field.onChange(newDate);
+                              }
+                            }}
+                            className="w-full"
+                          />
+                        </FormControl>
+                      </div>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="endDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>End Date & Time</FormLabel>
+                    <div className="flex flex-col space-y-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className="w-full pl-3 text-left font-normal"
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+
+                      <div className="flex space-x-2">
+                        <FormControl>
+                          <Input
+                            type="time"
+                            value={
+                              field.value ? format(field.value, "HH:mm") : ""
+                            }
+                            onChange={(e) => {
+                              const [hours, minutes] = e.target.value
+                                .split(":")
+                                .map(Number);
+                              
+                                // Only update if there's already a selected date
+                              if (field.value instanceof Date && !isNaN(hours) && !isNaN(minutes)) {
+                                const newDate = new Date(field.value);
+                                newDate.setHours(hours);
+                                newDate.setMinutes(minutes);
+                                field.onChange(newDate);
+                              }
+                            }}
+                            className="w-full"
+                          />
+                        </FormControl>
+                      </div>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="entranceFee"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Entrance Fee ($)</FormLabel>
+                  <FormControl>
+                    <Input type="number" min="0" step="0.01" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div>
+              <label htmlFor="imageUrl" className="form-label">
+                Event image
+              </label>
+              <ImageUploader id="imageUrl" {...form.register("imageUrl")} />
+              {form.formState.errors.imageUrl?.message && (
+                <p className="text-sm text-red-400">
+                  {form.formState.errors.imageUrl.message}
+                </p>
+              )}
+            </div>
+
+
+            <FormField
+              control={form.control}
+              name="isFeatured"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Featured Event</FormLabel>
+                    <FormDescription>
+                      This event will be displayed prominently on the website.
+                    </FormDescription>
                   </div>
-                </div>
+                </FormItem>
+              )}
+            />
+
+            <div>
+              <FormLabel>Tags</FormLabel>
+              <div className="flex flex-wrap gap-2 mt-2 mb-4">
+                {form.watch("tags")?.map((tag, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-1 bg-secondary text-secondary-foreground px-3 py-1 rounded-full"
+                  >
+                    <span>{tag}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTag(tag)}
+                      className="text-secondary-foreground/70 hover:text-secondary-foreground"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
               </div>
-              <div className="space-y-6 lg:space-y-8">
-                <div>
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
-                    {formData?.title}
-                  </h1>
-                  <p className="text-muted-foreground text-lg sm:text-xl">
-                    {(formData?.startDate, formData?.endDate) &&
-                      formatEventDates(formData?.startDate, formData?.endDate)}
-                  </p>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                  <div className="flex items-start space-x-2 text-muted-foreground">
-                    <ClockIcon className="h-5 w-5" />
-                    <span>
-                      {(formData?.startDate, formData?.endDate) &&
-                        formatEventTimes(
-                          formData?.startDate,
-                          formData?.endDate
-                        )}
-                    </span>
-                  </div>
-                  <div className="flex items-start space-x-2 text-muted-foreground">
-                    <MapPinIcon className="h-5 w-5 mt-0.5" />
-                    <span>{`${formData?.locationName}, ${formData?.address}, ${formData?.city}, ${formData?.state}`}</span>
-                  </div>
-                  <div className="flex items-start space-x-2 text-muted-foreground">
-                    <TicketIcon className="h-5 w-5" />
-                    <span>Ticket Price: ${formData?.entranceFee}</span>
-                  </div>
-                </div>
-                <div className="prose text-muted-foreground">
-                  <p>{formData?.content}</p>
-                </div>
+              <div className="flex gap-2">
+                <Input
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  placeholder="Add a tag"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddTag();
+                    }
+                  }}
+                />
+                <Button type="button" onClick={handleAddTag} variant="outline">
+                  Add
+                </Button>
               </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          <div className="py-6 flex justify-end space-x-4">
-            <button
-              onClick={handleEdit}
-              className="inline-flex w-72 py-3 justify-center text-white bg-accent text-base text-center hover:bg-secondary-dark cursor-pointer"
+        <Card>
+          <CardHeader>
+            <CardTitle>Location Details</CardTitle>
+            <CardDescription>
+              Enter the location information for your event.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="locationData.state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>State</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter state" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="locationData.city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>City</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter city" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="locationData.address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter address" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="locationData.postalCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Postal Code</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter postal code"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Ticket Information</CardTitle>
+            <CardDescription>Add ticket types for your event.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {ticketFields.map((field, index) => (
+              <div key={field.id} className="border rounded-lg p-4 space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-medium">
+                    Ticket Type {index + 1}
+                  </h3>
+                  {ticketFields.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeTicket(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                <Separator />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name={`ticketData.${index}.title`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ticket Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Regular, VIP, etc." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`ticketData.${index}.email`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contact Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="contact@example.com"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name={`ticketData.${index}.price`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Price ($)</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="0" step="0.01" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`ticketData.${index}.quantityAvailable`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Quantity Available</FormLabel>
+                        <FormControl>
+                          <Input type="number" min="1" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name={`ticketData.${index}.startsAt`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sales Start Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                className="w-full pl-3 text-left font-normal"
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP p")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`ticketData.${index}.expiresAt`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sales End Date</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                className="w-full pl-3 text-left font-normal"
+                              >
+                                {field.value ? (
+                                  format(field.value, "PPP p")
+                                ) : (
+                                  <span>Pick a date</span>
+                                )}
+                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={field.onChange}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div>
+                  <FormLabel>RSVP Contacts</FormLabel>
+                  <div className="space-y-2 mt-2">
+                    {form
+                      .watch(`ticketData.${index}.RSVPContact`)
+                      ?.map((_, contactIndex) => (
+                        <div key={contactIndex} className="flex gap-2">
+                          <FormField
+                            control={form.control}
+                            name={`ticketData.${index}.RSVPContact.${contactIndex}`}
+                            render={({ field }) => (
+                              <FormItem className="flex-1">
+                                <FormControl>
+                                  <Input
+                                    placeholder="contact@example.com or +12025550123"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          {form.watch(`ticketData.${index}.RSVPContact`)
+                            .length > 1 && (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => {
+                                const currentContacts = form.getValues(
+                                  `ticketData.${index}.RSVPContact`
+                                );
+                                form.setValue(
+                                  `ticketData.${index}.RSVPContact`,
+                                  currentContacts.filter(
+                                    (_, i) => i !== contactIndex
+                                  )
+                                );
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => handleAddRSVPContact(index)}
+                  >
+                    <Plus className="h-4 w-4 mr-2" /> Add Contact
+                  </Button>
+                </div>
+              </div>
+            ))}
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAddTicket}
+              className="w-full"
             >
-              Edit
-            </button>
-            <button
-              onClick={handleSubmit(onSubmit)}
-              disabled={isSubmitting}
-              className="inline-flex w-72 py-3 justify-center text-white bg-primary text-base text-center hover:bg-jet-black cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
-            >
-              Confirm and Submit
-            </button>
-          </div>
-        </div>
-      )}
-    </FormProvider>
+              <Plus className="h-4 w-4 mr-2" /> Add Ticket Type
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Button disabled={form.formState.isSubmitting} type="submit" className="w-full md:w-auto">
+          Create Event
+        </Button>
+      </form>
+    </Form>
   );
-};
-
-export default CreateEvent;
+}

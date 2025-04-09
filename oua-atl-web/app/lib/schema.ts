@@ -1,6 +1,8 @@
 import { z } from 'zod'
 
 const passwordSchema = z.string().min(8, { message: 'Password must be at least 8 characters long' });
+// Basic phone number regex (simple version, can be improved)
+const phoneRegex = /^\+?[1-9]\d{1,14}$/; // E.164 format, commonly used in APIs
 
 export const SignUpFormDataSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
@@ -104,29 +106,45 @@ export const ContactFormDataSchema = z.object({
   message: z.string().min(1, 'Email is required'),
 })
 
-export const CreateEventSchema = z.object({
-  title: z.string().min(1, 'Event name is required'),
-  imageUrl: z.string().min(1, 'Event image is required'),
-  startDate: z.string().min(1, 'Start date and time is required'),
-  endDate: z.string().min(1, 'End date and time is required'),
-  tags: z.string().min(1, 'Tags are required').refine(
-    (tags) =>
-      !tags || // Allow empty or undefined
-      tags.split(',').every((tag) => tag.trim().length > 0),
-    { message: 'Tags must be a comma-separated list of non-empty values' }
-  )
-  .transform((tags) =>
-    tags
-      ? tags.split(',').map((tag) => tag.trim()) // Transform only if provided
-      : []
+
+export const ticketSchema = z.object({
+  quantityAvailable: z.coerce.number().positive("Quantity must be positive"),
+  price: z.coerce.number().nonnegative("Price must be non-negative"),
+  startsAt: z.date(),
+  expiresAt: z.date(),
+  email: z.string().email("Invalid email address"),
+  title: z.string().min(1, "Title is required"),
+  RSVPContact: z.array(
+    z.string().refine((val) => {
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+      const isPhone = phoneRegex.test(val);
+      return isEmail || isPhone;
+    }, {
+      message: "Must be a valid email or phone number",
+    })
   ),
-  content: z.string().min(1, 'Event description is required'),
-  entranceFee: z.number().min(0, 'Ticket price must be at least 0'),
-  isFeatured: z.enum(['0', '1']),
-  locationName: z.string().min(1, 'Location name is required'),
-  city: z.string().min(1, 'Location city is required'),
-  state: z.string().min(1, 'Location State is required'),
-  address: z.string().min(1, 'Location address is required'),
+});
+
+export const locationSchema = z.object({
+  state: z.string().min(1, "State is required"),
+  city: z.string().min(1, "City is required"),
+  address: z.string().min(1, "Address is required"),
+  postalCode: z.string(),
+})
+
+export const CreateEventSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  content: z.string().min(1, "Content is required"),
+  startDate: z.date(),
+  endDate: z.date(),
+  entranceFee: z.coerce.number().nonnegative("Fee must be non-negative"),
+  tags: z.array(z.string()),
+  isFeatured: z.boolean().default(false),
+  imageUrl: z.string().url("Must be a valid URL"),
+  locationData: locationSchema,
+  ticketData: z
+    .array(ticketSchema)
+    .min(1, "At least one ticket type is required"),
 }).superRefine((val, ctx) => {
   const { startDate, endDate } = val; // Access parent to get startDate value
   if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
@@ -140,9 +158,9 @@ export const CreateEventSchema = z.object({
 
 export const EditEventSchema = z.object({
   title: z.string().min(1, 'Event name is required'),
-  imageUrl: z.string().min(1, 'Event image is required'),
-  startDate: z.string().min(1, 'Start date is required'),
-  endDate: z.string().optional(),
+  imageUrl: z.string().url("Invalid image URL"),
+  startDate: z.date(),
+  endDate: z.date(),
   tags: z
   .union([
     z.string().min(1, 'Tags are required').refine(
@@ -161,46 +179,34 @@ export const EditEventSchema = z.object({
       : tags.split(',').map((tag) => tag.trim()) // If it's a string, split and trim
   ),
   content: z.string().min(1, 'Event description is required'),
-  entranceFee: z.number().min(0, 'Ticket price must be at least 0'),
-  isFeatured: z.enum(['0', '1']),
-  locationName: z.string().min(1, 'Location name is required'),
-  city: z.string().min(1, 'Location city is required'),
-  state: z.string().min(1, 'Location State is required'),
-  address: z.string().min(1, 'Location address is required'),
+  entranceFee: z.coerce.number().nonnegative("Fee must be non-negative"),
+  isFeatured: z.boolean(),
+  locationData: locationSchema,
+  ticketData: z
+    .array(ticketSchema)
+    .min(1, "At least one ticket type is required"),
 }).superRefine((val, ctx) => {
   const { startDate, endDate } = val; // Access parent to get startDate value
   if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: 'End date must be later than start date',
-      path: ['startDate', 'endDate'],
+      path: ['endDate'],
     })// endDate must be later than startDate
   }
 });
 
 export const CreateProjectSchema = z.object({
-  amountGoal: z.union([z.number().min(0, "Amount goal must be at least 0"), z.string().transform((val) => Number(val))]), // Ensure it's non-negative
-  projectText: z.string().min(1, "Project description is required"),
-  // isFeatured: z.boolean(),
-  // createdBy: z.string().uuid("Invalid UUID for createdBy"),
-  imageURL: z.string().url("Invalid image URL"),
   projectTitle: z.string().min(1, "Project title is required"),
-  deadline: z.string().min(1, "Deadline is required"),
-  city: z.string().min(1, 'Location city is required'),
-  state: z.string().min(1, 'Location State is required'),
-  postalCode: z.string().min(1, 'Location postal code is required'),
+  projectText: z.string().min(1, "Project description is required"),
+  amountGoal: z.coerce.number().nonnegative("Amount must be non-negative"), // Ensure it's non-negative
+  imageURL: z.string().url("Invalid image URL"),
+  isFeatured: z.boolean(),
+  deadline: z.date(),
+  locationData: locationSchema,
 });
 
-export const EditProjectSchema = z.object({
-  amountGoal: z.union([z.number().min(0, "Amount goal must be at least 0"), z.string().transform((val) => Number(val))]), // Ensure it's non-negative
-  projectText: z.string().min(1, "Project description is required"),
-  imageURL: z.string().url("Invalid image URL"),
-  projectTitle: z.string().min(1, "Project title is required"),
-  deadline: z.string().min(1, "Deadline is required"),
-  city: z.string().min(1, 'Location city is required'),
-  state: z.string().min(1, 'Location State is required'),
-  address: z.string(),
-});
+export const EditProjectSchema = CreateProjectSchema;
 
 export const ExecutiveSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),

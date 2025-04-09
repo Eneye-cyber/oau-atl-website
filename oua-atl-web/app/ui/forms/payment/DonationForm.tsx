@@ -73,7 +73,7 @@ const DonationForm = ({
       <input {...register("userEmail")} type="hidden" />
 
       <div>
-        <Label htmlFor="amountAttempted">Donation Amount (<span style={{ textDecoration: "line-through"}}>N</span>)</Label>
+        <Label htmlFor="amountAttempted">Donation Amount ($)</Label>
         <Input
           id="amountAttempted"
           type="number"

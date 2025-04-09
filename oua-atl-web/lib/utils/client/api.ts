@@ -52,8 +52,7 @@ export const finalizeChange = async (id: string, url: string): Promise<BasicResp
         const statusCode = axiosError.response?.status;
         const fallbackMessage =
           error.response?.data?.message ||
-          axiosError.message || (error as Error)?.message
-          "Something went wrong";
+          axiosError.message || "Something went wrong";
         return {
           message: `${statusCode ?? 'Error'} - ${ fallbackMessage}`,
           payload: {

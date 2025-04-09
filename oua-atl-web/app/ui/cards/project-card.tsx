@@ -28,13 +28,13 @@ export default function ProjectCard({id, image, summary, title, goal, raised, st
       <div className="flex flex-col lg:flex-row">
         {/* Image Section */}
         <div className="relative w-full lg:w-1/3">
-          <Link href={`/projects/${id}`} title={title}>
+          <Link href={`/projects/${id}`} className="bg-gray-100" title={title}>
             <Image
               src={image ?? "/img/project.jpg"}
               alt={title}
-              width={420}
-              height={244}
-              className="rounded-md w-full"
+              width={208}
+              height={208}
+              className="rounded-md w-full aspect-video bg-slate-200 object-contain"
             />
           </Link>
           <div className="absolute top-2 left-1">

@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE;
 const deleteUrlMap: Record<string, (id: string) => string> = {
   'members/regular': id => `${baseUrl}/users/${id}/profile/delete`,
+  'projects': id => `${baseUrl}/projects/${id}`,
+  'events': id => `${baseUrl}/physical-events/${id}`,
   // Add more if needed
 };
 
@@ -23,13 +25,14 @@ const ActionMenu = ({ path, id, hasEdit = true, hasDelete = true, hasView = true
     setIsDeleting(true);
 
     try {
+      const method = path === 'members/regular' ? "POST" : "DELETE"
       const url = deleteUrlMap?.[path]?.(id);
       if (!url) {
         toast.error("Invalid delete path.");
         return;
       }
       const response = await fetch(url, {
-        method: "POST",
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -39,10 +42,11 @@ const ActionMenu = ({ path, id, hasEdit = true, hasDelete = true, hasView = true
       if (!response.ok) {
         throw new Error(`${response.status} - ${response.statusText}`);
       }
-
+      const result = await response.json().catch(() => null)
       // Refresh or redirect after deletion
-      toast.success('Item deleted successfully')
-      router.refresh();
+      toast.success( result?.message ?? 'Item deleted successfully')
+      // router.refresh();
+      // window.location.reload()
     } catch (error: unknown) {
       console.error(error);
       toast.error("Failed to delete. Please try again.", {description: (error as Error)?.message});

@@ -93,7 +93,7 @@ const DataTable: FC<TableProps> = ({title, columns, path, data, idKey, showActio
                       )}
                     </TableDataCell>
                   ))}
-                  {(showActions || customActions.length) && (
+                  {(showActions || customActions.length > 0) && (
                     <TableDataCell align='center'>
                       {/* Render custom actions */}
                       {customActions.length > 0 && customActions.map((CustomAction, index) => (

@@ -43,6 +43,19 @@ interface EventPayload {
   location_id: string;
 }
 
+interface ProjectPayload {
+  deadline: string;
+  image_id: string | null;
+  image_url: string;
+  created_by: string;
+  project_id: string;
+  amount_goal: number;
+  is_featured: string; // If meant to be a boolean, this should be `boolean`
+  location_id: string | null;
+  project_text: string;
+  location_data: Location;
+  project_title: string;
+}
 export type PreviewMethods = 'DELETE' | 'POST' | 'PUT' | 'PATCH'; // Expandable
 // Structure for the wrapper with preview_id and method
 export interface EventPreviewCollection {
@@ -51,6 +64,11 @@ export interface EventPreviewCollection {
   payload: EventPayload;
 }
 
+export interface ProjectPreviewCollection {
+  preview_id: string;
+  method: PreviewMethods
+  payload: ProjectPayload;
+}
 type Location = {
   city: string;
   state: string;
@@ -208,6 +226,15 @@ export interface GalleryCollection {
   item_count: number; // Number of items in the gallery
   image_url: string;
 };
+export interface TicketType {
+  price: number;
+  title: string;
+  starts_at: string; // ISO date string
+  ticket_id: number;
+  expires_at: string; // ISO date string
+  rsvp_contacts: string[];
+  quantity_available: number;
+}
 
 export interface EventResponseObject {
   tags: string[]; // Array of tags
@@ -215,22 +242,12 @@ export interface EventResponseObject {
   content: string; // Event description/content
   end_date: string; // ISO date string for the end date
   event_id: string; // UUID for the event ID
-  location: {
-    city: string; // Location city
-    state: string; // Location state
-    address: string; // Location address
-  place_id?: string,
-  latlong: {
-      lat: number; // Latitude
-      long: number; // Longitude
-    };
-    postal_code: string; // Postal code
-  };
+  location: Location;
   image_url: string; // URL of the event image
   start_date: string; // ISO date string for the start date
   is_featured: boolean; // Whether the event is featured
   entrance_fee: number; // Entrance fee for the event
-  tickets?: [],
+  tickets: TicketType[],
 }
 
 export interface EventCollection {

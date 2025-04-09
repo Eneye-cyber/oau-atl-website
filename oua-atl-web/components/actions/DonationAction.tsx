@@ -22,7 +22,7 @@ const DonationAction = ({ projectID, maxAmount }: { projectID: string; maxAmount
     try {
       const data: User = user;
 
-      if (!data.role || !data.id || !data.email) {
+      if (!data?.role || !data?.id || !data?.email) {
         setDialogState("signIn");
         return;
       }

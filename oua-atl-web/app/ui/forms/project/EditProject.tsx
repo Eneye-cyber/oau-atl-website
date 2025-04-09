@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploader from "@/app/ui/forms/ImageUploader";
@@ -8,7 +8,36 @@ import { useRouter } from "next/navigation";
 import { EditProjectSchema } from "@/app/lib/schema";
 import ProjectCard from "@/components/ProjectCard";
 import { ProjectResponseObject } from "@/app/lib/types";
-import { formatDateForInput, transformProjectFormObject } from "@/lib/utils";
+import {  transformProjectFormObject } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 
 type ProjectFormData = z.infer<typeof EditProjectSchema>;
@@ -23,34 +52,34 @@ const EditProject = ({
   const [isPreview, setIsPreview] = useState(false); // State to toggle preview mode
   const [formData, setFormData] = useState<ProjectFormData | null>(null); // State to hold form data for preview
 
-  const methods = useForm<ProjectFormData>({
+  const form = useForm<ProjectFormData>({
     resolver: zodResolver(EditProjectSchema),
     defaultValues: {
-      amountGoal: parseFloat(project.amount_goal), // Transform string to number
-      projectText: project.project_text,
-      imageURL: project.image_url,
       projectTitle: project.project_title,
-      deadline: formatDateForInput(project.deadline),
-      city: project.location.city,
-      state: project.location.state,
-      address: project.location?.address || "", // Assuming postal code is in the address
+      projectText: project.project_text,
+      amountGoal: parseFloat(project.amount_goal), // Transform string to number
+      imageURL: project.image_url,
+      isFeatured: project.is_featured,
+      deadline: new Date(project.deadline),
+      locationData: {
+        state: project.location.state,
+        city: project.location.city,
+        address: project?.location?.address ?? "",
+        postalCode: "0000000"
+      },
     },
   });
+
   const {
-    register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    setError,
     watch,
     trigger,
-  } = methods;
+  } = form;
 
   const onSubmit: SubmitHandler<ProjectFormData> = async (data) => {
     try {
       // Transform the data before sending
-      const transformedData = transformProjectFormObject(data);
-
-      console.log("Sending update request:", transformedData);
 
       const backendUrl = `${process.env.NEXT_PUBLIC_API_BASE}/projects/${id}`;
 
@@ -61,7 +90,7 @@ const EditProject = ({
           // If authentication is needed, include the Authorization header
           // 'Authorization': `Bearer ${yourAuthToken}`,
         },
-        body: JSON.stringify(transformedData),
+        body: JSON.stringify(data),
         credentials: "include", // Ensures cookies are included
       });
 
@@ -69,10 +98,6 @@ const EditProject = ({
         const result = await response
           .json()
           .catch(() => ({ message: response.statusText }));
-        setError("projectTitle", {
-          type: "server",
-          message: result.message || "Invalid form field format",
-        });
         return;
       }
 
@@ -81,8 +106,8 @@ const EditProject = ({
           .json()
           .catch(() => ({ message: response.statusText }));
         console.log("Update result:", result);
-        toast.success("Update successful!");
-        router.push(`/admin/projects/${id}`);
+        toast.success("Update successful!", { description: result.message });
+        router.push(`/admin/projects`);
         return;
       }
 
@@ -108,215 +133,287 @@ const EditProject = ({
   };
 
   return (
-    <FormProvider {...methods}>
-      {!isPreview ? (
-        <form
-          className="p-4 md:p-8 bg-white shadow-lg container"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <div className="py-4">
-            <h3 className="font-bold text-xl sm:text-3xl">Edit Project</h3>
-          </div>
-
-          <div className="flex flex-col gap-4 mt-10">
-            <section className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-              <h3 className="text-xl font-semibold sm:col-span-6">
-                Project Details
-              </h3>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="projectTitle" className="form-label">
-                  Project Name *
-                </label>
-                <input
-                  id="projectTitle"
-                  type="text"
-                  {...register("projectTitle")}
-                  className="form-input"
+    <Card className="w-full container">
+      <CardHeader>
+        <CardTitle className="text-2xl">Edit Project</CardTitle>
+        <CardDescription>
+          Fill out the form below to update an existing fundraising project.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          {!isPreview ? (
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Project Title */}
+                <FormField
+                  control={form.control}
+                  name="projectTitle"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Project Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter project title" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                {errors.projectTitle?.message && (
-                  <p className="text-sm text-red-400">
-                    {errors.projectTitle.message}
-                  </p>
-                )}
-              </div>
 
-              <div className="sm:col-span-3">
-                <label htmlFor="imageURL" className="form-label">
-                  Project Image *
-                </label>
-                <ImageUploader id="imageURL" {...register("imageURL")} />
-                {errors.imageURL?.message && (
-                  <p className="text-sm text-red-400">
-                    {errors.imageURL.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="sm:col-span-3">
-                <label htmlFor="amountGoal" className="form-label">
-                  Project Financial Goal *
-                </label>
-                <input
-                  id="amountGoal"
-                  type="number"
-                  {...register("amountGoal")}
-                  className="form-input"
+                {/* Project Description */}
+                <FormField
+                  control={form.control}
+                  name="projectText"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Project Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Describe your project"
+                          className="min-h-32"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                {errors.amountGoal?.message && (
-                  <p className="text-sm text-red-400">
-                    {errors.amountGoal.message}
-                  </p>
-                )}
-              </div>
 
-              <div className="sm:col-span-3">
-                <label htmlFor="deadline" className="form-label">
-                  Deadline *
-                </label>
-                <input
-                  type="datetime-local"
-                  id="deadline"
-                  {...register("deadline")}
-                  className="form-input"
+                {/* Amount Goal */}
+                <FormField
+                  control={form.control}
+                  name="amountGoal"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Funding Goal</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                            $
+                          </span>
+                          <Input
+                            type="number"
+                            placeholder="0.00"
+                            className="pl-8"
+                            {...field}
+                            onChange={(e) => {
+                              const value =
+                                e.target.value === "" ? "0" : e.target.value;
+                              field.onChange(Number.parseFloat(value));
+                            }}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                {errors.deadline?.message && (
-                  <p className="text-sm text-red-400">
-                    {errors.deadline.message}
-                  </p>
-                )}
-              </div>
 
-              <div className="sm:col-span-6">
-                <label htmlFor="projectText" className="form-label">
-                  Project Description *
-                </label>
-                <textarea
-                  id="projectText"
-                  {...register("projectText")}
-                  className="form-input"
+                {/* Deadline */}
+                <FormField
+                  control={form.control}
+                  name="deadline"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Deadline</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-left font-normal"
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Select a date</span>
+                              )}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                            disabled={(date) => date < new Date()}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                {errors.projectText?.message && (
-                  <p className="text-sm text-red-400">
-                    {errors.projectText.message}
-                  </p>
-                )}
-              </div>
-            </section>
 
-            <hr className="sm:col-span-6" />
-            <section className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6 sm:col-span-6">
-              <h3 className="text-xl font-semibold sm:col-span-6">
-                Project Location
-              </h3>
+                {/* Image URL */}
+                <div className="md:col-span-2">
+                  <label htmlFor="imageURL" className="form-label">
+                    Project image
+                  </label>
+                  <ImageUploader id="imageURL" {...form.register("imageURL")} />
+                  {form.formState.errors.imageURL?.message && (
+                    <p className="text-sm text-red-400">
+                      {form.formState.errors.imageURL.message}
+                    </p>
+                  )}
+                </div>
 
-              <div className="sm:col-span-3">
-                <label htmlFor="city" className="form-label">
-                  Location City *
-                </label>
-                <input
-                  id="city"
-                  type="text"
-                  {...register("city")}
-                  className="form-input"
+                {/* locationData Fields */}
+                <div className="md:col-span-2">
+                  <h3 className="text-lg font-medium mb-4">
+                    locationData Information
+                  </h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {/* State */}
+                    <FormField
+                      control={form.control}
+                      name="locationData.state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>State</FormLabel>
+                          <FormControl>
+                            <Input placeholder="State" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* City */}
+                    <FormField
+                      control={form.control}
+                      name="locationData.city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>City</FormLabel>
+                          <FormControl>
+                            <Input placeholder="City" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Address */}
+                    <FormField
+                      control={form.control}
+                      name="locationData.address"
+                      render={({ field }) => (
+                        <FormItem className="md:col-span-2">
+                          <FormLabel>Address</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Street address" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Postal Code */}
+                    <FormField
+                      control={form.control}
+                      name="locationData.postalCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Postal Code</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Postal code" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* Featured Checkbox */}
+                <FormField
+                  control={form.control}
+                  name="isFeatured"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 md:col-span-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>Featured Project</FormLabel>
+                        <FormDescription>
+                          Mark this project as featured to highlight it on the
+                          homepage
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
                 />
-                {errors.city?.message && (
-                  <p className="text-sm text-red-400">{errors.city.message}</p>
-                )}
               </div>
 
-              <div className="sm:col-span-3">
-                <label htmlFor="state" className="form-label">
-                  Location State *
-                </label>
-                <input
-                  id="state"
-                  type="text"
-                  {...register("state")}
-                  className="form-input"
-                />
-                {errors.state?.message && (
-                  <p className="text-sm text-red-400">{errors.state.message}</p>
-                )}
+              <div className="flex justify-end space-x-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handlePreview}
+                  disabled={isSubmitting}
+                >
+                  Preview Changes
+                </Button>
+
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Updating..." : "Update Project"}
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <div className="p-4 md:p-8 bg-white shadow-lg container">
+              <div className="py-4">
+                <h3 className="font-bold text-xl sm:text-3xl">
+                  Preview Project
+                </h3>
               </div>
 
-              <div className="sm:col-span-3">
-                <label htmlFor="address" className="form-label">
-                  Location Address *
-                </label>
-                <input
-                  id="address"
-                  type="text"
-                  {...register("address")}
-                  className="form-input"
-                />
-                {errors.address?.message && (
-                  <p className="text-sm text-red-400">
-                    {errors.address.message}
-                  </p>
-                )}
+              <div className="md:py-8 text-center">
+                <h2 className="text-3xl md:text-5xl font-semibold">
+                  {formData?.projectTitle}
+                </h2>
+                <div className="inline-block capitalize relative mt-1">{`${formData?.locationData?.city} ${formData?.locationData?.state}`}</div>
               </div>
-            </section>
-          </div>
 
-          <div className="py-6 flex justify-end gap-4">
-            <button
-              type="button"
-              onClick={handlePreview}
-              className="inline-flex w-72 py-3 justify-center text-white bg-accent text-base text-center hover:bg-secondary-dark cursor-pointer"
-            >
-              Preview
-            </button>
-            <input
-              type="submit"
-              disabled={isSubmitting}
-              value={isSubmitting ? "Loading..." : "Submit"}
-              className="inline-flex w-72 py-3 text-white bg-primary text-base hover:bg-jet-black cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
-            />
-          </div>
-        </form>
-      ) : (
-        <div className="p-4 md:p-8 bg-white shadow-lg container">
-          <div className="py-4">
-            <h3 className="font-bold text-xl sm:text-3xl">Preview Project</h3>
-          </div>
+              <ProjectCard
+                project={{
+                  image_url: formData?.imageURL,
+                  project_text: formData?.projectText,
+                  amount_goal: formData?.amountGoal,
+                  amount_collected: 0,
+                  donation_count: 0,
+                }}
+                percentage={0}
+              />
 
-          <div className="md:py-8 text-center">
-            <h2 className="text-3xl md:text-5xl font-semibold">
-              {formData?.projectTitle}
-            </h2>
-            <div className="inline-block capitalize relative mt-1">{`${formData?.city} ${formData?.state}`}</div>
-          </div>
-
-          <ProjectCard
-            project={{
-              image_url: formData?.imageURL,
-              project_text: formData?.projectText,
-              amount_goal: formData?.amountGoal,
-              amount_collected: 0,
-              donation_count: 0,
-            }}
-            percentage={0}
-          />
-
-          <div className="py-6 flex justify-end space-x-4">
-            <button
-              onClick={handleEdit}
-              className="inline-flex w-72 py-3 justify-center text-white bg-accent text-base text-center hover:bg-secondary-dark cursor-pointer"
-            >
-              Edit
-            </button>
-            <button
-              onClick={handleSubmit(onSubmit)}
-              disabled={isSubmitting}
-              className="inline-flex w-72 py-3 justify-center text-white bg-primary text-base text-center hover:bg-jet-black cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
-            >
-              Confirm and Submit
-            </button>
-          </div>
-        </div>
-      )}
-    </FormProvider>
+              <div className="py-6 flex justify-end space-x-4">
+                <button
+                  disabled={isSubmitting}
+                  onClick={handleEdit}
+                  className="inline-flex w-72 py-3 justify-center text-white bg-accent text-base text-center hover:bg-secondary-dark cursor-pointer"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={handleSubmit(onSubmit)}
+                  disabled={isSubmitting}
+                  className="inline-flex w-72 py-3 justify-center text-white bg-primary text-base text-center hover:bg-jet-black cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+                >
+                  Confirm and Submit
+                </button>
+              </div>
+            </div>
+          )}
+        </Form>
+      </CardContent>
+    </Card>
   );
 };
 

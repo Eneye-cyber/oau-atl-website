@@ -51,11 +51,11 @@ const StatsFeed = () => {
     <div className="grid md:grid-cols-3 gap-6">
       {loading ? (
         // 🔹 Show loading placeholders while data is being fetched
-        <div className="grid md:grid-cols-3 gap-6">
+        <>
           <StatLoader />
           <StatLoader />
           <StatLoader />
-        </div>
+        </>
       ) : (
         // 🔹 Show actual data once it's loaded
         <>

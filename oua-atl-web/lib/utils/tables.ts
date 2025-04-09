@@ -32,6 +32,18 @@ export const ProjectColumns = [
   { key: 'location', label: 'Location' },
 ];
 
+
+export const ProjectPreviewColumns = [
+  { key: 'image_url', label: 'Image' },
+  { key: 'project_title', label: 'Project name' },
+  { key: 'amount_goal', label: 'Financial goal' },
+  { key: 'created_by', label: 'Created by'  },
+  { key: 'deadline', label: 'Project Opened', type: 'date' },
+  // { key: 'location', label: 'Location' },
+  { key: 'method', label: 'Project Action' },
+
+];
+
 export const RegularMembersColumn = [
   { key: "full_name", label: "Full name" },
   { key: "email", label: "Email" },

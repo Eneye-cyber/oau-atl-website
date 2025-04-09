@@ -65,7 +65,6 @@ const Page = () => {
           console.error('Error fetching data:', result.message);
           toast.error('Error fetching data', {description: result.message})
         }
-        console.log(i, result)
   
       })
       setLoading(false);
