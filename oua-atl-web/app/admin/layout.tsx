@@ -27,7 +27,7 @@ export default function AdminLayout({
       return <LoadingSpinner />;
     }
 
-    if (!authLoading && role !== "member") return <LoadingSpinner />;
+    if (!authLoading && role !== "admin") return <LoadingSpinner />;
 
   return (
     <div

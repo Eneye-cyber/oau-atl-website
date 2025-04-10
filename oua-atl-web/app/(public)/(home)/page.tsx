@@ -68,6 +68,7 @@ const HomePage = () => {
   const heroSection = homeData.sections.find((s) => s.slug === "home-hero-section");
   const bannerSection = homeData.sections.find((s) => s.slug === "strip-banner");
   const midSection = homeData.sections.find((s) => s.slug === "home-page-mid-section");
+  const projectSection = homeData.sections.find((s) => s.slug === "projects");
   const eventSection = homeData.sections.find((s) => s.slug === "physical-events");
   const adBannerSection = homeData.sections.find((s) => s.slug === "ad-banner");
   const extraSection = homeData.sections.find((s) => s.slug === "home-grid-section");
@@ -86,13 +87,13 @@ const HomePage = () => {
 
       {midSection && <MidSection data={midSection} />}
 
-      {/* <section className="py-20 my-12 px-3 bg-gray-100">
-        <div className="container">
-          <Suspense fallback={<TableLoader />}>
-            <PastProjects data={homeData.sections.find((s: Section) => s.slug === "projects")} />
-          </Suspense>
-        </div>
-      </section> */}
+      {projectSection && (
+        <section className="py-20 my-12 px-3 bg-gray-100">
+          <div className="container">
+              <PastProjects data={projectSection} />
+          </div>
+        </section>
+      )}
 
       {eventSection && (
         <section className="py-20 pad">

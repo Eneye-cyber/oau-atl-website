@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         if (!response.ok) throw new Error("Not authenticated");
         const data = await response.json();
-        console.log("data", data);
+        // console.log("data", data);
         const user = data?.user;
         if (!user) {
           throw new Error("Invalid response: No user data");
@@ -78,12 +78,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Read response headers (optional: check Set-Cookie directive)
       const setCookieHeader = response.headers["set-cookie"];
-      console.log(response.headers);
-      if (setCookieHeader) {
-        console.log("Set-Cookie received:", setCookieHeader);
-      }
+      // console.log(response.headers);
+      // if (setCookieHeader) {
+      //   console.log("Set-Cookie received:", setCookieHeader);
+      // }
 
-      console.log("Login successful:", response.data);
+      // console.log("Login successful:", response.data);
 
       // User data
       const user = response.data?.user;

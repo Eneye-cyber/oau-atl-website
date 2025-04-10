@@ -32,13 +32,13 @@ const Page =  () => {
   
         <MidSection data={homeData.sections.find((s: Section) => s.slug === "home-page-mid-section")  ?? homeData.fallback} />
   
-        {/* <section className="py-20 my-12 px-3 bg-gray-100">
+        <section className="py-20 my-12 px-3 bg-gray-100">
           <div className="container">
             <Suspense fallback={<TableLoader />}>
               <PastProjects data={homeData.sections.find((s: Section) => s.slug === "projects")  ?? homeData.fallback} />
             </Suspense>
           </div>
-        </section> */}
+        </section>
   
         <section className="py-20 pad">
           <div className="container">

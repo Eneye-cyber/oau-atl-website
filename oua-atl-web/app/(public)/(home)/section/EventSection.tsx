@@ -9,24 +9,6 @@ import {
 } from "@/components/ui/card"
 
 
-const eventsFallBack = [
-  {
-    image_url: "/img/reunion.jpg",
-    start_date: "18th, December 2024",
-    title: "Alumni End-of-Year Reunion (2024)",
-    content: "Join us for a festive gathering to reconnect with old friends, celebrate accomplishments, and create lasting memories.",
-  },
-  {
-    start_date: "May 2023",
-    title: "Project Inception",
-    content: "The idea for our revolutionary product was born, marking the beginning of an exciting journey.",
-  },
-  {
-    start_date: "July 2023",
-    title: "Team Assembly",
-    content: "We brought together a diverse group of talented individuals to turn our vision into reality.",
-  }
-]
 
 const EventSection: React.FC<SectionDataProps> = ({data}) => {
   const events = [...data.content]
